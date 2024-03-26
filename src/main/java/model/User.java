@@ -38,15 +38,47 @@ public class User {
 
     public User() {}
 
-    public User(String username, String email, String password, Rol rol) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.rol = rol;
+    public static UserBuilder create(String username) {
+        return new UserBuilder(username);
     }
 
-    public User(String username, String email, String password) {
-        this(username, email, password, Rol.USER);
+    private User(UserBuilder builder) {
+        this.username = builder.username;
+        this.email = builder.email;
+        this.password = builder.password;
+        this.rol = builder.rol;
+    }
+
+    public static class UserBuilder {
+        private final String username;
+        private String email;
+        private String password;
+        private Rol rol;
+
+        public UserBuilder(String username) {
+            this.username = username;
+        }
+
+        public UserBuilder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public UserBuilder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public UserBuilder rol(Rol rol) {
+            this.rol = rol;
+            return this;
+        }
+
+        public User build() {
+            if(rol == null) rol = Rol.USER;
+            return new User(this);
+        }
+
     }
 
     public Long getId() {
