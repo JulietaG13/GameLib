@@ -23,6 +23,7 @@ dependencies {
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'org.hibernate:hibernate-core:5.6.5.Final'
     implementation 'org.hsqldb:hsqldb:2.6.1'
+    compile "com.sparkjava:spark-core:2.9.4"
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.13.2'
