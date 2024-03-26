@@ -18,7 +18,7 @@ public class Main {
 
         final EntityManager entityManager = factory.createEntityManager();
 
-        sample1(entityManager);
+        //sample1(entityManager);
 
         List<User> users = new Users(entityManager).listAll();
         StringBuilder str = new StringBuilder();
@@ -30,6 +30,7 @@ public class Main {
         entityManager.close();
     }
 
+    /*
     private static void sample1(EntityManager entityManager) {
         final EntityTransaction transaction = entityManager.getTransaction();
         Users usersRepo = new Users(entityManager);
@@ -47,5 +48,6 @@ public class Main {
 
         transaction.commit();
     }
+    */
 
 }
