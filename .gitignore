@@ -1,0 +1,9 @@
+null
+out
+.gradle
+.DS_STORE
+.idea
+build
+target
+*.iml
+db
