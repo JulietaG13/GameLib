@@ -37,6 +37,22 @@ public class Application {
             return gson.toJson(userService.listAll());
         });
 
+        Spark.post("/users", "application/json", (req, resp) -> {
+            final User user = User.fromJson(req.body());
+
+            final EntityManager em = factory.createEntityManager();
+            final UserService users = new UserService(em);
+            EntityTransaction tx = em.getTransaction();
+            tx.begin();
+            users.persist(user);
+            resp.type("application/json");
+            resp.status(201);
+            tx.commit();
+            em.close();
+
+            return user.asJson();
+        });
+
         Spark.options("/*", (req, res) -> {
             String accessControlRequestHeaders = req.headers("Access-Control-Request-Headers");
             if (accessControlRequestHeaders != null) {
