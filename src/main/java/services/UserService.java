@@ -1,4 +1,4 @@
-package repository;
+package services;
 
 
 import model.User;
@@ -7,11 +7,11 @@ import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
-public class Users {
+public class UserService {
 
     private final EntityManager entityManager;
 
-    public Users(EntityManager entityManager) {
+    public UserService(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
@@ -37,6 +37,11 @@ public class Users {
 
     public List<User> listAll() {
         return entityManager.createQuery("SELECT u FROM User u", User.class).getResultList();
+    }
+
+    public void deleteAll() {
+        new ShelfService(entityManager).deleteAll(); // delete child
+        entityManager.createQuery("DELETE FROM User").executeUpdate();
     }
 
     public User persist(User user) {
