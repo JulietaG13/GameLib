@@ -1,8 +1,9 @@
 .viewsContainer{
     display: flex;
     flex-direction: row;
-    background-color: #4d0879 ;
+    background-color: #4F2E8C;
     position: fixed;
+    height: 5em;
     width: 100%;
     top: 0;
 }
@@ -16,8 +17,8 @@
     justify-content: left;
 }
 .logo img{
-    width: 90px;
-    height: 90px;
+    width: 3em;
+    height: 3em;
     padding-right: 4%;
 }
 
@@ -39,8 +40,8 @@
     justify-content: right;
 }
 .user img{
-    width: 90px;
-    height: 90px;
+    width: 5em;
+    height: 5em;
     padding-right: 4%;
 }
 
