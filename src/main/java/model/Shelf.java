@@ -2,7 +2,9 @@ package model;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Shelf {
@@ -24,7 +26,7 @@ public class Shelf {
             joinColumns = @JoinColumn(name = "shelf_id"),
             inverseJoinColumns = @JoinColumn(name = "game_id")
     )
-    private final List<Game> games = new ArrayList<>();
+    private final Set<Game> games = new HashSet<>();
 
     public Shelf() {}
 

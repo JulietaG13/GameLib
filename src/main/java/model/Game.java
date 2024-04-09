@@ -1,8 +1,7 @@
 package model;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class Game {
@@ -20,7 +19,7 @@ public class Game {
     //TODO(gameLogo, gamePicture, gameBanner)
 
     @ManyToMany(mappedBy = "games")
-    private final List<Shelf> inShelves = new ArrayList<>();
+    private final Set<Shelf> inShelves = new HashSet<>();
 
     public Game() {}
 
