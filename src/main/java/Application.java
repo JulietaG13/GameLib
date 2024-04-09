@@ -37,7 +37,7 @@ public class Application {
             return gson.toJson(userService.listAll());
         });
 
-        Spark.post("/users", "application/json", (req, resp) -> {
+        Spark.post("/newuser", "application/json", (req, resp) -> {
             final User user = User.fromJson(req.body());
 
             final EntityManager em = factory.createEntityManager();
