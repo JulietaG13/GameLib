@@ -24,7 +24,6 @@ public class Application {
 
         Spark.port(4567);
 
-        clearTables(entityManager);
         storeUsers1(entityManager);
         storeGames1(entityManager);
 
