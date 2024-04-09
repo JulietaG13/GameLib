@@ -73,7 +73,7 @@
     font-size: 18px;
 }
 
-.forgot-password span{
+.forgot-password .link{
     color: #dd5538;
     cursor: pointer;
 }
