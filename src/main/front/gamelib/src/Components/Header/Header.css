@@ -1,0 +1,50 @@
+.viewsContainer{
+    display: flex;
+    flex-direction: row;
+    background-color: #4d0879 ;
+    position: fixed;
+    width: 100%;
+    top: 0;
+}
+
+.logo{
+    display: flex;
+    flex-direction: row;
+    flex: 1 1 0;
+    padding: 1%;
+    align-items: center;
+    justify-content: left;
+}
+.logo img{
+    width: 90px;
+    height: 90px;
+    padding-right: 4%;
+}
+
+.goTo{
+    display: flex;
+    flex-direction: row;
+    flex: 1 1 0;
+    padding: 1%;
+    align-items: center;
+    justify-content: center;
+}
+
+.user{
+    display: flex;
+    flex-direction: row;
+    flex: 1 1 0;
+    padding: 1%;
+    align-items: center;
+    justify-content: right;
+}
+.user img{
+    width: 90px;
+    height: 90px;
+    padding-right: 4%;
+}
+
+a {
+    color: inherit;
+    text-decoration: none; /* no underline */
+}
