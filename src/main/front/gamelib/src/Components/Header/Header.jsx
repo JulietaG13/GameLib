@@ -1,12 +1,12 @@
-import React, {useState} from "react"
-import './Header.css'
+import React, {useState} from "react";
+import './Header.css';
 
 import gamelibLogo from '../Assets/gamelib-logo.jpg';
-import user_icon from '../Assets/user-icon.png'
+import user_icon from '../Assets/user-icon.png';
 
 function Header() {
     return (
-        <header className="viewsContainer">
+        <navbar className="viewsContainer">
             <div className="logo">
                 <img src={gamelibLogo} alt={"GameLib logo"}/>
                 <h2>GameLib</h2>
@@ -24,7 +24,7 @@ function Header() {
                 <h2>Username</h2>
                 <img src={user_icon} alt={"user icon"}/>
             </div>
-        </header>
+        </navbar>
     );
 }
 

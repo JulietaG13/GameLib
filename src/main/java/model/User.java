@@ -1,8 +1,8 @@
 package model;
 
+import com.google.gson.Gson;
+
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class User {
@@ -49,6 +49,16 @@ public class User {
         this.rol = builder.rol;
     }
 
+    public static User fromJson(String json) {
+        final Gson gson = new Gson();
+        return gson.fromJson(json, User.class);
+    }
+
+    public String asJson() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
+
     public static class UserBuilder {
         private final String username;
         private String email;
@@ -80,6 +90,7 @@ public class User {
         }
 
     }
+
 
     public Long getId() {
         return id;
