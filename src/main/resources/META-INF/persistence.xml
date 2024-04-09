@@ -9,12 +9,12 @@
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbc.JDBCDriver"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:hsqldb:hsql://localhost/gamelibdb;shutdown=true"/> <!-- shutdown=false -->
+            <property name="javax.persistence.jdbc.url" value="jdbc:hsqldb:hsql://localhost/gamelibdb;shutdown=false"/>
             <property name="javax.persistence.jdbc.user" value="sa"/>
             <property name="javax.persistence.jdbc.password" value=""/>
 
             <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.hbm2ddl.auto" value="create"/> <!-- update -->
         </properties>
 
     </persistence-unit>
