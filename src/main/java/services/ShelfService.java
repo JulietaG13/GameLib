@@ -36,6 +36,17 @@ public class ShelfService {
                 .setParameter("username", user.getUsername()).getResultList();
     }
 
+    public Shelf find(String name, User user) {
+        List<Shelf> shelves = listByUser(user);
+        Shelf res = null;
+        for(Shelf s : shelves) {
+            if(s.getName().equals(name)) {
+                res = s;
+            }
+        }
+        return res;
+    }
+
     public List<Shelf> listAll() {
         return entityManager.createQuery("SELECT s FROM Shelf s", Shelf.class).getResultList();
     }
@@ -44,21 +55,25 @@ public class ShelfService {
         entityManager.createQuery("DELETE FROM Shelf").executeUpdate();
     }
 
-    public void addGame(Shelf shelf, Game game) {
+    public void addGame(Shelf shelf, User user, Game game) {
         EntityTransaction t = entityManager.getTransaction();
 
         t.begin();
+        /*
         Optional<Shelf> managedShelf = findById(shelf.getId());
         if(managedShelf.isEmpty()) throw new NoSuchElementException("Shelf not in BD!");
 
         Optional<Game> managedGame = new GameService(entityManager).findById(game.getId());
         if(managedGame.isEmpty()) throw new NoSuchElementException("Game not in BD!");
+        */
 
-        Shelf shelf1 = managedShelf.get();
-        Game game1 = managedGame.get();
-        shelf1.addGame(game1);
+        Shelf managedShelf = find(shelf.getName(), user);
+        Optional<Game> managedGame = new GameService(entityManager).findByTitle(game.getTitle());
+        if(managedGame.isEmpty()) throw new NoSuchElementException("Game not in BD!");
 
-        persist(shelf1);
+        managedShelf.addGame(managedGame.get());
+
+        persist(managedShelf);
 
         t.commit();
     }

@@ -95,16 +95,18 @@ public class Application {
         }
         transaction.commit();
 
-        shelfService.addGame(shelf, game1);
-        shelfService.addGame(shelf, game3);
+        shelfService.addGame(shelf, user, game1);
+        shelfService.addGame(shelf, user, game3);
     }
 
     public static void clearTables(EntityManager entityManager) {
         final EntityTransaction t = entityManager.getTransaction();
+        /*
         t.begin();
         new UserService(entityManager).deleteAll();
         new GameService(entityManager).deleteAll();
         t.commit();
+        */
     }
 }
 
