@@ -1,16 +1,17 @@
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import model.Game;
+import model.Shelf;
 import model.User;
 import persistence.Database;
-import repository.Users;
+import services.GameService;
+import services.ShelfService;
+import services.UserService;
 import spark.Spark;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import java.util.Arrays;
-import java.util.List;
 
 public class Application {
 
@@ -23,7 +24,19 @@ public class Application {
 
         Spark.port(4567);
 
+        clearTables(entityManager);
         storeUsers1(entityManager);
+        storeGames1(entityManager);
+
+        Spark.get("/users", "application/json", (req, resp) -> {
+
+            resp.type("application/json");
+            resp.status(201);
+
+            UserService userService = new UserService(entityManager);
+
+            return gson.toJson(userService.listAll());
+        });
 
         Spark.options("/*", (req, res) -> {
             String accessControlRequestHeaders = req.headers("Access-Control-Request-Headers");
@@ -44,30 +57,54 @@ public class Application {
             res.header("Access-Control-Allow-Headers", "*");
             res.type("application/json");
         });
-
-        Spark.get("/users", "application/json", (req, resp) -> {
-
-            resp.type("application/json");
-            resp.status(201);
-
-            Users users = new Users(entityManager);
-
-            return gson.toJson(users.listAll());
-        });
     }
 
     private static void storeUsers1(EntityManager entityManager) {
         final EntityTransaction transaction = entityManager.getTransaction();
-        Users users = new Users(entityManager);
+        UserService userService = new UserService(entityManager);
 
         transaction.begin();
-        if(users.listAll().isEmpty()) {
+        if(userService.listAll().isEmpty()) {
             for(int i = 1; i < 5; i++) {
                 User u = User.create("username" + i).email("user" + i + "@mail.com").password("qwerty123").build();
-                users.persist(u);
+                userService.persist(u);
             }
         }
         transaction.commit();
+    }
+
+    private static void storeGames1(EntityManager entityManager) {
+        final EntityTransaction transaction = entityManager.getTransaction();
+        GameService gameService = new GameService(entityManager);
+        ShelfService shelfService = new ShelfService(entityManager);
+        UserService userService = new UserService(entityManager);
+
+        User user = User.create("IOwnAShelf").email("shelves@mail.com").password("1234").build();
+        Shelf shelf = new Shelf(user, "elf on a shelf");
+        Game game1 = Game.create("awesome game").description("just an awesome game").build();
+        Game game2 = Game.create("another awesome game").description("just another awesome game").build();
+        Game game3 = Game.create("even another awesome game").description("also an awesome game").build();
+
+        transaction.begin();
+        if (gameService.listAll().isEmpty() && shelfService.listAll().isEmpty()) {
+            userService.persist(user);
+            gameService.persist(game1);
+            gameService.persist(game2);
+            gameService.persist(game3);
+            shelfService.persist(shelf);
+        }
+        transaction.commit();
+
+        shelfService.addGame(shelf, game1);
+        shelfService.addGame(shelf, game3);
+    }
+
+    public static void clearTables(EntityManager entityManager) {
+        final EntityTransaction t = entityManager.getTransaction();
+        t.begin();
+        new UserService(entityManager).deleteAll();
+        new GameService(entityManager).deleteAll();
+        t.commit();
     }
 }
 
