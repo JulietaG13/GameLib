@@ -59,10 +59,10 @@ export const Register = () => {
                     </div>
                 </div>
                 <div className="forgot-password">Do you already have an account?
-                    <Link to={"/login"} className={"link"}>Log in</Link>
+                    <Link to={"/login"} className={"link"}> Log in</Link>
                 </div>
                 <div className="submit-container">
-                    <button className={"submit"} title={"Register"} onClick={submit}/>
+                    <button className={"submit"} title={"Register"} onClick={submit}>Register</button>
                 </div>
             </div>
             );
