@@ -2,7 +2,7 @@ import './App.css';
 import Header from "./Components/Header/Header"
 import {BrowserRouter, Routes, Route, Outlet} from "react-router-dom"
 import Login from "./Components/LoginSignup/Login";
-import Register from "./Components/LoginSignup/register";
+import {Register} from "./Components/LoginSignup/register";
 function App() {
     return <BrowserRouter>
         <Routes>

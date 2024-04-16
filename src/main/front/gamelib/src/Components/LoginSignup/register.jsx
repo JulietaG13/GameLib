@@ -9,8 +9,8 @@ import axios from "axios";
 import {Navigate} from "react-router-dom";
 
 export const Register = () => {
-    const [name, setName] = useState('');
-    const [mail, setMail] = useState('');
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [navigate, setNavigate] = useState(false);
 
@@ -20,7 +20,7 @@ export const Register = () => {
         e.preventDefault()
 
         await axios.post("http://localhost:4567/newuser", {
-            name: name, mail: mail, password: password
+            username: username, email: email, password: password, rol: "USER"
         });
 
         setNavigate(true);
@@ -42,13 +42,13 @@ export const Register = () => {
                         <img src={user_icon} alt=""/>
                         <input type="text" placeholder={"Name"}
                             //saves value
-                               onChange={e => setName(e.target.value)}
+                               onChange={e => setUsername(e.target.value)}
                         />
                     </div>
                     <div className="input">
                         <img src={email_icon} alt=""/>
                         <input type="email" placeholder={"Email"}
-                               onChange={e => setMail(e.target.value)}
+                               onChange={e => setEmail(e.target.value)}
                         />
                     </div>
                     <div className="input">
@@ -62,7 +62,7 @@ export const Register = () => {
                     <Link to={"/login"} className={"link"}>Log in</Link>
                 </div>
                 <div className="submit-container">
-                    <button className={"submit"} title={"Register"} onPress = {submit}/>
+                    <button className={"submit"} title={"Register"} onClick={submit}/>
                 </div>
             </div>
             );
