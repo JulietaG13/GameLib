@@ -1,5 +1,7 @@
 package model;
 
+import com.google.gson.Gson;
+
 import javax.persistence.*;
 import java.util.*;
 
@@ -26,6 +28,16 @@ public class Game {
     private Game(GameBuilder builder) {
         this.title = builder.title;
         this.description = builder.description;
+    }
+
+    public static Game fromJson(String json) {
+        final Gson gson = new Gson();
+        return gson.fromJson(json, Game.class);
+    }
+
+    public String asJson() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
     }
 
     public static GameBuilder create(String title) {

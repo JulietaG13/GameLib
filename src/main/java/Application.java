@@ -93,6 +93,22 @@ public class Application {
             return "OK";
         });
 
+        Spark.post("/newgame", "application/json", (req, resp) -> {
+            final Game game = Game.fromJson(req.body());
+
+            final EntityManager em = factory.createEntityManager();
+            final GameService games = new GameService(em);
+            EntityTransaction tx = em.getTransaction();
+            tx.begin();
+            games.persist(game);
+            resp.type("application/json");
+            resp.status(201);
+            tx.commit();
+            em.close();
+
+            return game.asJson();
+        });
+
         Spark.options("/*", (req, res) -> {
             String accessControlRequestHeaders = req.headers("Access-Control-Request-Headers");
             if (accessControlRequestHeaders != null) {

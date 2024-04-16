@@ -1,10 +1,25 @@
 import React, {useState} from "react";
 import './ManageVideogame.css';
+import axios from "axios";
 
-function ManageVideogame() {
+function ManageVideogame({type, videogameID}) {
+    console.log('id:', videogameID);
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+
+    //sends data to backend
+    const submit = async e => {
+        //prevents page to reload
+        e.preventDefault()
+
+        await axios.post("http://localhost:4567/newgame", {
+            title: title, description: description
+        });
+    }
+
     return (
-        <div className={"mainPopUP"}>
-            <h1>Add videogame</h1>
+        <form className={"mainPopUP"} onSubmit={submit}>
+            <h1>{type} videogame{videogameID}</h1>
 
             <div className={"cover"}>
                 <h3>Upload cover</h3>
@@ -12,8 +27,12 @@ function ManageVideogame() {
             </div>
 
             <div className={"titleDesc"}>
-                <input type={"text"} placeholder={"Add title"}/>
-                <input id={"desc"} type={"text"} placeholder={"Add description"}/>
+                <input type={"text"} placeholder={"Add title"}
+                       onChange={e => setTitle(e.target.value)}
+                />
+                <input id={"desc"} type={"text"} placeholder={"Add description"}
+                       onChange={e => setDescription(e.target.value)}
+                />
             </div>
 
             <div className={"platforms"}>
@@ -37,10 +56,10 @@ function ManageVideogame() {
             </div>
 
             <div className={"buttons"}>
-                <input type={"button"} value={"Delete"}/>
-                <input type={"button"} value={"Add"}/>
+                <input type={"button"} value={"Cancel"}/>
+                <input type={"button"} value={"Add"} onClick={submit} />
             </div>
-        </div>
+        </form>
     );
 }
 
