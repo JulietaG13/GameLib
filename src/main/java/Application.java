@@ -1,4 +1,7 @@
 import com.google.gson.Gson;
+import entities.ResponsePair;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import model.Game;
 import model.Shelf;
 import model.User;
@@ -12,11 +15,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.util.Date;
 import java.util.Optional;
 
 public class Application {
 
     private static final Gson gson = new Gson();
+    private static final String SECRET_KEY = "12000dpi0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    // TODO(secret_key)
 
     public static void main(String[] args) {
         new Database().startDBServer();
@@ -55,42 +61,35 @@ public class Application {
             return user.asJson();
         });
 
-        Spark.post("/loginuser", "application/json", (req, resp) -> {
+        Spark.post("/login", "application/json", (req, resp) -> {
             final User user = User.fromJson(req.body());
+            final String username = user.getUsername();
+            final String password = user.getPassword();
 
-            if (user.getUsername() == null) {
+            if (username == null) {
                 resp.status(404);
                 return "Username cannot be null!";
             }
 
-            if (user.getPassword() == null) {
+            if (password == null) {
                 resp.status(404);
                 return "Password cannot be null!";
             }
 
             final EntityManager em = factory.createEntityManager();
-            final UserService userService = new UserService(em);
-
-            EntityTransaction tx = em.getTransaction();
-            tx.begin();
-
-            Optional<User> possibleUser = userService.findByUsername(user.getUsername());
-            if (possibleUser.isEmpty()) {
-                resp.status(404);
-                return "User does not exist!";
+            ResponsePair response = authenticateUser(username, password, entityManager);
+            if(response.statusCode != 200) {
+                resp.status(response.statusCode);
+                return response.message;
             }
-
-            if (!possibleUser.get().getPassword().equals(user.getPassword())) {
-                resp.status(404);
-                return "Password is incorrect!";
-            }
-
             resp.status(200);
-            tx.commit();
-            em.close();
 
-            // TODO(return token in body)
-            return "OK";
+            // Generate JWT token
+            String token = generateToken(username);
+
+            // Send token to frontend
+            resp.type("application/json");
+            return "{ token: " + token + "}";
         });
 
         Spark.post("/newgame", "application/json", (req, resp) -> {
@@ -130,6 +129,39 @@ public class Application {
         });
     }
 
+    //
+
+    private static ResponsePair authenticateUser(String username, String password, EntityManager entityManager) {
+        UserService userService = new UserService(entityManager);
+        EntityTransaction tx = entityManager.getTransaction();
+
+        tx.begin();
+        Optional<User> possibleUser = userService.findByUsername(username);
+        tx.commit();
+        entityManager.close();
+
+        if (possibleUser.isEmpty()) {
+            return new ResponsePair(404, "User does not exist!");
+        }
+
+        if (!possibleUser.get().getPassword().equals(password)) {
+            return new ResponsePair(404, "Password is incorrect!");
+        }
+        return new ResponsePair(200, "OK!");
+    }
+
+    private static String generateToken(String username) {
+        // Create JWT token with username as subject
+        String token = Jwts.builder()
+                .setSubject(username)
+                .setExpiration(new Date(System.currentTimeMillis() + 3_600_000)) // 1 hour expiration
+                .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+                .compact();
+        return token;
+    }
+
+    // tests for BD //
+
     private static void storeUsers1(EntityManager entityManager) {
         final EntityTransaction transaction = entityManager.getTransaction();
         UserService userService = new UserService(entityManager);
@@ -168,16 +200,6 @@ public class Application {
 
         shelfService.addGame(shelf, user, game1);
         shelfService.addGame(shelf, user, game3);
-    }
-
-    public static void clearTables(EntityManager entityManager) {
-        final EntityTransaction t = entityManager.getTransaction();
-        /*
-        t.begin();
-        new UserService(entityManager).deleteAll();
-        new GameService(entityManager).deleteAll();
-        t.commit();
-        */
     }
 }
 
