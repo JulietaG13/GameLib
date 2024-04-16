@@ -29,19 +29,19 @@ public class Application {
     public static void main(String[] args) {
         new Database().startDBServer();
         final EntityManagerFactory factory = Persistence.createEntityManagerFactory("gamelib");
-        final EntityManager entityManager = factory.createEntityManager();
+        final EntityManager em = factory.createEntityManager();
 
         Spark.port(4567);
 
-        storeUsers1(entityManager);
-        storeGames1(entityManager);
+        storeUsers1(em);
+        storeGames1(em);
 
         Spark.get("/users", "application/json", (req, resp) -> {
 
             resp.type("application/json");
             resp.status(201);
 
-            UserService userService = new UserService(entityManager);
+            UserService userService = new UserService(em);
 
             return gson.toJson(userService.listAll());
         });
@@ -68,7 +68,6 @@ public class Application {
                 user.setRol(Rol.USER);
             }
 
-            final EntityManager em = factory.createEntityManager();
             final UserService userService = new UserService(em);
             EntityTransaction tx = em.getTransaction();
             tx.begin();
@@ -76,14 +75,12 @@ public class Application {
             Optional<User> existingUser = userService.findByUsername(user.getUsername());
             if (existingUser.isPresent()) {
                 tx.commit();
-                em.close();
                 resp.status(403);
                 return "Username already exists!";
             }
             existingUser = userService.findByEmail(user.getEmail());
             if (existingUser.isPresent()) {
                 tx.commit();
-                em.close();
                 resp.status(403);
                 return "Email already in use!";
             }
@@ -92,7 +89,6 @@ public class Application {
             resp.type("application/json");
             resp.status(201);
             tx.commit();
-            em.close();
 
             return user.asJson();
         });
@@ -112,8 +108,7 @@ public class Application {
                 return "Password cannot be null!";
             }
 
-            final EntityManager em = factory.createEntityManager();
-            ResponsePair response = authenticateUser(username, password, entityManager);
+            ResponsePair response = authenticateUser(username, password, em);
             if(response.statusCode != 200) {
                 resp.status(response.statusCode);
                 return response.message;
@@ -130,8 +125,6 @@ public class Application {
 
         Spark.post("/newgame", "application/json", (req, resp) -> {
             final Game game = Game.fromJson(req.body());
-
-            final EntityManager em = factory.createEntityManager();
             final GameService games = new GameService(em);
             EntityTransaction tx = em.getTransaction();
             tx.begin();
@@ -139,7 +132,6 @@ public class Application {
             resp.type("application/json");
             resp.status(201);
             tx.commit();
-            em.close();
 
             return "Videogame saved successfully!";
         });
@@ -174,7 +166,6 @@ public class Application {
         tx.begin();
         Optional<User> possibleUser = userService.findByUsername(username);
         tx.commit();
-        entityManager.close();
 
         if (possibleUser.isEmpty()) {
             return new ResponsePair(404, "User does not exist!");
