@@ -1,11 +1,13 @@
 import React, {useState} from "react";
 import './ManageVideogame.css';
 import axios from "axios";
+import {Navigate} from "react-router-dom";
 
 function ManageVideogame({type, videogameID}) {
     console.log('id:', videogameID);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [navigate, setNavigate] = useState(false);
 
     //sends data to backend
     const submit = async e => {
@@ -15,6 +17,12 @@ function ManageVideogame({type, videogameID}) {
         await axios.post("http://localhost:4567/newgame", {
             title: title, description: description
         });
+
+        setNavigate(true);
+    }
+
+    if(navigate) {
+        return <Navigate to={"/"}/>;
     }
 
     return (
