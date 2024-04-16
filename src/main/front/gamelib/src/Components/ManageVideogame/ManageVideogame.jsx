@@ -1,22 +1,42 @@
 import React, {useState} from "react";
 import './ManageVideogame.css';
 import axios from "axios";
-import {Navigate} from "react-router-dom";
+import {Navigate, useParams} from "react-router-dom";
 
-function ManageVideogame({type, videogameID}) {
-    console.log('id:', videogameID);
+function ManageVideogame({type}) {
+    const videogameID = Number(useParams());
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [navigate, setNavigate] = useState(false);
+
+    // if(type === "Edit") {
+    //     console.log("LOL")
+    //
+    //     prevGame = async e => {
+    //         await axios.get("http://localhost:4567/getgame/" + videogameID)
+    //             .then(function (response) {
+    //                 // handle success
+    //                 console.log(response);
+    //                 return response;
+    //             })
+    //     }
+    // }
 
     //sends data to backend
     const submit = async e => {
         //prevents page to reload
         e.preventDefault()
 
-        await axios.post("http://localhost:4567/newgame", {
-            title: title, description: description
-        });
+        if(type === "Add") {
+            await axios.post("http://localhost:4567/newgame", {
+                title: title, description: description
+            });
+        }
+        // else if (type === "Edit") {
+        //     await axios.put("http://localhost:4567/editgame/" + videogameID, {
+        //         title: title, description: description
+        //     });
+        // }
 
         setNavigate(true);
     }
@@ -27,7 +47,7 @@ function ManageVideogame({type, videogameID}) {
 
     return (
         <form className={"mainPopUP"} onSubmit={submit}>
-            <h1>{type} videogame{videogameID}</h1>
+            <h1>{type} videogame</h1>
 
             <div className={"cover"}>
                 <h3>Upload cover</h3>
