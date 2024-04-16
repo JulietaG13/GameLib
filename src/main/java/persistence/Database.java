@@ -5,7 +5,7 @@ import org.hsqldb.persist.HsqlProperties;
 public class Database {
 
     // java -cp ./lib/hsqldb.jar org.hsqldb.server.Server --database.0 file:./db/gamelibdb --dbname.0 gamelibdb
-    final String dbLocation = "/db/";
+    final String dbLocation = "./db/";
     org.hsqldb.server.Server server;
 
     public void startDBServer() {
