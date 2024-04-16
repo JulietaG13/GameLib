@@ -3,6 +3,7 @@ import entities.ResponsePair;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import model.Game;
+import model.Rol;
 import model.Shelf;
 import model.User;
 import persistence.Database;
@@ -47,11 +48,45 @@ public class Application {
         Spark.post("/newuser", "application/json", (req, resp) -> {
             final User user = User.fromJson(req.body());
 
-            //TODO(try/catch constraint errors)
+            if (user.getUsername() == null) {
+                resp.status(404);
+                return "Username cannot be null!";
+            }
+
+            if (user.getEmail() == null) {
+                resp.status(404);
+                return "Email cannot be null!";
+            }
+
+            if (user.getPassword() == null) {
+                resp.status(404);
+                return "Password cannot be null!";
+            }
+
+            if (user.getRol() == null) {
+                user.setRol(Rol.USER);
+            }
+
             final EntityManager em = factory.createEntityManager();
             final UserService userService = new UserService(em);
             EntityTransaction tx = em.getTransaction();
             tx.begin();
+
+            Optional<User> existingUser = userService.findByUsername(user.getUsername());
+            if (existingUser.isPresent()) {
+                tx.commit();
+                em.close();
+                resp.status(403);
+                return "Username already exists!";
+            }
+            existingUser = userService.findByEmail(user.getEmail());
+            if (existingUser.isPresent()) {
+                tx.commit();
+                em.close();
+                resp.status(403);
+                return "Email already in use!";
+            }
+
             userService.persist(user);
             resp.type("application/json");
             resp.status(201);
