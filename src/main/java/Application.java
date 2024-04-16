@@ -106,7 +106,7 @@ public class Application {
             tx.commit();
             em.close();
 
-            return game.asJson();
+            return "Videogame saved successfully!";
         });
 
         Spark.options("/*", (req, res) -> {
