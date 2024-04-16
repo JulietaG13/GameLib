@@ -13,35 +13,62 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [navigate, setNavigate] = useState(false);
 
-    const submit = async e => {
+    const handleLogin = async e => {
         e.preventDefault();
         try {
             //sends data to backend
             const response = await axios.post('http://localhost:4567/loginuser', {
                 username: username, password: password
             } );//{withCredentials: true}
-            const { token, refreshToken } = response.data;
 
-            //saves token in local storage
-            localStorage.setItem('token', token);
-            localStorage.setItem('refreshToken', refreshToken);
+            if (response.status === 200){
+                const {token, refreshToken} = response.data;
 
-            //checks if the token is saved
-            console.log(response.data)
+                //saves token in local storage
+                localStorage.setItem('token', token);
+                //localStorage.setItem('refreshToken', refreshToken);
+
+                //checks if the token is saved
+                console.log(response.data)
+            } else {
+                console.log("Error while login") //TODO: show error message
+            }
         }
         catch (error) {
-            console.error(e);
+            console.error('Error:', error);
         }
 
         //setNavigate(true);
     }
+
+
+    const fetchData = async () => {
+        try {
+            const token = localStorage.getItem('token');
+
+            const response = await axios.get('/protected/resource', {
+                headers: {
+                    'Token': `${token}`
+                }
+            });
+            if (response.status === 200) {
+                const data = response.data;
+                // Process the fetched data
+            } else {
+                // Handle unauthorized access or other errors
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
 
     if (navigate) {
         return <Navigate to={"/"}/>
     }
 
     return(
-        <form onSubmit={submit}>
+        <form onSubmit={handleLogin}>
             <div className='container'>
                 <div className='header'>
                     <div className="text">{"Login"}</div>
@@ -66,7 +93,7 @@ const Login = () => {
                 <div className="forgot-password">New here? <Link to="/register" className={"link"}> Register </Link></div>
                 <div className="submit-container">
                     <div className={"submit"}
-                         onClick={submit}>Login
+                         onClick={handleLogin}>Login
                     </div>
                 </div>
 
