@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.util.Optional;
 
 public class Application {
 
@@ -40,17 +41,56 @@ public class Application {
         Spark.post("/newuser", "application/json", (req, resp) -> {
             final User user = User.fromJson(req.body());
 
+            //TODO(try/catch constraint errors)
             final EntityManager em = factory.createEntityManager();
-            final UserService users = new UserService(em);
+            final UserService userService = new UserService(em);
             EntityTransaction tx = em.getTransaction();
             tx.begin();
-            users.persist(user);
+            userService.persist(user);
             resp.type("application/json");
             resp.status(201);
             tx.commit();
             em.close();
 
             return user.asJson();
+        });
+
+        Spark.post("/loginuser", "application/json", (req, resp) -> {
+            final User user = User.fromJson(req.body());
+
+            if (user.getUsername() == null) {
+                resp.status(404);
+                return "Username cannot be null!";
+            }
+
+            if (user.getPassword() == null) {
+                resp.status(404);
+                return "Password cannot be null!";
+            }
+
+            final EntityManager em = factory.createEntityManager();
+            final UserService userService = new UserService(em);
+
+            EntityTransaction tx = em.getTransaction();
+            tx.begin();
+
+            Optional<User> possibleUser = userService.findByUsername(user.getUsername());
+            if (possibleUser.isEmpty()) {
+                resp.status(404);
+                return "User does not exist!";
+            }
+
+            if (!possibleUser.get().getPassword().equals(user.getPassword())) {
+                resp.status(404);
+                return "Password is incorrect!";
+            }
+
+            resp.status(200);
+            tx.commit();
+            em.close();
+
+            // TODO(return token in body)
+            return "OK";
         });
 
         Spark.options("/*", (req, res) -> {
