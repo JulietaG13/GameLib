@@ -1,5 +1,6 @@
 import com.google.gson.Gson;
 import entities.ResponsePair;
+import entities.Token;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import model.Game;
@@ -120,11 +121,11 @@ public class Application {
             resp.status(200);
 
             // Generate JWT token
-            String token = generateToken(username);
+            Token token = generateToken(username);
 
             // Send token to frontend
             resp.type("application/json");
-            return "{ token: " + token + "}";
+            return token.asJson();
         });
 
         Spark.post("/newgame", "application/json", (req, resp) -> {
@@ -185,14 +186,14 @@ public class Application {
         return new ResponsePair(200, "OK!");
     }
 
-    private static String generateToken(String username) {
+    private static Token generateToken(String username) {
         // Create JWT token with username as subject
-        String token = Jwts.builder()
+        String str = Jwts.builder()
                 .setSubject(username)
                 .setExpiration(new Date(System.currentTimeMillis() + 3_600_000)) // 1 hour expiration
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .compact();
-        return token;
+        return new Token(str);
     }
 
     // tests for BD //
