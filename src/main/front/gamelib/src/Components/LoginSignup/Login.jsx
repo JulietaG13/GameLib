@@ -30,6 +30,7 @@ const Login = () => {
                 localStorage.setItem('token', token);
                 //localStorage.setItem('refreshToken', refreshToken);
 
+                console.log(localStorage.getItem('token'))
                 //checks if the token is saved
                 //console.log(response.data)
             } else {
