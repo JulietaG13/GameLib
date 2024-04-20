@@ -18,6 +18,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.Date;
+import java.util.Optional;
 
 public class Application {
 
@@ -140,13 +141,8 @@ public class Application {
 
             Game game = gameToEdit.get();
 
-//            EntityTransaction tx = em.getTransaction();
-//            tx.begin();
-//            games.persist(game);
-//            resp.type("application/json");
-//            resp.status(201);
-//            tx.commit();
-//            em.close();
+            resp.type("application/json");
+            resp.status(201);
 
             return game.asJson();
         });
