@@ -1,42 +1,22 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import './ManageVideogame.css';
 import axios from "axios";
 import {Navigate, useParams} from "react-router-dom";
 
 function ManageVideogame({type}) {
-    const videogameID = Number(useParams());
+    const videogameID = useParams();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [navigate, setNavigate] = useState(false);
-
-    // if(type === "Edit") {
-    //     console.log("LOL")
-    //
-    //     prevGame = async e => {
-    //         await axios.get("http://localhost:4567/getgame/" + videogameID)
-    //             .then(function (response) {
-    //                 // handle success
-    //                 console.log(response);
-    //                 return response;
-    //             })
-    //     }
-    // }
 
     //sends data to backend
     const submit = async e => {
         //prevents page to reload
         e.preventDefault()
 
-        if(type === "Add") {
-            await axios.post("http://localhost:4567/newgame", {
-                title: title, description: description
-            });
-        }
-        // else if (type === "Edit") {
-        //     await axios.put("http://localhost:4567/editgame/" + videogameID, {
-        //         title: title, description: description
-        //     });
-        // }
+        await axios.post("http://localhost:4567/newgame", {
+            title: title, description: description
+        });
 
         setNavigate(true);
     }

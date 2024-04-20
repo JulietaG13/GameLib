@@ -1,5 +1,4 @@
 import './App.css';
-import Header from "./Components/Header/Header"
 import {BrowserRouter, Routes, Route, Outlet, useParams} from "react-router-dom"
 import Login from "./Components/LoginSignup/Login";
 import {Register} from "./Components/LoginSignup/register";

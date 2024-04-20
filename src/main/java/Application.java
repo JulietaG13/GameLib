@@ -144,20 +144,24 @@ public class Application {
             return "Videogame saved successfully!";
         });
 
-        Spark.get("/getgame/:id", (req, resp) -> {
+        Spark.get("/getgame/:id", "application/json", (req, resp) -> {
             final EntityManager em = factory.createEntityManager();
             final GameService games = new GameService(em);
 
-            Optional<Game> gameToEdit = games.findById(Long.valueOf(req.params(":id")));
+            Optional<Game> game = games.findById(Long.valueOf(req.params(":id")));
 
-            if(gameToEdit.isEmpty()) {
+            if(game.isEmpty()) {
                 throw new IllegalArgumentException("There's no game with id " + req.params(":id"));
             }
 
-            return gameToEdit.get().asJson();
+            resp.type("application/json");
+            resp.status(201);
+            em.close();
+
+            return game.get().asJson();
         });
 
-        Spark.put("editgame/:id", "application/json", (req, resp) -> {
+        Spark.put("/editgame/:id", "application/json", (req, resp) -> {
             final EntityManager em = factory.createEntityManager();
             final GameService games = new GameService(em);
 
