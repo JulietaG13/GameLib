@@ -1,5 +1,5 @@
 import com.google.gson.Gson;
-import entities.ResponsePair;
+import entities.Response;
 import entities.Token;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -8,6 +8,7 @@ import model.Rol;
 import model.Shelf;
 import model.User;
 import persistence.Database;
+import services.AccessControlService;
 import services.GameService;
 import services.ShelfService;
 import services.UserService;
@@ -18,7 +19,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.util.Date;
-import java.util.Optional;
 
 public class Application {
 
@@ -49,46 +49,27 @@ public class Application {
         Spark.post("/newuser", "application/json", (req, resp) -> {
             final User user = User.fromJson(req.body());
 
-            if (user.getUsername() == null) {
-                resp.status(404);
-                return "Username cannot be null!";
+            Response response = AccessControlService.isFormatValid(user);
+            if(response.hasError) {
+                resp.status(response.statusCode);
+                return response.message;
             }
 
-            if (user.getEmail() == null) {
-                resp.status(404);
-                return "Email cannot be null!";
-            }
-
-            if (user.getPassword() == null) {
-                resp.status(404);
-                return "Password cannot be null!";
-            }
-
-            if (user.getRol() == null) {
+            if (user.getRol() == null) {    // default
                 user.setRol(Rol.USER);
             }
 
+            response = AccessControlService.isUserAvailable(user, em);
+            if(response.hasError) {
+                resp.status(response.statusCode);
+                return response.message;
+            }
+
             final UserService userService = new UserService(em);
-            EntityTransaction tx = em.getTransaction();
-            tx.begin();
-
-            Optional<User> existingUser = userService.findByUsername(user.getUsername());
-            if (existingUser.isPresent()) {
-                tx.commit();
-                resp.status(403);
-                return "Username already exists!";
-            }
-            existingUser = userService.findByEmail(user.getEmail());
-            if (existingUser.isPresent()) {
-                tx.commit();
-                resp.status(403);
-                return "Email already in use!";
-            }
-
             userService.persist(user);
+
             resp.type("application/json");
             resp.status(201);
-            tx.commit();
 
             return user.asJson();
         });
@@ -108,8 +89,8 @@ public class Application {
                 return "Password cannot be null!";
             }
 
-            ResponsePair response = authenticateUser(username, password, em);
-            if(response.statusCode != 200) {
+            Response response = AccessControlService.authenticateUser(username, password, em);
+            if(response.hasError) {
                 resp.status(response.statusCode);
                 return response.message;
             }
@@ -158,24 +139,6 @@ public class Application {
     }
 
     //
-
-    private static ResponsePair authenticateUser(String username, String password, EntityManager entityManager) {
-        UserService userService = new UserService(entityManager);
-        EntityTransaction tx = entityManager.getTransaction();
-
-        tx.begin();
-        Optional<User> possibleUser = userService.findByUsername(username);
-        tx.commit();
-
-        if (possibleUser.isEmpty()) {
-            return new ResponsePair(404, "User does not exist!");
-        }
-
-        if (!possibleUser.get().getPassword().equals(password)) {
-            return new ResponsePair(404, "Password is incorrect!");
-        }
-        return new ResponsePair(200, "OK!");
-    }
 
     private static Token generateToken(String username) {
         // Create JWT token with username as subject
