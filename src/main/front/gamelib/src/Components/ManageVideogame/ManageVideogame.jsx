@@ -1,10 +1,10 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import './ManageVideogame.css';
 import axios from "axios";
-import {Navigate} from "react-router-dom";
+import {Navigate, useParams} from "react-router-dom";
 
-function ManageVideogame({type, videogameID}) {
-    console.log('id:', videogameID);
+function ManageVideogame({type}) {
+    const videogameID = useParams();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [navigate, setNavigate] = useState(false);
@@ -27,7 +27,7 @@ function ManageVideogame({type, videogameID}) {
 
     return (
         <form className={"mainPopUP"} onSubmit={submit}>
-            <h1>{type} videogame{videogameID}</h1>
+            <h1>{type} videogame</h1>
 
             <div className={"cover"}>
                 <h3>Upload cover</h3>

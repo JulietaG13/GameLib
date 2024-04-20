@@ -26,7 +26,7 @@ public class Shelf {
             joinColumns = @JoinColumn(name = "shelf_id"),
             inverseJoinColumns = @JoinColumn(name = "game_id")
     )
-    private final Set<Game> games = new HashSet<>();
+    private final transient Set<Game> games = new HashSet<>();
 
     public Shelf() {}
 

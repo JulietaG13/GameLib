@@ -8,7 +8,7 @@ import {Link} from "react-router-dom";
 
 function Header() {
     return (
-        <navbar className="viewsContainer">
+        <div className="viewsContainer">
             <div className="logo">
                 <img src={gamelibLogo} alt={"GameLib logo"}/>
                 <h2> <Link to="/" className={"link"}> GameLib </Link> </h2>
@@ -26,7 +26,7 @@ function Header() {
                 <h2>Username</h2>
                 <img src={user_icon} alt={"user icon"}/>
             </div>
-        </navbar>
+        </div>
     );
 }
 

@@ -28,7 +28,7 @@ public class Application {
     public static void main(String[] args) {
         new Database().startDBServer();
         final EntityManagerFactory factory = Persistence.createEntityManagerFactory("gamelib");
-        final EntityManager em = factory.createEntityManager();
+        final EntityManager em = factory.createEntityManager(); // one for all
 
         Spark.port(4567);
 
@@ -112,6 +112,43 @@ public class Application {
             resp.status(201);
 
             return "Videogame saved successfully!";
+        });
+
+        Spark.get("/getgame/:id", "application/json", (req, resp) -> {
+            final GameService games = new GameService(em);
+
+            Optional<Game> game = games.findById(Long.valueOf(req.params(":id")));
+
+            if(game.isEmpty()) {
+                throw new IllegalArgumentException("There's no game with id " + req.params(":id"));
+            }
+
+            resp.type("application/json");
+            resp.status(201);
+
+            return game.get().asJson();
+        });
+
+        Spark.put("/editgame/:id", "application/json", (req, resp) -> {
+            final GameService games = new GameService(em);
+
+            Optional<Game> gameToEdit = games.findById(Long.valueOf(req.params(":id")));
+
+            if(gameToEdit.isEmpty()) {
+                throw new IllegalArgumentException("There's no game with id " + req.params(":id"));
+            }
+
+            Game game = gameToEdit.get();
+
+//            EntityTransaction tx = em.getTransaction();
+//            tx.begin();
+//            games.persist(game);
+//            resp.type("application/json");
+//            resp.status(201);
+//            tx.commit();
+//            em.close();
+
+            return game.asJson();
         });
 
         Spark.options("/*", (req, res) -> {
