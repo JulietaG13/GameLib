@@ -46,7 +46,10 @@ public class UserService {
     }
 
     public User persist(User user) {
+        EntityTransaction tx = entityManager.getTransaction();
+        tx.begin();
         entityManager.persist(user);
+        tx.commit();
         return user;
     }
 
