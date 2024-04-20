@@ -13,25 +13,47 @@ export const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [navigate, setNavigate] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+
 
     //sends data to backend
     const submit = async e => {
         //prevents page to reload
         e.preventDefault()
-
-        await axios.post("http://localhost:4567/newuser", {
-            username: username, email: email, password: password, rol: "USER"
-        });
-
-        setNavigate(true);
+        try {
+            //posts data to back
+            await axios.post("http://localhost:4567/newuser", {
+                username: username, email: email, password: password, rol: "USER"
+            });
+                //redirects to login page
+                setNavigate(true);
+        }
+        catch (error) {
+            if (error.response.status) {
+                setErrorMessage(error.response.data)
+            }
+            else {
+                setErrorMessage("Something went wrong")
+            }
+            console.error('Error:', error);
+        }
     }
+    const ErrorMessage = ({ message }) => {
+        return (
+            <div className={message ? 'formErrorHandling' : ''}>
+                {message}
+            </div>
+        );
+    };
+
+
 
     if (navigate){
         return <Navigate to={"/login"}/>;
     }
 
-    return <form onSubmit={submit}>
-        <main className={"form-signin"}>
+    return <form className={"static-form"} onSubmit={submit}>
+        <main className={"form-signing"}>
             <div className='container'>
                 <div className='header'>
                     <div className="text">Sign up</div>
@@ -58,7 +80,10 @@ export const Register = () => {
                         />
                     </div>
                 </div>
-                <div className="forgot-password">Do you already have an account?
+                <div>
+                    <ErrorMessage message={errorMessage}/>
+                </div>
+                <div className="new-here">Do you already have an account?
                     <Link to={"/login"} className={"link"}> Log in</Link>
                 </div>
                 <div className="submit-container">

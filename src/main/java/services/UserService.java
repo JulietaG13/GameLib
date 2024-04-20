@@ -4,6 +4,7 @@ package services;
 import model.User;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +46,34 @@ public class UserService {
     }
 
     public User persist(User user) {
+        EntityTransaction tx = entityManager.getTransaction();
+        tx.begin();
         entityManager.persist(user);
+        tx.commit();
         return user;
+    }
+
+    public boolean usernameInUse(User user) {
+        EntityTransaction tx = entityManager.getTransaction();
+        tx.begin();
+
+        if (findByUsername(user.getUsername()).isPresent()) {
+            tx.commit();
+            return true;
+        }
+        tx.commit();
+        return false;
+    }
+
+    public boolean emailInUse(User user) {
+        EntityTransaction tx = entityManager.getTransaction();
+        tx.begin();
+
+        if (findByEmail(user.getEmail()).isPresent()) {
+            tx.commit();
+            return true;
+        }
+        tx.commit();
+        return false;
     }
 }
