@@ -16,7 +16,6 @@ import spark.Spark;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.util.Date;
 
@@ -107,12 +106,10 @@ public class Application {
         Spark.post("/newgame", "application/json", (req, resp) -> {
             final Game game = Game.fromJson(req.body());
             final GameService games = new GameService(em);
-            EntityTransaction tx = em.getTransaction();
-            tx.begin();
+
             games.persist(game);
             resp.type("application/json");
             resp.status(201);
-            tx.commit();
 
             return "Videogame saved successfully!";
         });
@@ -153,21 +150,17 @@ public class Application {
     // tests for BD //
 
     private static void storeUsers1(EntityManager entityManager) {
-        final EntityTransaction transaction = entityManager.getTransaction();
         UserService userService = new UserService(entityManager);
 
-        transaction.begin();
         if(userService.listAll().isEmpty()) {
             for(int i = 1; i < 5; i++) {
                 User u = User.create("username" + i).email("user" + i + "@mail.com").password("qwerty123").build();
                 userService.persist(u);
             }
         }
-        transaction.commit();
     }
 
     private static void storeGames1(EntityManager entityManager) {
-        final EntityTransaction transaction = entityManager.getTransaction();
         GameService gameService = new GameService(entityManager);
         ShelfService shelfService = new ShelfService(entityManager);
         UserService userService = new UserService(entityManager);
@@ -178,7 +171,6 @@ public class Application {
         Game game2 = Game.create("another awesome game").description("just another awesome game").build();
         Game game3 = Game.create("even another awesome game").description("also an awesome game").build();
 
-        transaction.begin();
         if (gameService.listAll().isEmpty() && shelfService.listAll().isEmpty()) {
             userService.persist(user);
             gameService.persist(game1);
@@ -186,7 +178,6 @@ public class Application {
             gameService.persist(game3);
             shelfService.persist(shelf);
         }
-        transaction.commit();
 
         shelfService.addGame(shelf, user, game1);
         shelfService.addGame(shelf, user, game3);

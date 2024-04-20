@@ -3,6 +3,7 @@ package services;
 import model.Game;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +36,10 @@ public class GameService {
     }
 
     public Game persist(Game game) {
+        EntityTransaction tx = entityManager.getTransaction();
+        tx.begin();
         entityManager.persist(game);
+        tx.commit();
         return game;
     }
 }
