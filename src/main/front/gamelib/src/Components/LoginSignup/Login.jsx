@@ -5,6 +5,8 @@ import password_icon from '../Assets/password icon.png'
 import {Link, Navigate} from "react-router-dom";
 import axios from "axios";
 import user_icon from '../Assets/user-icon.png'
+import Header from "../Header/Header";
+
 
 
 const Login = () => {
@@ -12,66 +14,53 @@ const Login = () => {
     const [username, setMail] = useState('');
     const [password, setPassword] = useState('');
     const [navigate, setNavigate] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleLogin = async e => {
-        //e.preventDefault();
+        setErrorMessage('')
         try {
             //sends data to backend
             const response = await axios.post('http://localhost:4567/login', {
                 username: username, password: password
-            });//{withCredentials: true}
+            });
 
-            console.log(response.data)
+            const {token, refreshToken} = response.data;
 
-            if (response.status === 200){
-                const {token, refreshToken} = response.data;
+            //saves token in local storage
+            localStorage.setItem('token', token);
+            localStorage.setItem('refreshToken', refreshToken);
 
-                //saves token in local storage
-                localStorage.setItem('token', token);
-                //localStorage.setItem('refreshToken', refreshToken);
+            setNavigate(true);
 
-                console.log(localStorage.getItem('token'))
-                //checks if the token is saved
-                //console.log(response.data)
-            } else {
-                console.log("Error while login") //TODO: show error message
-            }
         }
         catch (error) {
+            console.log(error.response)
+            if (error.response.status) {
+                setErrorMessage(error.response.data)
+            }
+            else {
+                setErrorMessage("Something went wrong")
+            }
             console.error('Error:', error);
         }
-
-        //setNavigate(true);
     }
 
-
-    const fetchData = async () => {
-        try {
-            const token = localStorage.getItem('token');
-
-            const response = await axios.get('/protected/resource', {
-                headers: {
-                    'Token': `${token}`
-                }
-            });
-            if (response.status === 200) {
-                const data = response.data;
-                // Process the fetched data
-            } else {
-                // Handle unauthorized access or other errors
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
+    //Displays error message if there is one
+    const ErrorMessage = ({ message }) => {
+        return (
+            <div className={message ? 'formErrorHandling' : ''}>
+                {message}
+            </div>
+        );
     };
 
-
+    //if navigate is true, redirects to home page, this happens only when logged successfully
     if (navigate) {
         return <Navigate to={"/"}/>
     }
 
     return(
-        <form onSubmit={handleLogin}>
+        <form className={"static-form"} onSubmit={handleLogin}>
             <div className='container'>
                 <div className='header'>
                     <div className="text">{"Login"}</div>
@@ -93,7 +82,10 @@ const Login = () => {
                         />
                     </div>
                 </div>
-                <div className="forgot-password">New here? <Link to="/register" className={"link"}> Register </Link></div>
+                <div >
+                    <ErrorMessage message={errorMessage} />
+                </div>
+                <div className="new-here">New here? <Link to="/register" className={"link"}> Register </Link></div>
                 <div className="submit-container">
                     <div className={"submit"}
                          onClick={handleLogin}>Login

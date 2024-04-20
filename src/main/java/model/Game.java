@@ -1,6 +1,7 @@
 package model;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.JsonAdapter;
 
 import javax.persistence.*;
 import java.util.*;
@@ -21,7 +22,7 @@ public class Game {
     //TODO(gameLogo, gamePicture, gameBanner)
 
     @ManyToMany(mappedBy = "games")
-    private final Set<Shelf> inShelves = new HashSet<>();
+    private final transient Set<Shelf> inShelves = new HashSet<>();
 
     public Game() {}
 
