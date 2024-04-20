@@ -14,12 +14,14 @@ const Login = () => {
     const [navigate, setNavigate] = useState(false);
 
     const handleLogin = async e => {
-        e.preventDefault();
+        //e.preventDefault();
         try {
             //sends data to backend
-            const response = await axios.post('http://localhost:4567/loginuser', {
+            const response = await axios.post('http://localhost:4567/login', {
                 username: username, password: password
-            } );//{withCredentials: true}
+            });//{withCredentials: true}
+
+            console.log(response.data)
 
             if (response.status === 200){
                 const {token, refreshToken} = response.data;
@@ -28,8 +30,9 @@ const Login = () => {
                 localStorage.setItem('token', token);
                 //localStorage.setItem('refreshToken', refreshToken);
 
+                console.log(localStorage.getItem('token'))
                 //checks if the token is saved
-                console.log(response.data)
+                //console.log(response.data)
             } else {
                 console.log("Error while login") //TODO: show error message
             }
