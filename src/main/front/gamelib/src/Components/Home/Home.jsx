@@ -1,12 +1,8 @@
-import React, {useState} from "react"
+import React from "react"
 import '../LoginSignup/LoginSignup.css'
+import {Link} from "react-router-dom";
 
-import email_icon from '../Assets/mail-icon.png'
-import password_icon from '../Assets/password icon.png'
-import {Link, Navigate} from "react-router-dom";
-import axios from "axios";
-
-
+//Home component
 const Home = () => {
     return(
         <div className='container'>
