@@ -1,11 +1,11 @@
-import React, {useState} from "react";
+import React from "react";
 import './Header.css';
 
 import gamelibLogo from '../Assets/gamelib-logo.jpg';
 import user_icon from '../Assets/user-icon.png';
-import Home from "../Home/Home";
 import {Link} from "react-router-dom";
 
+//Header component
 function Header() {
     return (
         <div className="viewsContainer">
@@ -17,7 +17,7 @@ function Header() {
                 <h2><a href="https://youtu.be/dQw4w9WgXcQ?si=ZImQDCkmnZI0wC_z" >The Library</a></h2>
             </div>
             <div className="goTo">
-                <h2><a href="https://youtu.be/dQw4w9WgXcQ?si=ZImQDCkmnZI0wC_z">My Gameshelf</a></h2>
+                <h2><a href="https://youtu.be/dQw4w9WgXcQ?si=ZImQDCkmnZI0wC_z">My GameShelf</a></h2>
             </div>
             <div className="goTo">
                 <h2><a href="https://youtu.be/dQw4w9WgXcQ?si=ZImQDCkmnZI0wC_z">Discover</a></h2>

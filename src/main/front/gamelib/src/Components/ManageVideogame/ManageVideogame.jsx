@@ -9,9 +9,9 @@ function ManageVideogame({type}) {
     const [description, setDescription] = useState('');
     const [navigate, setNavigate] = useState(false);
 
-    //sends data to backend
+    //Sends data to backend
     const submit = async e => {
-        //prevents page to reload
+        //Prevents page to reload
         e.preventDefault()
 
         await axios.post("http://localhost:4567/newgame", {
