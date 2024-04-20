@@ -29,7 +29,7 @@ public class Application {
     public static void main(String[] args) {
         new Database().startDBServer();
         final EntityManagerFactory factory = Persistence.createEntityManagerFactory("gamelib");
-        final EntityManager em = factory.createEntityManager();
+        final EntityManager em = factory.createEntityManager(); // one for all
 
         Spark.port(4567);
 
@@ -137,7 +137,6 @@ public class Application {
         });
 
         Spark.get("/getgame/:id", "application/json", (req, resp) -> {
-            final EntityManager em = factory.createEntityManager();
             final GameService games = new GameService(em);
 
             Optional<Game> game = games.findById(Long.valueOf(req.params(":id")));
@@ -148,13 +147,11 @@ public class Application {
 
             resp.type("application/json");
             resp.status(201);
-            em.close();
 
             return game.get().asJson();
         });
 
         Spark.put("/editgame/:id", "application/json", (req, resp) -> {
-            final EntityManager em = factory.createEntityManager();
             final GameService games = new GameService(em);
 
             Optional<Game> gameToEdit = games.findById(Long.valueOf(req.params(":id")));
