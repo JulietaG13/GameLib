@@ -1,12 +1,12 @@
 package model;
 
+import adapters.GsonAdapter;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.annotations.JsonAdapter;
 import entities.Response.MessageResponse;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -84,7 +84,7 @@ public class Game {
     // JSON //
     
     public static Game fromJson(String json) {
-        final Gson gson = new Gson();
+        final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, GsonAdapter.getLocalDateTimeAdapter()).create();
         return gson.fromJson(json, Game.class);
     }
     
@@ -131,7 +131,7 @@ public class Game {
         return title;
     }
     
-    public void setTitle(Long id, LocalDateTime lastUpdate) {
+    public void setTitle(String title, LocalDateTime lastUpdate) {
         this.title = title;
         this.lastUpdate = lastUpdate;
     }
@@ -140,7 +140,7 @@ public class Game {
         return description;
     }
     
-    public void setDescription(Long id, LocalDateTime lastUpdate) {
+    public void setDescription(String description, LocalDateTime lastUpdate) {
         this.description = description;
         this.lastUpdate = lastUpdate;
     }
