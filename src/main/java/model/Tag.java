@@ -1,5 +1,9 @@
 package model;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +24,21 @@ public class Tag {
   
   public Tag(String name) {
     this.name = name;
+  }
+  
+  // JSON //
+  
+  public JsonObject asJson() {
+    JsonArray jsonArray = new JsonArray();
+    for (Game game : taggedGames) {
+      JsonObject jsonGame = JsonParser.parseString(game.asJson()).getAsJsonObject();
+      jsonArray.add(jsonGame);
+    }
+    JsonObject jsonObj = new JsonObject();
+    jsonObj.addProperty("id", id);
+    jsonObj.addProperty("name", name);
+    jsonObj.add("tagged_games", jsonArray);
+    return jsonObj;
   }
   
   // ADDS? //
