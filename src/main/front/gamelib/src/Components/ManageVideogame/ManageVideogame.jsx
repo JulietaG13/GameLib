@@ -45,6 +45,11 @@ function ManageVideogame({type}) {
         setNavigate(true);
     }
 
+    const cancel = () => {
+        setNavigate(true);
+    }
+
+
     if(navigate) {
         return <Navigate to={"/"}/>;
     }
@@ -71,7 +76,7 @@ function ManageVideogame({type}) {
 
             <div className={"releaseDate"}>
                 <h3>Release date</h3>
-                <input type={"datetime-local"} name={"releaseDate"} value={videogame.releaseDate}
+                <input type={"datetime-local"} name={"releaseDate"} defaultValue={videogame.releaseDate}
                        onChange={e => setReleaseDate(e.target.value)}
                 />
             </div>
@@ -98,7 +103,7 @@ function ManageVideogame({type}) {
             </div>
 */}
             <div className={"buttons"}>
-                <input type={"button"} value={"Cancel"}/>
+                <input type={"button"} value={"Cancel"} onClick={cancel} />
                 <input type={"button"} value={"Add"} onClick={submit} />
             </div>
         </form>
