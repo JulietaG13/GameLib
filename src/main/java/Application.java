@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -215,6 +216,7 @@ public class Application {
 
         Spark.put("/editgame/:id", "application/json", (req, resp) -> {
             //TODO(get token from header and validate it)
+            System.out.println("Esta línea es absolutamente necesaria para que la edicion funcione correctamente");
             final GameService gameService = new GameService(em);
 
             long id;
@@ -324,19 +326,19 @@ public class Application {
         Game game1 = Game
                 .create("awesome game")
                 .description("just an awesome game")
-                .releaseDate(LocalDateTime.now())
+                .releaseDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
                 .lastUpdate(LocalDateTime.now())
                 .build();
         Game game2 = Game
                 .create("another awesome game")
                 .description("just another awesome game")
-                .releaseDate(LocalDateTime.now().plusMonths(4))
+                .releaseDate(LocalDateTime.now().plusMonths(4).truncatedTo(ChronoUnit.SECONDS))
                 .lastUpdate(LocalDateTime.now().plusMonths(4))
                 .build();
         Game game3 = Game
                 .create("even another awesome game")
                 .description("also an awesome game")
-                .releaseDate(LocalDateTime.now().plusMonths(2))
+                .releaseDate(LocalDateTime.now().plusMonths(2).truncatedTo(ChronoUnit.SECONDS))
                 .lastUpdate(LocalDateTime.now().plusMonths(2))
                 .build();
 
@@ -368,13 +370,13 @@ public class Application {
         Game game1 = Game
                 .create("tagged game 1")
                 .description("a game with 1 tag")
-                .releaseDate(LocalDateTime.now().plusDays(2))
+                .releaseDate(LocalDateTime.now().plusDays(2).truncatedTo(ChronoUnit.SECONDS))
                 .lastUpdate(LocalDateTime.now().plusDays(2))
                 .build();
         Game game2 = Game
                 .create("tagged game 2")
                 .description("a game with 3 tags")
-                .releaseDate(LocalDateTime.now().plusDays(3))
+                .releaseDate(LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.SECONDS))
                 .lastUpdate(LocalDateTime.now().plusDays(3))
                 .build();
         gameService.persist(game1);
@@ -397,8 +399,8 @@ public class Application {
             userService.persist(u1);
             userService.persist(u2);
     
-            Game g1 = Game.create("game with 2 user reviews").description("the game has 2 reviews each by different users").releaseDate(LocalDateTime.now().plusDays(11)).build();
-            Game g2 = Game.create("game reviewd by same user").description("the game has 2 reviews by the same user").releaseDate(LocalDateTime.now().plusDays(13)).build();
+            Game g1 = Game.create("game with 2 user reviews").description("the game has 2 reviews each by different users").releaseDate(LocalDateTime.now().plusDays(11).truncatedTo(ChronoUnit.SECONDS)).build();
+            Game g2 = Game.create("game reviewd by same user").description("the game has 2 reviews by the same user").releaseDate(LocalDateTime.now().plusDays(13).truncatedTo(ChronoUnit.SECONDS)).build();
             gameService.persist(g1);
             gameService.persist(g2);
             

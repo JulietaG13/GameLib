@@ -11,11 +11,14 @@ function ManageVideogame({type}) {
     const [navigate, setNavigate] = useState(false);
     const [videogame, setVideogame] = useState({});
 
+    console.log(videogame.releaseDate)
+
     useEffect(() => {
         if(type === "Edit") {
             axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
                 .then(response => {
                     setVideogame(response.data);
+                    console.log(response.data);
                 })
         }
     }, [])
@@ -25,19 +28,19 @@ function ManageVideogame({type}) {
         //Prevents page to reload
         e.preventDefault()
 
-        await axios.post("http://localhost:4567/newgame", {
-            title: title, description: description, releaseDate: releaseDate, lastUpdate: FormatLastUpdateDate(new Date())
-        })
+        // await axios.post("http://localhost:4567/newgame", {
+        //     title: title, description: description, releaseDate: releaseDate, lastUpdate: FormatLastUpdateDate(new Date())
+        // })
 
-        // if (type === "Edit") {
-        //     await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, {
-        //         title: title, description: description, releaseDate: releaseDate, lastUpdate: formatedLastUpdate
-        //     });
-        // } else if (type === "Add") {
-        //     await axios.post("http://localhost:4567/newgame", {
-        //         title: title, description: description, releaseDate: releaseDate
-        //     });
-        // }
+        if (type === "Edit") {
+            await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, {
+                title: title, description: description, releaseDate: releaseDate, lastUpdate: FormatLastUpdateDate(new Date())
+            });
+        } else if (type === "Add") {
+            await axios.post("http://localhost:4567/newgame", {
+                title: title, description: description, releaseDate: releaseDate, lastUpdate: FormatLastUpdateDate(new Date())
+            });
+        }
 
         setNavigate(true);
     }
@@ -107,13 +110,21 @@ function ManageVideogame({type}) {
     );
 }
 
+function trimMilliseconds(date) {
+    let formatedDate = new Date(date.setMilliseconds(0)).toString();
+    console.log(formatedDate);
+    return formatedDate;
+}
+
 function FormatLastUpdateDate(lastUpdate) {
-    return lastUpdate.getFullYear() + '-' +
+    let formatedDate = lastUpdate.getFullYear() + '-' +
         String(lastUpdate.getMonth() + 1).padStart(2, '0') + '-' +
         String(lastUpdate.getDate()).padStart(2, '0') + 'T' +
         String(lastUpdate.getHours()).padStart(2, '0') + ':' +
         String(lastUpdate.getMinutes()).padStart(2, '0') + ':' +
         String(lastUpdate.getSeconds()).padStart(2, '0');
+    console.log(formatedDate);
+    return formatedDate;
 }
 
 export default ManageVideogame;
