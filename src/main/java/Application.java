@@ -7,15 +7,9 @@ import entities.responses.MessageResponse;
 import entities.responses.StatusResponse;
 import entities.Token;
 import entities.responses.UserResponse;
-import model.Game;
-import model.Rol;
-import model.Shelf;
-import model.User;
+import model.*;
 import persistence.Database;
-import services.AccessControlService;
-import services.GameService;
-import services.ShelfService;
-import services.UserService;
+import services.*;
 import spark.Spark;
 
 import javax.persistence.EntityManager;
@@ -38,6 +32,7 @@ public class Application {
 
         storeUsers1(em);
         storeGames1(em);
+        storeTags1(em);
 
         Spark.get("/users", "application/json", (req, resp) -> {
 
@@ -286,6 +281,30 @@ public class Application {
 
         shelfService.addGame(shelf, user, game1);
         shelfService.addGame(shelf, user, game3);
+    }
+    
+    private static void storeTags1(EntityManager entityManager) {
+        TagService tagService = new TagService(entityManager);
+        GameService gameService = new GameService(entityManager);
+        
+        if(tagService.listAll().isEmpty()) {
+            for(int i = 1; i < 5; i++) {
+                Tag t = new Tag("tag" + i);
+                tagService.persist(t);
+            }
+        }
+        
+        List<Tag> tags = tagService.listAll();
+        
+        Game game1 = Game.create("tagged game 1").description("a game with 1 tag").releaseDate(LocalDateTime.now().plusDays(2)).build();
+        Game game2 = Game.create("tagged game 2").description("a game with 3 tags").releaseDate(LocalDateTime.now().plusDays(3)).build();
+        gameService.persist(game1);
+        gameService.persist(game2);
+        
+        gameService.addTag(game1, tags.get(0));
+        
+        gameService.addTag(game2, tags.get(2));
+        gameService.addTag(game2, tags.get(3));
     }
 }
 
