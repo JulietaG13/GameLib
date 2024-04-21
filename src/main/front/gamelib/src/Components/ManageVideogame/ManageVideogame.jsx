@@ -7,6 +7,7 @@ function ManageVideogame({type}) {
     const videogameID = useParams();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [releaseDate, setReleaseDate] = useState('');
     const [navigate, setNavigate] = useState(false);
     const [videogame, setVideogame] = useState({});
 
@@ -19,24 +20,25 @@ function ManageVideogame({type}) {
         }
     }, [])
 
+    console.log(videogame)
+    console.log(videogame.releaseDate)
+
     //Sends data to backend
     const submit = async e => {
         //Prevents page to reload
         e.preventDefault()
 
         await axios.post("http://localhost:4567/newgame", {
-            title: title, description: description
+            title: title, description: description, releaseDate: releaseDate
         });
 
-        // if(type === "Edit") {
+        // if (type === "Edit") {
         //     await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, {
-        //         title: title, description: description
+        //         title: title, description: description, releaseDate: releaseDate, lastUpdate: releaseDate
         //     });
-        // }
-        //
-        // if(type === "Add") {
+        // } else if (type === "Add") {
         //     await axios.post("http://localhost:4567/newgame", {
-        //         title: title, description: description
+        //         title: title, description: description, releaseDate: releaseDate
         //     });
         // }
 
@@ -51,10 +53,12 @@ function ManageVideogame({type}) {
         <form className={"mainPopUP"} onSubmit={submit}>
             <h1>{type} videogame</h1>
 
+            {/*
             <div className={"cover"}>
                 <h3>Upload cover</h3>
                 <input name={"gameCover"} type={"file"} accept={"image/*"}/>
             </div>
+            */}
 
             <div className={"titleDesc"}>
                 <input type={"text"} placeholder={"Add title"} defaultValue={videogame.title}
@@ -65,6 +69,14 @@ function ManageVideogame({type}) {
                 />
             </div>
 
+            <div className={"releaseDate"}>
+                <h3>Release date</h3>
+                <input type={"datetime-local"} name={"releaseDate"} value={videogame.releaseDate}
+                       onChange={e => setReleaseDate(e.target.value)}
+                />
+            </div>
+
+{/*
             <div className={"platforms"}>
                 <h3>Platforms</h3>
                 <select name={"Platforms"} multiple>
@@ -84,7 +96,7 @@ function ManageVideogame({type}) {
                     <option value={"rogueLike"}>Rogue-Like</option>
                 </select>
             </div>
-
+*/}
             <div className={"buttons"}>
                 <input type={"button"} value={"Cancel"}/>
                 <input type={"button"} value={"Add"} onClick={submit} />

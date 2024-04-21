@@ -62,6 +62,14 @@ public class GameService {
         if (!game.getDescription().equals(gameUpdate.getDescription())) {
             game.setDescription(gameUpdate.getDescription(), lastUpdate);
         }
+
+        if (!game.getReleaseDate().equals(gameUpdate.getReleaseDate())) {
+            game.setReleaseDate(gameUpdate.getReleaseDate(), lastUpdate);
+        }
+
+        if (!game.getLastUpdate().equals(gameUpdate.getLastUpdate())) {
+            game.setLastUpdate(gameUpdate.getLastUpdate());
+        }
         //TODO(rest of the updates)
         
         persist(game);

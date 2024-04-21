@@ -120,6 +120,13 @@ public class Game {
         }
         return new MessageResponse(false);
     }
+
+    public static MessageResponse isReleaseDateValid(LocalDateTime releaseDate) {
+        if (releaseDate == null) {
+            return new MessageResponse(true, "Release date cannot be null!");
+        }
+        return new MessageResponse(false);
+    }
     
     // ADDS? //
     
@@ -164,8 +171,9 @@ public class Game {
         return releaseDate;
     }
     
-    public void setReleaseDate(LocalDateTime releaseDate) {
+    public void setReleaseDate(LocalDateTime releaseDate, LocalDateTime lastUpdate) {
         this.releaseDate = releaseDate;
+        this.lastUpdate = lastUpdate;
     }
     
     public LocalDateTime getLastUpdate() {
