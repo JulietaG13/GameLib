@@ -1,6 +1,7 @@
 package model;
 
 import com.google.gson.Gson;
+import entities.responses.MessageResponse;
 
 import javax.persistence.*;
 
@@ -90,7 +91,40 @@ public class User {
         }
 
     }
-
+    
+    // RESTRICTIONS //
+    
+    public static MessageResponse isUsernameValid(String username) {
+        if (username == null) {
+            return new MessageResponse(true, "Username cannot be null!");
+        }
+        if (username.equals("")) {
+            return new MessageResponse(true, "Username cannot be empty!");
+        }
+        return new MessageResponse(false);
+    }
+    
+    public static MessageResponse isPasswordValid(String password) {
+        if (password == null) {
+            return new MessageResponse(true, "Password cannot be null!");
+        }
+        if (password.equals("")) {
+            return new MessageResponse(true, "Password cannot be empty!");
+        }
+        return new MessageResponse(false);
+    }
+    
+    public static MessageResponse isEmailValid(String email) {
+        if (email == null) {
+            return new MessageResponse(true, "Email cannot be null!");
+        }
+        if (email.equals("")) {
+            return new MessageResponse(true, "Email cannot be empty!");
+        }
+        return new MessageResponse(false);
+    }
+    
+    // GETTERS - SETTER //
 
     public Long getId() {
         return id;
