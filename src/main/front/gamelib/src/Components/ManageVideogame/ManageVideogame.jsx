@@ -8,6 +8,16 @@ function ManageVideogame({type}) {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [navigate, setNavigate] = useState(false);
+    const [videogame, setVideogame] = useState({});
+
+    useEffect(() => {
+        if(type === "Edit") {
+            axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
+                .then(response => {
+                    setVideogame(response.data);
+                })
+        }
+    }, [])
 
     //Sends data to backend
     const submit = async e => {
@@ -17,6 +27,18 @@ function ManageVideogame({type}) {
         await axios.post("http://localhost:4567/newgame", {
             title: title, description: description
         });
+
+        // if(type === "Edit") {
+        //     await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, {
+        //         title: title, description: description
+        //     });
+        // }
+        //
+        // if(type === "Add") {
+        //     await axios.post("http://localhost:4567/newgame", {
+        //         title: title, description: description
+        //     });
+        // }
 
         setNavigate(true);
     }
@@ -35,10 +57,10 @@ function ManageVideogame({type}) {
             </div>
 
             <div className={"titleDesc"}>
-                <input type={"text"} placeholder={"Add title"}
+                <input type={"text"} placeholder={"Add title"} defaultValue={videogame.title}
                        onChange={e => setTitle(e.target.value)}
                 />
-                <input id={"desc"} type={"text"} placeholder={"Add description"}
+                <input id={"desc"} type={"text"} placeholder={"Add description"} defaultValue={videogame.description}
                        onChange={e => setDescription(e.target.value)}
                 />
             </div>
