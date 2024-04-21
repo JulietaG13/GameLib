@@ -45,6 +45,20 @@ public class Application {
             return gson.toJson(userService.listAll());
         });
     
+        Spark.get("/tags", "application/json", (req, resp) -> {
+        
+            resp.type("application/json");
+            resp.status(201);
+        
+            TagService tagService = new TagService(em);
+            JsonArray jsonArray = new JsonArray();
+            for (Tag tag : tagService.listAll()) {
+                jsonArray.add(tag.asJson());
+            }
+        
+            return jsonArray;
+        });
+    
         Spark.post("/tokenvalidation", "application/json", (req, resp) -> {
             String token = JsonParser.parseString(req.body())
                 .getAsJsonObject()
