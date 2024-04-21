@@ -41,6 +41,9 @@ public class Game {
         inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private final Set<Tag> tags = new HashSet<>();
+    
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    private final Set<Review> reviews = new HashSet<>();
 
     public Game() {}
 
@@ -137,6 +140,11 @@ public class Game {
     public void addTag(Tag tag) {
         tags.add(tag);
         tag.addGame(this);
+    }
+    
+    public void addReview(Review review) {
+        reviews.add(review);
+        review.setGame(this);
     }
     
     // GETTERS - SETTERS //
