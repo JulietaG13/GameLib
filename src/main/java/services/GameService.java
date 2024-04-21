@@ -32,6 +32,12 @@ public class GameService {
     public List<Game> listAll() {
         return entityManager.createQuery("SELECT g FROM Game g", Game.class).getResultList();
     }
+    
+    public List<Game> listByLatest(int max) {
+        return entityManager.createQuery("SELECT g FROM Game g ORDER BY g.lastUpdate DESC", Game.class)
+            .setMaxResults(max)
+            .getResultList();
+    }
 
     public void deleteAll() {
         entityManager.createQuery("DELETE FROM Game").executeUpdate();
