@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import './LoginSignup.css'
 
 import password_icon from '../Assets/password icon.png'
@@ -16,6 +16,10 @@ const Login = () => {
     const [navigate, setNavigate] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
+
+
+
+
     const handleLogin = async e => {
         setErrorMessage('')
         try {
@@ -29,6 +33,7 @@ const Login = () => {
             //saves token in local storage
             localStorage.setItem('token', token);
             localStorage.setItem('refreshToken', refreshToken);
+            localStorage.setItem('username', username);
 
             setNavigate(true);
 

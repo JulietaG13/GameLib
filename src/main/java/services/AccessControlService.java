@@ -97,13 +97,13 @@ public class AccessControlService {
         // Create JWT token with username as subject
         String str = Jwts.builder()
             .setSubject(username)
-            .setExpiration(new Date(System.currentTimeMillis() + 3_600_000)) // 1 hour expiration
+            .setExpiration(new Date(System.currentTimeMillis() + 3_600_000)) // 3_600_000 = 1 hour expiration
             .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
             .compact();
         return new Token(str);
     }
     
-    public String getUsernameFromToken(String token) {
+    public static String getUsernameFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
             .setSigningKey(SECRET_KEY)
             .build()
@@ -112,7 +112,7 @@ public class AccessControlService {
         return claims.getSubject();
     }
     
-    public boolean isTokenValid(String token) {
+    public static boolean isTokenValid(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token);
             return true;
