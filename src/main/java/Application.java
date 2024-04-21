@@ -1,8 +1,6 @@
 import com.google.gson.Gson;
 import entities.Response;
 import entities.Token;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import model.Game;
 import model.Rol;
 import model.Shelf;
@@ -17,14 +15,11 @@ import spark.Spark;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import java.util.Date;
 import java.util.Optional;
 
 public class Application {
 
     private static final Gson gson = new Gson();
-    private static final String SECRET_KEY = "12000dpi0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    // TODO(secret_key)
 
     public static void main(String[] args) {
         new Database().startDBServer();
@@ -97,7 +92,7 @@ public class Application {
             resp.status(200);
 
             // Generate JWT token
-            Token token = generateToken(username);
+            Token token = AccessControlService.generateToken(username);
 
             // Send token to frontend
             resp.type("application/json");
@@ -166,18 +161,6 @@ public class Application {
             res.header("Access-Control-Allow-Headers", "*");
             res.type("application/json");
         });
-    }
-
-    //
-
-    private static Token generateToken(String username) {
-        // Create JWT token with username as subject
-        String str = Jwts.builder()
-                .setSubject(username)
-                .setExpiration(new Date(System.currentTimeMillis() + 3_600_000)) // 1 hour expiration
-                .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
-                .compact();
-        return new Token(str);
     }
 
     // tests for BD //
