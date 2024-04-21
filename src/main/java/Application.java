@@ -43,6 +43,32 @@ public class Application {
 
             return gson.toJson(userService.listAll());
         });
+    
+        Spark.post("/tokenvalidation", "application/json", (req, resp) -> {
+            String token = JsonParser.parseString(req.body())
+                .getAsJsonObject()
+                .get(Token.PROPERTY_NAME)
+                .getAsString();
+            
+            if (!AccessControlService.isTokenValid(token)) {
+                resp.status(401);
+                return "Token is invalid or has expired!";
+            }
+        
+            resp.type("application/json");
+            resp.status(201);
+        
+            UserService userService = new UserService(em);
+            String username = AccessControlService.getUsernameFromToken(token);
+            Optional<User> user = userService.findByUsername(username);
+            
+            if (user.isEmpty()) {
+                resp.status(404);
+                return "User not found!";
+            }
+            
+            return user.get().asJson();
+        });
 
         Spark.post("/newuser", "application/json", (req, resp) -> {
             final User user = User.fromJson(req.body());
