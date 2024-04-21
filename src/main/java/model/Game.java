@@ -1,9 +1,13 @@
 package model;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.JsonAdapter;
+import entities.Response.MessageResponse;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -18,27 +22,25 @@ public class Game {
 
     @Column(nullable = false)
     private String description;
+    
+    @Column(nullable = false)
+    private LocalDateTime releaseDate;
+    
+    @Column(nullable = false)
+    private LocalDateTime lastUpdate;
 
     //TODO(gameLogo, gamePicture, gameBanner)
 
     @ManyToMany(mappedBy = "games")
-    private final transient Set<Shelf> inShelves = new HashSet<>();
+    private final Set<Shelf> inShelves = new HashSet<>();
 
     public Game() {}
 
     private Game(GameBuilder builder) {
         this.title = builder.title;
         this.description = builder.description;
-    }
-
-    public static Game fromJson(String json) {
-        final Gson gson = new Gson();
-        return gson.fromJson(json, Game.class);
-    }
-
-    public String asJson() {
-        Gson gson = new Gson();
-        return gson.toJson(this);
+        this.releaseDate = builder.releaseDate;
+        this.lastUpdate = builder.releaseDate;
     }
 
     public static GameBuilder create(String title) {
@@ -48,6 +50,7 @@ public class Game {
     public static class GameBuilder {
         private final String title;
         private String description;
+        private LocalDateTime releaseDate;
 
         public GameBuilder(String title) {
             this.title = title;
@@ -57,10 +60,18 @@ public class Game {
             this.description = description;
             return this;
         }
+        
+        public GameBuilder releaseDate(LocalDateTime releaseDate) {
+            this.releaseDate = releaseDate;
+            return this;
+        }
 
         public Game build() {
-            if(description == null) {
+            if (description == null) {
                 throw new IllegalArgumentException();
+            }
+            if (releaseDate == null) {
+                releaseDate = LocalDateTime.now();
             }
             return new Game(this);
         }
@@ -69,7 +80,45 @@ public class Game {
     public void addInShelf(Shelf shelf) {
         inShelves.add(shelf);
     }
-
+    
+    // JSON //
+    
+    public static Game fromJson(String json) {
+        final Gson gson = new Gson();
+        return gson.fromJson(json, Game.class);
+    }
+    
+    public String asJson() {
+        JsonObject jsonObj = new JsonObject();
+        jsonObj.addProperty("id", id);
+        jsonObj.addProperty("title", title);
+        jsonObj.addProperty("description", description);
+        jsonObj.addProperty("releaseDate", releaseDate.toString());
+        jsonObj.addProperty("lastUpdate", lastUpdate.toString());
+        return jsonObj.toString();
+    }
+    
+    // RESTRICTIONS //
+    
+    public static MessageResponse isTitleValid(String title) {
+        if (title == null) {
+            return new MessageResponse(true, "Title cannot be null!");
+        }
+        if (title.equals("")) {
+            return new MessageResponse(true, "Title cannot be empty!");
+        }
+        return new MessageResponse(false);
+    }
+    
+    public static MessageResponse isDescriptionValid(String description) {
+        if (description == null) {
+            return new MessageResponse(true, "Description cannot be null!");
+        }
+        return new MessageResponse(false);
+    }
+    
+    // GETTERS - SETTER //
+    
     public void setId(Long id) {
         this.id = id;
     }
@@ -81,8 +130,34 @@ public class Game {
     public String getTitle() {
         return title;
     }
+    
+    public void setTitle(Long id, LocalDateTime lastUpdate) {
+        this.title = title;
+        this.lastUpdate = lastUpdate;
+    }
 
     public String getDescription() {
         return description;
+    }
+    
+    public void setDescription(Long id, LocalDateTime lastUpdate) {
+        this.description = description;
+        this.lastUpdate = lastUpdate;
+    }
+    
+    public LocalDateTime getReleaseDate() {
+        return releaseDate;
+    }
+    
+    public void setReleaseDate(LocalDateTime releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+    
+    public LocalDateTime getLastUpdate() {
+        return lastUpdate;
+    }
+    
+    public void setLastUpdate(LocalDateTime lastUpdate) {
+        this.lastUpdate = lastUpdate;
     }
 }

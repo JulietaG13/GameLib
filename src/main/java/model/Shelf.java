@@ -19,14 +19,14 @@ public class Shelf {
 
     @ManyToOne
     private User user;
-
+    
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "game_in_shelf",
             joinColumns = @JoinColumn(name = "shelf_id"),
             inverseJoinColumns = @JoinColumn(name = "game_id")
     )
-    private final transient Set<Game> games = new HashSet<>();
+    private final Set<Game> games = new HashSet<>();
 
     public Shelf() {}
 

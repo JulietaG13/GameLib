@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import entities.Response.MessageResponse;
 import entities.Response.StatusResponse;
 import entities.Token;
 import entities.Response.UserResponse;
@@ -18,6 +19,7 @@ import spark.Spark;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class Application {
@@ -111,12 +113,29 @@ public class Application {
         Spark.post("/newgame", "application/json", (req, resp) -> {
             final Game game = Game.fromJson(req.body());
             final GameService games = new GameService(em);
-
+    
+            //TODO(just to test for now)
+            game.setReleaseDate(LocalDateTime.now());
+            game.setLastUpdate(LocalDateTime.now());
+            //
+            
+            MessageResponse titleResponse = Game.isTitleValid(game.getTitle());
+            if (titleResponse.hasError()) {
+                resp.status(404);
+                return titleResponse.getMessage();
+            }
+    
+            MessageResponse descriptionResponse = Game.isDescriptionValid(game.getDescription());
+            if (descriptionResponse.hasError()) {
+                resp.status(404);
+                return descriptionResponse.getMessage();
+            }
+            
             games.persist(game);
             resp.type("application/json");
             resp.status(201);
 
-            return "Videogame saved successfully!";
+            return game.asJson();
         });
 
         Spark.get("/getgame/:id", "application/json", (req, resp) -> {
