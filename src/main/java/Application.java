@@ -140,11 +140,20 @@ public class Application {
 
         Spark.get("/getgame/:id", "application/json", (req, resp) -> {
             final GameService games = new GameService(em);
+            
+            long id;
+            try {
+                id = Long.parseLong(req.params(":id"));
+            } catch (NumberFormatException e) {
+                resp.status(403);
+                return "Game ID must be a number!";
+            }
+            
+            Optional<Game> game = games.findById(id);
 
-            Optional<Game> game = games.findById(Long.valueOf(req.params(":id")));
-
-            if(game.isEmpty()) {
-                throw new IllegalArgumentException("There's no game with id " + req.params(":id"));
+            if (game.isEmpty()) {
+                resp.status(404);
+                return "There's no game with id " + req.params(":id") + "!";
             }
 
             resp.type("application/json");
