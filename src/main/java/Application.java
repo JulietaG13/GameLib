@@ -1,6 +1,9 @@
 import com.google.gson.Gson;
-import entities.Response;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import entities.Response.StatusResponse;
 import entities.Token;
+import entities.Response.UserResponse;
 import model.Game;
 import model.Rol;
 import model.Shelf;
@@ -44,10 +47,10 @@ public class Application {
         Spark.post("/newuser", "application/json", (req, resp) -> {
             final User user = User.fromJson(req.body());
 
-            Response response = AccessControlService.isFormatValid(user);
-            if(response.hasError) {
+            StatusResponse response = AccessControlService.isFormatValid(user);
+            if(response.hasError()) {
                 resp.status(response.statusCode);
-                return response.message;
+                return response.getMessage();
             }
 
             if (user.getRol() == null) {    // default
@@ -55,9 +58,9 @@ public class Application {
             }
 
             response = AccessControlService.isUserAvailable(user, em);
-            if(response.hasError) {
+            if(response.hasError()) {
                 resp.status(response.statusCode);
-                return response.message;
+                return response.getMessage();
             }
 
             final UserService userService = new UserService(em);
@@ -73,30 +76,36 @@ public class Application {
             final User user = User.fromJson(req.body());
             final String username = user.getUsername();
             final String password = user.getPassword();
-
-            if (username == null) {
-                resp.status(404);
-                return "Username cannot be null!";
+    
+            StatusResponse usernameResponse = AccessControlService.isUsernameValid(username);
+            if(usernameResponse.hasError()) {
+                resp.status(usernameResponse.statusCode);
+                return usernameResponse.getMessage();
+            }
+            
+            StatusResponse passwordResponse = AccessControlService.isPasswordValid(password);
+            if(passwordResponse.hasError()) {
+                resp.status(passwordResponse.statusCode);
+                return passwordResponse.getMessage();
             }
 
-            if (password == null) {
-                resp.status(404);
-                return "Password cannot be null!";
-            }
-
-            Response response = AccessControlService.authenticateUser(username, password, em);
-            if(response.hasError) {
-                resp.status(response.statusCode);
-                return response.message;
+            UserResponse authResponse = AccessControlService.authenticateUser(username, password, em);
+            if(authResponse.hasError()) {
+                resp.status(authResponse.statusCode);
+                return authResponse.getMessage();
             }
             resp.status(200);
 
-            // Generate JWT token
             Token token = AccessControlService.generateToken(username);
 
-            // Send token to frontend
+            JsonObject json = JsonParser
+                .parseString(authResponse.getUser().asJson())
+                .getAsJsonObject();
+            
+            json.addProperty(Token.PROPERTY_NAME, token.getToken());
+    
             resp.type("application/json");
-            return token.asJson();
+            return json;
         });
 
         Spark.post("/newgame", "application/json", (req, resp) -> {
