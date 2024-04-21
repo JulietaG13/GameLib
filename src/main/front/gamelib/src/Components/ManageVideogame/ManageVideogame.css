@@ -28,6 +28,12 @@
     height: 7em;
 }
 
+.releaseDate {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .platforms {
     flex-direction: row;
     align-items: center;

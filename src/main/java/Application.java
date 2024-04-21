@@ -138,11 +138,6 @@ public class Application {
             final Game game = Game.fromJson(req.body());
             final GameService games = new GameService(em);
 
-            //TODO(just to test for now)
-            game.setReleaseDate(LocalDateTime.now());
-            game.setLastUpdate(LocalDateTime.now());
-            //
-
             MessageResponse titleResponse = Game.isTitleValid(game.getTitle());
             if (titleResponse.hasError()) {
                 resp.status(404);
@@ -154,6 +149,17 @@ public class Application {
                 resp.status(404);
                 return descriptionResponse.getMessage();
             }
+
+            MessageResponse releaseDateResponse = Game.isReleaseDateValid(game.getReleaseDate());
+            if (releaseDateResponse.hasError()) {
+                resp.status(404);
+                return releaseDateResponse.getMessage();
+            }
+
+            //TODO(just to test for now)
+            //game.setReleaseDate(LocalDateTime.now());
+            game.setLastUpdate(LocalDateTime.now());
+            //
 
             games.persist(game);
             resp.type("application/json");
@@ -206,6 +212,7 @@ public class Application {
             }
 
             Game gameUpdate = Game.fromJson(req.body());
+            //LocalDateTime lastUpdate = LocalDateTime.now();
             LocalDateTime lastUpdate = gameUpdate.getLastUpdate(); //TODO(have front send LocalDateTime)
 
             GameResponse gameResponse = gameService.update(id, gameUpdate, lastUpdate);
