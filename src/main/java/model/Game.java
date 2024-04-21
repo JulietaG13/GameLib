@@ -4,7 +4,7 @@ import adapters.GsonAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import entities.Response.MessageResponse;
+import entities.responses.MessageResponse;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

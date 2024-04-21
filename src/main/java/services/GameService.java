@@ -1,6 +1,6 @@
 package services;
 
-import entities.Response.GameResponse;
+import entities.responses.GameResponse;
 import model.Game;
 
 import javax.persistence.EntityManager;

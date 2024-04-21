@@ -1,8 +1,7 @@
 package model;
 
 import com.google.gson.Gson;
-import entities.Response.MessageResponse;
-import entities.Response.StatusResponse;
+import entities.responses.MessageResponse;
 
 import javax.persistence.*;
 

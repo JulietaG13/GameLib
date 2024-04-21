@@ -1,11 +1,11 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import entities.Response.GameResponse;
-import entities.Response.MessageResponse;
-import entities.Response.StatusResponse;
+import entities.responses.GameResponse;
+import entities.responses.MessageResponse;
+import entities.responses.StatusResponse;
 import entities.Token;
-import entities.Response.UserResponse;
+import entities.responses.UserResponse;
 import model.Game;
 import model.Rol;
 import model.Shelf;

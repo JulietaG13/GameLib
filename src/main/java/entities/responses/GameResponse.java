@@ -1,4 +1,4 @@
-package entities.Response;
+package entities.responses;
 
 import interfaces.Response;
 import model.Game;
