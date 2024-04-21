@@ -33,6 +33,7 @@ public class Application {
         storeUsers1(em);
         storeGames1(em);
         storeTags1(em);
+        storeReviews1(em);
 
         Spark.get("/users", "application/json", (req, resp) -> {
 
@@ -338,6 +339,42 @@ public class Application {
 
         gameService.addTag(game2, tags.get(2));
         gameService.addTag(game2, tags.get(3));
+    }
+    
+    private static void storeReviews1(EntityManager entityManager) {
+        ReviewService reviewService = new ReviewService(entityManager);
+        UserService userService = new UserService(entityManager);
+        GameService gameService = new GameService(entityManager);
+    
+        if (reviewService.listAll().isEmpty()) {
+            User u1 = User.create("i made 1 review").email("review1@mail.com").password("qwerty123").build();
+            User u2 = User.create("i made 3 reviews").email("review3@mail.com").password("qwerty123").build();
+            userService.persist(u1);
+            userService.persist(u2);
+    
+            Game g1 = Game.create("game with 2 user reviews").description("the game has 2 reviews each by different users").releaseDate(LocalDateTime.now().plusDays(11)).build();
+            Game g2 = Game.create("game reviewd by same user").description("the game has 2 reviews by the same user").releaseDate(LocalDateTime.now().plusDays(13)).build();
+            gameService.persist(g1);
+            gameService.persist(g2);
+            
+            Review r1 = new Review("this game is subpar if i say so myself");
+            Review r2 = new Review("awesome game 10/10 would recommend i love it");
+            reviewService.addReview(r1, u1, g1);
+            reviewService.addReview(r2, u2, g1);
+            
+            Review r3 = new Review("a review");
+            Review r4 = new Review("a second review");
+            reviewService.addReview(r3, u2, g2);
+            reviewService.addReview(r4, u2, g2);
+            
+            reviewService.likeReview(r1, u1);   // se auto-likeo
+            reviewService.dislikeReview(r1, u2);
+            
+            reviewService.dislikeReview(r2, u1);
+            
+            reviewService.likeReview(r3, u1);
+            reviewService.likeReview(r4, u1);
+        }
     }
 }
 
