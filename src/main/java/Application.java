@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import entities.Response.GameResponse;
 import entities.Response.MessageResponse;
 import entities.Response.StatusResponse;
 import entities.Token;
@@ -139,7 +140,7 @@ public class Application {
         });
 
         Spark.get("/getgame/:id", "application/json", (req, resp) -> {
-            final GameService games = new GameService(em);
+            final GameService gameService = new GameService(em);
             
             long id;
             try {
@@ -149,7 +150,7 @@ public class Application {
                 return "Game ID must be a number!";
             }
             
-            Optional<Game> game = games.findById(id);
+            Optional<Game> game = gameService.findById(id);
 
             if (game.isEmpty()) {
                 resp.status(404);
@@ -163,20 +164,37 @@ public class Application {
         });
 
         Spark.put("/editgame/:id", "application/json", (req, resp) -> {
-            final GameService games = new GameService(em);
-
-            Optional<Game> gameToEdit = games.findById(Long.valueOf(req.params(":id")));
-
-            if(gameToEdit.isEmpty()) {
-                throw new IllegalArgumentException("There's no game with id " + req.params(":id"));
+            //TODO(get token from header and validate it)
+            final GameService gameService = new GameService(em);
+            
+            long id;
+            try {
+                id = Long.parseLong(req.params(":id"));
+            } catch (NumberFormatException e) {
+                resp.status(403);
+                return "Game ID must be a number!";
             }
-
-            Game game = gameToEdit.get();
+    
+            Optional<Game> gameToEdit = gameService.findById(id);
+    
+            if (gameToEdit.isEmpty()) {
+                resp.status(404);
+                return "There's no game with id " + req.params(":id") + "!";
+            }
+            
+            Game gameUpdate = Game.fromJson(req.body());
+            LocalDateTime lastUpdate = gameUpdate.getLastUpdate(); //TODO(have front send LocalDateTime)
+            
+            GameResponse gameResponse = gameService.update(id, gameUpdate, lastUpdate);
+            if (gameResponse.hasError()) {
+                resp.status(404);
+                return gameResponse.getMessage();
+            }
 
             resp.type("application/json");
             resp.status(201);
 
-            return game.asJson();
+            return gameResponse.getGame().asJson();
         });
 
         Spark.options("/*", (req, res) -> {
