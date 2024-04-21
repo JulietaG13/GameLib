@@ -156,9 +156,15 @@ public class Application {
                 return releaseDateResponse.getMessage();
             }
 
+            MessageResponse lastUpdateResponse = Game.isLastUpdateValid(game.getLastUpdate());
+            if (lastUpdateResponse.hasError()) {
+                resp.status(404);
+                return lastUpdateResponse.getMessage();
+            }
+
             //TODO(just to test for now)
             //game.setReleaseDate(LocalDateTime.now());
-            game.setLastUpdate(LocalDateTime.now());
+            //game.setLastUpdate(LocalDateTime.now());
             //
 
             games.persist(game);
@@ -300,9 +306,24 @@ public class Application {
 
         User user = User.create("IOwnAShelf").email("shelves@mail.com").password("1234").build();
         Shelf shelf = new Shelf(user, "elf on a shelf");
-        Game game1 = Game.create("awesome game").description("just an awesome game").releaseDate(LocalDateTime.now()).build();
-        Game game2 = Game.create("another awesome game").description("just another awesome game").releaseDate(LocalDateTime.now().plusMonths(4)).build();
-        Game game3 = Game.create("even another awesome game").description("also an awesome game").releaseDate(LocalDateTime.now().plusMonths(2)).build();
+        Game game1 = Game
+                .create("awesome game")
+                .description("just an awesome game")
+                .releaseDate(LocalDateTime.now())
+                .lastUpdate(LocalDateTime.now())
+                .build();
+        Game game2 = Game
+                .create("another awesome game")
+                .description("just another awesome game")
+                .releaseDate(LocalDateTime.now().plusMonths(4))
+                .lastUpdate(LocalDateTime.now().plusMonths(4))
+                .build();
+        Game game3 = Game
+                .create("even another awesome game")
+                .description("also an awesome game")
+                .releaseDate(LocalDateTime.now().plusMonths(2))
+                .lastUpdate(LocalDateTime.now().plusMonths(2))
+                .build();
 
         if (gameService.listAll().isEmpty() && shelfService.listAll().isEmpty()) {
             userService.persist(user);
@@ -329,8 +350,18 @@ public class Application {
 
         List<Tag> tags = tagService.listAll();
 
-        Game game1 = Game.create("tagged game 1").description("a game with 1 tag").releaseDate(LocalDateTime.now().plusDays(2)).build();
-        Game game2 = Game.create("tagged game 2").description("a game with 3 tags").releaseDate(LocalDateTime.now().plusDays(3)).build();
+        Game game1 = Game
+                .create("tagged game 1")
+                .description("a game with 1 tag")
+                .releaseDate(LocalDateTime.now().plusDays(2))
+                .lastUpdate(LocalDateTime.now().plusDays(2))
+                .build();
+        Game game2 = Game
+                .create("tagged game 2")
+                .description("a game with 3 tags")
+                .releaseDate(LocalDateTime.now().plusDays(3))
+                .lastUpdate(LocalDateTime.now().plusDays(3))
+                .build();
         gameService.persist(game1);
         gameService.persist(game2);
 

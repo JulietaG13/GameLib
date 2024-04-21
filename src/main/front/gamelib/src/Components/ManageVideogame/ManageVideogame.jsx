@@ -20,21 +20,18 @@ function ManageVideogame({type}) {
         }
     }, [])
 
-    console.log(videogame)
-    console.log(videogame.releaseDate)
-
     //Sends data to backend
     const submit = async e => {
         //Prevents page to reload
         e.preventDefault()
 
         await axios.post("http://localhost:4567/newgame", {
-            title: title, description: description, releaseDate: releaseDate
-        });
+            title: title, description: description, releaseDate: releaseDate, lastUpdate: FormatLastUpdateDate(new Date())
+        })
 
         // if (type === "Edit") {
         //     await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, {
-        //         title: title, description: description, releaseDate: releaseDate, lastUpdate: releaseDate
+        //         title: title, description: description, releaseDate: releaseDate, lastUpdate: formatedLastUpdate
         //     });
         // } else if (type === "Add") {
         //     await axios.post("http://localhost:4567/newgame", {
@@ -108,6 +105,15 @@ function ManageVideogame({type}) {
             </div>
         </form>
     );
+}
+
+function FormatLastUpdateDate(lastUpdate) {
+    return lastUpdate.getFullYear() + '-' +
+        String(lastUpdate.getMonth() + 1).padStart(2, '0') + '-' +
+        String(lastUpdate.getDate()).padStart(2, '0') + 'T' +
+        String(lastUpdate.getHours()).padStart(2, '0') + ':' +
+        String(lastUpdate.getMinutes()).padStart(2, '0') + ':' +
+        String(lastUpdate.getSeconds()).padStart(2, '0');
 }
 
 export default ManageVideogame;
