@@ -33,6 +33,14 @@ public class Game {
 
     @ManyToMany(mappedBy = "games")
     private final Set<Shelf> inShelves = new HashSet<>();
+    
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+        name = "games_tagged",
+        joinColumns = @JoinColumn(name = "game_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private final Set<Tag> tags = new HashSet<>();
 
     public Game() {}
 
@@ -76,10 +84,6 @@ public class Game {
             return new Game(this);
         }
     }
-
-    public void addInShelf(Shelf shelf) {
-        inShelves.add(shelf);
-    }
     
     // JSON //
     
@@ -117,7 +121,18 @@ public class Game {
         return new MessageResponse(false);
     }
     
-    // GETTERS - SETTER //
+    // ADDS? //
+    
+    protected void addInShelf(Shelf shelf) {
+        inShelves.add(shelf);
+    }
+    
+    public void addTag(Tag tag) {
+        tags.add(tag);
+        tag.addGame(this);
+    }
+    
+    // GETTERS - SETTERS //
     
     public void setId(Long id) {
         this.id = id;
