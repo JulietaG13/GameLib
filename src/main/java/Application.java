@@ -1,4 +1,5 @@
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import entities.responses.GameResponse;
@@ -21,6 +22,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public class Application {
@@ -196,6 +198,37 @@ public class Application {
 
             return gameResponse.getGame().asJson();
         });
+    
+        Spark.get("/latestupdated/:max", "application/json", (req, resp) -> {
+            final GameService gameService = new GameService(em);
+        
+            int max;
+            try {
+                max = Integer.parseInt(req.params("max"));
+            } catch (NumberFormatException e) {
+                resp.status(403);
+                return "Max number of games must be a number!";
+            }
+    
+            List<Game> latestUpdated = gameService.listByLatest(max);
+            resp.type("application/json");
+            resp.status(201);
+            
+            JsonObject jsonObj = new JsonObject();
+            jsonObj.addProperty("actual", latestUpdated.size());
+    
+            JsonArray jsonArray = new JsonArray(latestUpdated.size());
+            for(Game game : latestUpdated) {
+                JsonObject jsonGame = JsonParser
+                    .parseString(game.asJson())
+                    .getAsJsonObject();
+                jsonArray.add(jsonGame);
+            }
+            
+            jsonObj.add("games", jsonArray);
+        
+            return jsonObj.toString();
+        });
 
         Spark.options("/*", (req, res) -> {
             String accessControlRequestHeaders = req.headers("Access-Control-Request-Headers");
@@ -217,6 +250,7 @@ public class Application {
             res.type("application/json");
         });
     }
+    
 
     // tests for BD //
 
@@ -238,9 +272,9 @@ public class Application {
 
         User user = User.create("IOwnAShelf").email("shelves@mail.com").password("1234").build();
         Shelf shelf = new Shelf(user, "elf on a shelf");
-        Game game1 = Game.create("awesome game").description("just an awesome game").build();
-        Game game2 = Game.create("another awesome game").description("just another awesome game").build();
-        Game game3 = Game.create("even another awesome game").description("also an awesome game").build();
+        Game game1 = Game.create("awesome game").description("just an awesome game").releaseDate(LocalDateTime.now()).build();
+        Game game2 = Game.create("another awesome game").description("just another awesome game").releaseDate(LocalDateTime.now().plusMonths(4)).build();
+        Game game3 = Game.create("even another awesome game").description("also an awesome game").releaseDate(LocalDateTime.now().plusMonths(2)).build();
 
         if (gameService.listAll().isEmpty() && shelfService.listAll().isEmpty()) {
             userService.persist(user);
