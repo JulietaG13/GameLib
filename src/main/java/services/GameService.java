@@ -2,6 +2,7 @@ package services;
 
 import entities.responses.GameResponse;
 import model.Game;
+import model.Tag;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -42,14 +43,6 @@ public class GameService {
     public void deleteAll() {
         entityManager.createQuery("DELETE FROM Game").executeUpdate();
     }
-
-    public Game persist(Game game) {
-        EntityTransaction tx = entityManager.getTransaction();
-        tx.begin();
-        entityManager.persist(game);
-        tx.commit();
-        return game;
-    }
     
     public GameResponse update(Long id, Game gameUpdate, LocalDateTime lastUpdate) {
         EntityTransaction tx = entityManager.getTransaction();
@@ -74,5 +67,33 @@ public class GameService {
         persist(game);
         
         return new GameResponse(false, game, "OK!");
+    }
+    
+    public GameResponse addTag(Game game, Tag tag) {
+        EntityTransaction tx = entityManager.getTransaction();
+        
+        tx.begin();
+        Optional<Game> managedGame = findById(game.getId());
+        Optional<Tag> managedTag = new TagService(entityManager).findById(tag.getId());
+        if (managedGame.isEmpty()) {
+            return new GameResponse(true, "Theres no game with id " + game.getId() + "!");
+        }
+        if (managedTag.isEmpty()) {
+            return new GameResponse(true, "Theres no tag with id " + tag.getId() + "!");
+        }
+        tx.commit();
+        
+        managedGame.get().addTag(managedTag.get());
+        persist(managedGame.get());
+        
+        return new GameResponse(false, managedGame.get(), "OK!");
+    }
+    
+    public Game persist(Game game) {
+        EntityTransaction tx = entityManager.getTransaction();
+        tx.begin();
+        entityManager.persist(game);
+        tx.commit();
+        return game;
     }
 }
