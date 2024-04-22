@@ -5,13 +5,21 @@ import {Navigate, useParams} from "react-router-dom";
 
 function ManageVideogame({type}) {
     const videogameID = useParams();
-    const [title, setTitle] = useState('');
+    const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [releaseDate, setReleaseDate] = useState('');
     const [navigate, setNavigate] = useState(false);
     const [videogame, setVideogame] = useState({});
+    let item = localStorage.getItem('token');
+    console.log('token: ' + item);
 
     useEffect(() => {
+        axios.post('http://localhost:4567/tokenvalidation', {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': item
+            }
+        })
         if(type === "Edit") {
             axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
                 .then(response => {
@@ -26,24 +34,33 @@ function ManageVideogame({type}) {
         //Prevents page to reload
         e.preventDefault()
 
-        // await axios.post("http://localhost:4567/newgame", {
-        //     title: title, description: description, releaseDate: releaseDate, lastUpdate: FormatLastUpdateDate(new Date())
-        // })
-
         if (type === "Edit") {
             let dataToSend = {
-                title: title ? title : videogame.title,
+                title: name ? name : videogame.name,
                 description: description ? description : videogame.description,
                 releaseDate: releaseDate ? releaseDate : videogame.releaseDate,
                 lastUpdate: FormatLastUpdateDate(new Date())
             };
-            await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, dataToSend);
+            await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, dataToSend, {
+                headers: {
+                        'Content-Type': 'application/json',
+                        'token': item
+                }
+            });
         } else if (type === "Add") {
-            await axios.post("http://localhost:4567/newgame", {
-                title: title, description: description, releaseDate: releaseDate, lastUpdate: FormatLastUpdateDate(new Date())
+            let dataToSend = {
+                name: name,
+                description: description,
+                releaseDate: releaseDate,
+                lastUpdate: FormatLastUpdateDate(new Date())
+            };
+            await axios.post("http://localhost:4567/newgame", dataToSend, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': item
+                }
             });
         }
-
         setNavigate(true);
     }
 
@@ -82,8 +99,8 @@ function ManageVideogame({type}) {
             */}
 
             <div className={"titleDesc"}>
-                <input type={"text"} placeholder={"Add title"} defaultValue={videogame.title}
-                       onChange={e => setTitle(e.target.value)}
+                <input type={"text"} placeholder={"Add title"} defaultValue={videogame.name}
+                       onChange={e => setName(e.target.value)}
                 />
                 <input id={"desc"} type={"text"} placeholder={"Add description"} defaultValue={videogame.description}
                        onChange={e => setDescription(e.target.value)}
