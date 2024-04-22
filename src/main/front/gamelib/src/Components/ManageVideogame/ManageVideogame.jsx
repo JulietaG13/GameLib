@@ -16,31 +16,33 @@ function ManageVideogame({type}) {
             axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
                 .then(response => {
                     setVideogame(response.data);
+                    console.log(response.data);
                 })
         }
     }, [])
-
-    console.log(videogame)
-    console.log(videogame.releaseDate)
 
     //Sends data to backend
     const submit = async e => {
         //Prevents page to reload
         e.preventDefault()
 
-        await axios.post("http://localhost:4567/newgame", {
-            title: title, description: description, releaseDate: releaseDate
-        });
+        // await axios.post("http://localhost:4567/newgame", {
+        //     title: title, description: description, releaseDate: releaseDate, lastUpdate: FormatLastUpdateDate(new Date())
+        // })
 
-        // if (type === "Edit") {
-        //     await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, {
-        //         title: title, description: description, releaseDate: releaseDate, lastUpdate: releaseDate
-        //     });
-        // } else if (type === "Add") {
-        //     await axios.post("http://localhost:4567/newgame", {
-        //         title: title, description: description, releaseDate: releaseDate
-        //     });
-        // }
+        if (type === "Edit") {
+            let dataToSend = {
+                title: title ? title : videogame.title,
+                description: description ? description : videogame.description,
+                releaseDate: releaseDate ? releaseDate : videogame.releaseDate,
+                lastUpdate: FormatLastUpdateDate(new Date())
+            };
+            await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, dataToSend);
+        } else if (type === "Add") {
+            await axios.post("http://localhost:4567/newgame", {
+                title: title, description: description, releaseDate: releaseDate, lastUpdate: FormatLastUpdateDate(new Date())
+            });
+        }
 
         setNavigate(true);
     }
@@ -49,6 +51,20 @@ function ManageVideogame({type}) {
         setNavigate(true);
     }
 
+/*
+    const deleteGame = async () => {
+        console.log(1);
+        await axios.delete(`http://localhost:4567/deletegame/${videogameID.videogameID}`)
+            .then(response => {
+                console.log(response.data);
+                console.log(videogame);
+                setVideogame({});
+                console.log(videogame);
+            })
+        console.log(videogame);
+        //setNavigate(true);
+    }
+*/
 
     if(navigate) {
         return <Navigate to={"/"}/>;
@@ -104,10 +120,22 @@ function ManageVideogame({type}) {
 */}
             <div className={"buttons"}>
                 <input type={"button"} value={"Cancel"} onClick={cancel} />
+                {/*{type === "Edit" ? <input type={"button"} value={"Delete"} onClick = {deleteGame} /> : null}*/}
                 <input type={"button"} value={"Add"} onClick={submit} />
             </div>
         </form>
     );
+}
+
+function FormatLastUpdateDate(lastUpdate) {
+    let formatedDate = lastUpdate.getFullYear() + '-' +
+        String(lastUpdate.getMonth() + 1).padStart(2, '0') + '-' +
+        String(lastUpdate.getDate()).padStart(2, '0') + 'T' +
+        String(lastUpdate.getHours()).padStart(2, '0') + ':' +
+        String(lastUpdate.getMinutes()).padStart(2, '0') + ':' +
+        String(lastUpdate.getSeconds()).padStart(2, '0');
+    console.log(formatedDate);
+    return formatedDate;
 }
 
 export default ManageVideogame;

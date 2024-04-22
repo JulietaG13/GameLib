@@ -51,7 +51,7 @@ public class Game {
         this.name = builder.title;
         this.description = builder.description;
         this.releaseDate = builder.releaseDate;
-        this.lastUpdate = builder.releaseDate;
+        this.lastUpdate = builder.lastUpdate;
     }
 
     public static GameBuilder create(String title) {
@@ -62,6 +62,7 @@ public class Game {
         private final String title;
         private String description;
         private LocalDateTime releaseDate;
+        private LocalDateTime lastUpdate;
 
         public GameBuilder(String title) {
             this.title = title;
@@ -77,12 +78,20 @@ public class Game {
             return this;
         }
 
+        public GameBuilder lastUpdate(LocalDateTime lastUpdate) {
+            this.lastUpdate = lastUpdate;
+            return this;
+        }
+
         public Game build() {
             if (description == null) {
                 throw new IllegalArgumentException();
             }
             if (releaseDate == null) {
                 releaseDate = LocalDateTime.now();
+            }
+            if (lastUpdate == null) {
+                lastUpdate = LocalDateTime.now();
             }
             return new Game(this);
         }
@@ -127,6 +136,13 @@ public class Game {
     public static MessageResponse isReleaseDateValid(LocalDateTime releaseDate) {
         if (releaseDate == null) {
             return new MessageResponse(true, "Release date cannot be null!");
+        }
+        return new MessageResponse(false);
+    }
+
+    public static MessageResponse isLastUpdateValid(LocalDateTime lastUpdate) {
+        if (lastUpdate == null) {
+            return new MessageResponse(true, "Last update cannot be null!");
         }
         return new MessageResponse(false);
     }
@@ -190,5 +206,13 @@ public class Game {
     
     public void setLastUpdate(LocalDateTime lastUpdate) {
         this.lastUpdate = lastUpdate;
+    }
+
+    public Set<Shelf> getInShelves() {
+        return inShelves;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
     }
 }

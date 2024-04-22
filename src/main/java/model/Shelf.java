@@ -47,4 +47,8 @@ public class Shelf {
     public Long getId() {
         return id;
     }
+
+    public List<Game> getGames() {
+        return new ArrayList<>(games);
+    }
 }

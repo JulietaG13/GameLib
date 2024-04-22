@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -179,9 +180,15 @@ public class Application {
                 return releaseDateResponse.getMessage();
             }
 
+            MessageResponse lastUpdateResponse = Game.isLastUpdateValid(game.getLastUpdate());
+            if (lastUpdateResponse.hasError()) {
+                resp.status(404);
+                return lastUpdateResponse.getMessage();
+            }
+
             //TODO(just to test for now)
             //game.setReleaseDate(LocalDateTime.now());
-            game.setLastUpdate(LocalDateTime.now());
+            //game.setLastUpdate(LocalDateTime.now());
             //
 
             games.persist(game);
@@ -252,6 +259,37 @@ public class Application {
             resp.status(201);
 
             return gameResponse.getGame().asJson();
+        });
+
+        Spark.delete("/deletegame/:id", "application/json", (req, res) -> {
+            //TODO(get token from header and validate it)
+            System.out.println(2);
+            //System.out.println("Esta línea es absolutamente necesaria para que la eliminacion funcione correctamente");
+            final GameService gameService = new GameService(em);
+
+            System.out.println(3);
+
+            long id;
+            try {
+                id = Long.parseLong(req.params(":id"));
+            } catch (NumberFormatException e) {
+                res.status(403);
+                return "Game ID must be a number!";
+            }
+
+            Optional<Game> game = gameService.findById(id);
+
+            if (game.isEmpty()) {
+                res.status(404);
+                return "There's no game with id " + req.params(":id") + "!";
+            }
+
+            System.out.println(4);
+
+            gameService.delete(id);
+
+            res.status(200);
+            return "Game with id " + req.params(":id") + " has been deleted!";
         });
 
         Spark.get("/latestupdated/:max", "application/json", (req, resp) -> {
@@ -327,9 +365,24 @@ public class Application {
 
         User user = User.create("IOwnAShelf").email("shelves@mail.com").password("1234").build();
         Shelf shelf = new Shelf(user, "elf on a shelf");
-        Game game1 = Game.create("awesome game").description("just an awesome game").releaseDate(LocalDateTime.now()).build();
-        Game game2 = Game.create("another awesome game").description("just another awesome game").releaseDate(LocalDateTime.now().plusMonths(4)).build();
-        Game game3 = Game.create("even another awesome game").description("also an awesome game").releaseDate(LocalDateTime.now().plusMonths(2)).build();
+        Game game1 = Game
+                .create("awesome game")
+                .description("just an awesome game")
+                .releaseDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
+                .lastUpdate(LocalDateTime.now())
+                .build();
+        Game game2 = Game
+                .create("another awesome game")
+                .description("just another awesome game")
+                .releaseDate(LocalDateTime.now().plusMonths(4).truncatedTo(ChronoUnit.SECONDS))
+                .lastUpdate(LocalDateTime.now().plusMonths(4))
+                .build();
+        Game game3 = Game
+                .create("even another awesome game")
+                .description("also an awesome game")
+                .releaseDate(LocalDateTime.now().plusMonths(2).truncatedTo(ChronoUnit.SECONDS))
+                .lastUpdate(LocalDateTime.now().plusMonths(2))
+                .build();
 
         if (gameService.listAll().isEmpty() && shelfService.listAll().isEmpty()) {
             userService.persist(user);
@@ -356,8 +409,18 @@ public class Application {
 
         List<Tag> tags = tagService.listAll();
 
-        Game game1 = Game.create("tagged game 1").description("a game with 1 tag").releaseDate(LocalDateTime.now().plusDays(2)).build();
-        Game game2 = Game.create("tagged game 2").description("a game with 3 tags").releaseDate(LocalDateTime.now().plusDays(3)).build();
+        Game game1 = Game
+                .create("tagged game 1")
+                .description("a game with 1 tag")
+                .releaseDate(LocalDateTime.now().plusDays(2).truncatedTo(ChronoUnit.SECONDS))
+                .lastUpdate(LocalDateTime.now().plusDays(2))
+                .build();
+        Game game2 = Game
+                .create("tagged game 2")
+                .description("a game with 3 tags")
+                .releaseDate(LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.SECONDS))
+                .lastUpdate(LocalDateTime.now().plusDays(3))
+                .build();
         gameService.persist(game1);
         gameService.persist(game2);
 
@@ -378,8 +441,8 @@ public class Application {
             userService.persist(u1);
             userService.persist(u2);
     
-            Game g1 = Game.create("game with 2 user reviews").description("the game has 2 reviews each by different users").releaseDate(LocalDateTime.now().plusDays(11)).build();
-            Game g2 = Game.create("game reviewd by same user").description("the game has 2 reviews by the same user").releaseDate(LocalDateTime.now().plusDays(13)).build();
+            Game g1 = Game.create("game with 2 user reviews").description("the game has 2 reviews each by different users").releaseDate(LocalDateTime.now().plusDays(11).truncatedTo(ChronoUnit.SECONDS)).build();
+            Game g2 = Game.create("game reviewd by same user").description("the game has 2 reviews by the same user").releaseDate(LocalDateTime.now().plusDays(13).truncatedTo(ChronoUnit.SECONDS)).build();
             gameService.persist(g1);
             gameService.persist(g2);
             
