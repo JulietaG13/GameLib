@@ -40,6 +40,36 @@ public class GameService {
             .getResultList();
     }
 
+    public void delete(Long id) {
+        EntityTransaction tx = entityManager.getTransaction();
+        tx.begin();
+
+        Game game = entityManager.find(Game.class, id);
+
+        System.out.println(100);
+        // Removes reviews related to the game
+        entityManager.createQuery("DELETE FROM Review r WHERE r.game.id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+
+        System.out.println(101);
+        // Removes shelves related to the game
+        game.getInShelves().forEach(shelf -> shelf.getGames().remove(game));
+
+        System.out.println(102);
+        // Removes tags related to the game
+        game.getTags().forEach(tag -> tag.getTaggedGames().remove(game));
+
+        System.out.println(103);
+        // Finally, removes the game
+        entityManager.createQuery("DELETE FROM Game g WHERE g.id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+        System.out.println(104);
+
+        tx.commit();
+    }
+
     public void deleteAll() {
         entityManager.createQuery("DELETE FROM Game").executeUpdate();
     }

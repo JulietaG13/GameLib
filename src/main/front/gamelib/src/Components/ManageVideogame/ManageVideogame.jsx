@@ -11,8 +11,6 @@ function ManageVideogame({type}) {
     const [navigate, setNavigate] = useState(false);
     const [videogame, setVideogame] = useState({});
 
-    console.log(videogame.releaseDate)
-
     useEffect(() => {
         if(type === "Edit") {
             axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
@@ -52,8 +50,20 @@ function ManageVideogame({type}) {
     const cancel = () => {
         setNavigate(true);
     }
-
-
+/*
+    const deleteGame = async () => {
+        console.log(1);
+        await axios.delete(`http://localhost:4567/deletegame/${videogameID.videogameID}`)
+            .then(response => {
+                console.log(response.data);
+                console.log(videogame);
+                setVideogame({});
+                console.log(videogame);
+            })
+        console.log(videogame);
+        //setNavigate(true);
+    }
+*/
     if(navigate) {
         return <Navigate to={"/"}/>;
     }
@@ -108,16 +118,11 @@ function ManageVideogame({type}) {
 */}
             <div className={"buttons"}>
                 <input type={"button"} value={"Cancel"} onClick={cancel} />
+                {type === "Edit" ? <input type={"button"} value={"Delete"} {/*onClick = {deleteGame}*/} /> : null}
                 <input type={"button"} value={"Add"} onClick={submit} />
             </div>
         </form>
     );
-}
-
-function trimMilliseconds(date) {
-    let formatedDate = new Date(date.setMilliseconds(0)).toString();
-    console.log(formatedDate);
-    return formatedDate;
 }
 
 function FormatLastUpdateDate(lastUpdate) {

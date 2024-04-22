@@ -207,4 +207,12 @@ public class Game {
     public void setLastUpdate(LocalDateTime lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
+
+    public Set<Shelf> getInShelves() {
+        return inShelves;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
 }

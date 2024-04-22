@@ -250,6 +250,37 @@ public class Application {
             return gameResponse.getGame().asJson();
         });
 
+        Spark.delete("/deletegame/:id", "application/json", (req, res) -> {
+            //TODO(get token from header and validate it)
+            System.out.println(2);
+            //System.out.println("Esta línea es absolutamente necesaria para que la eliminacion funcione correctamente");
+            final GameService gameService = new GameService(em);
+
+            System.out.println(3);
+
+            long id;
+            try {
+                id = Long.parseLong(req.params(":id"));
+            } catch (NumberFormatException e) {
+                res.status(403);
+                return "Game ID must be a number!";
+            }
+
+            Optional<Game> game = gameService.findById(id);
+
+            if (game.isEmpty()) {
+                res.status(404);
+                return "There's no game with id " + req.params(":id") + "!";
+            }
+
+            System.out.println(4);
+
+            gameService.delete(id);
+
+            res.status(200);
+            return "Game with id " + req.params(":id") + " has been deleted!";
+        });
+
         Spark.get("/latestupdated/:max", "application/json", (req, resp) -> {
             final GameService gameService = new GameService(em);
 
