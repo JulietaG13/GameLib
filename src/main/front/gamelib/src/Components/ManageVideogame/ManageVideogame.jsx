@@ -50,6 +50,7 @@ function ManageVideogame({type}) {
     const cancel = () => {
         setNavigate(true);
     }
+
 /*
     const deleteGame = async () => {
         console.log(1);
@@ -64,6 +65,7 @@ function ManageVideogame({type}) {
         //setNavigate(true);
     }
 */
+
     if(navigate) {
         return <Navigate to={"/"}/>;
     }
@@ -118,7 +120,7 @@ function ManageVideogame({type}) {
 */}
             <div className={"buttons"}>
                 <input type={"button"} value={"Cancel"} onClick={cancel} />
-                {type === "Edit" ? <input type={"button"} value={"Delete"} {/*onClick = {deleteGame}*/} /> : null}
+                {/*{type === "Edit" ? <input type={"button"} value={"Delete"} onClick = {deleteGame} /> : null}*/}
                 <input type={"button"} value={"Add"} onClick={submit} />
             </div>
         </form>
