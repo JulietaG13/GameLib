@@ -60,12 +60,14 @@ public class Application {
         });
     
         Spark.post("/tokenvalidation", "application/json", (req, resp) -> {
+            /*
             String token = JsonParser.parseString(req.body())
                 .getAsJsonObject()
                 .get(Token.PROPERTY_NAME)
                 .getAsString();
-            
-            if (!AccessControlService.isTokenValid(token)) {
+            */
+            String token = req.headers(Token.PROPERTY_NAME);
+            if (token == null || !AccessControlService.isTokenValid(token)) {
                 resp.status(401);
                 return "Token is invalid or has expired!";
             }
@@ -150,10 +152,16 @@ public class Application {
         });
 
         Spark.post("/newgame", "application/json", (req, resp) -> {
+            String token = req.headers(Token.PROPERTY_NAME);
+            if (token == null || !AccessControlService.isTokenValid(token)) {
+                resp.status(401);
+                return "Token is invalid or has expired!";
+            }
+            
             final Game game = Game.fromJson(req.body());
             final GameService games = new GameService(em);
 
-            MessageResponse titleResponse = Game.isTitleValid(game.getTitle());
+            MessageResponse titleResponse = Game.isTitleValid(game.getName());
             if (titleResponse.hasError()) {
                 resp.status(404);
                 return titleResponse.getMessage();
@@ -208,9 +216,13 @@ public class Application {
         });
 
         Spark.put("/editgame/:id", "application/json", (req, resp) -> {
-            //TODO(get token from header and validate it)
+            String token = req.headers(Token.PROPERTY_NAME);
+            if (token == null || !AccessControlService.isTokenValid(token)) {
+                resp.status(401);
+                return "Token is invalid or has expired!";
+            }
+            
             final GameService gameService = new GameService(em);
-
             long id;
             try {
                 id = Long.parseLong(req.params(":id"));

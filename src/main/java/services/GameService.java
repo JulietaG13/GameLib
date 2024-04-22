@@ -24,7 +24,7 @@ public class GameService {
 
     public Optional<Game> findByTitle(String title) {
         return entityManager
-                .createQuery("SELECT g FROM Game g WHERE g.title LIKE :title", Game.class)
+                .createQuery("SELECT g FROM Game g WHERE g.name LIKE :title", Game.class)
                 .setParameter("title", title).getResultList()
                 .stream()
                 .findFirst();
@@ -55,8 +55,8 @@ public class GameService {
         tx.commit();
         Game game = managedGame.get();
         
-        if (!game.getTitle().equals(gameUpdate.getTitle())) {
-            game.setTitle(gameUpdate.getTitle(), lastUpdate);
+        if (!game.getName().equals(gameUpdate.getName())) {
+            game.setTitle(gameUpdate.getName(), lastUpdate);
         }
         
         if (!game.getDescription().equals(gameUpdate.getDescription())) {

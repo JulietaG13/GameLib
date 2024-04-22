@@ -18,7 +18,7 @@ public class Game {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String title;
+    private String name;
 
     @Column(nullable = false)
     private String description;
@@ -48,7 +48,7 @@ public class Game {
     public Game() {}
 
     private Game(GameBuilder builder) {
-        this.title = builder.title;
+        this.name = builder.title;
         this.description = builder.description;
         this.releaseDate = builder.releaseDate;
         this.lastUpdate = builder.releaseDate;
@@ -98,7 +98,7 @@ public class Game {
     public String asJson() {
         JsonObject jsonObj = new JsonObject();
         jsonObj.addProperty("id", id);
-        jsonObj.addProperty("title", title);
+        jsonObj.addProperty("title", name);
         jsonObj.addProperty("description", description);
         jsonObj.addProperty("releaseDate", releaseDate.toString());
         jsonObj.addProperty("lastUpdate", lastUpdate.toString());
@@ -157,12 +157,12 @@ public class Game {
         return id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
     
     public void setTitle(String title, LocalDateTime lastUpdate) {
-        this.title = title;
+        this.name = title;
         this.lastUpdate = lastUpdate;
     }
 
