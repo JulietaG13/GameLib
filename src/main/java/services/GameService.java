@@ -22,10 +22,10 @@ public class GameService {
         return Optional.ofNullable(entityManager.find(Game.class, id));
     }
 
-    public Optional<Game> findByTitle(String title) {
+    public Optional<Game> findByName(String name) {
         return entityManager
-                .createQuery("SELECT g FROM Game g WHERE g.name LIKE :title", Game.class)
-                .setParameter("title", title).getResultList()
+                .createQuery("SELECT g FROM Game g WHERE g.name LIKE :name", Game.class)
+                .setParameter("name", name).getResultList()
                 .stream()
                 .findFirst();
     }
@@ -85,20 +85,12 @@ public class GameService {
         tx.commit();
         Game game = managedGame.get();
         
-        if (!game.getName().equals(gameUpdate.getName())) {
+        if (gameUpdate.getName() != null && !game.getName().equals(gameUpdate.getName())) {
             game.setName(gameUpdate.getName(), lastUpdate);
         }
         
-        if (!game.getDescription().equals(gameUpdate.getDescription())) {
+        if (gameUpdate.getDescription() != null && !game.getDescription().equals(gameUpdate.getDescription())) {
             game.setDescription(gameUpdate.getDescription(), lastUpdate);
-        }
-
-        if (!game.getReleaseDate().equals(gameUpdate.getReleaseDate())) {
-            game.setReleaseDate(gameUpdate.getReleaseDate(), lastUpdate);
-        }
-
-        if (!game.getLastUpdate().equals(gameUpdate.getLastUpdate())) {
-            game.setLastUpdate(gameUpdate.getLastUpdate());
         }
         //TODO(rest of the updates)
         

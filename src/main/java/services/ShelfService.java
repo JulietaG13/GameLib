@@ -68,7 +68,7 @@ public class ShelfService {
         */
 
         Shelf managedShelf = find(shelf.getName(), user);
-        Optional<Game> managedGame = new GameService(entityManager).findByTitle(game.getName());
+        Optional<Game> managedGame = new GameService(entityManager).findByName(game.getName());
         if(managedGame.isEmpty()) throw new NoSuchElementException("Game not in BD!");
 
         managedShelf.addGame(managedGame.get());
