@@ -33,9 +33,13 @@ function ManageVideogame({type}) {
         // })
 
         if (type === "Edit") {
-            await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, {
-                title: title, description: description, releaseDate: releaseDate, lastUpdate: FormatLastUpdateDate(new Date())
-            });
+            let dataToSend = {
+                title: title ? title : videogame.title,
+                description: description ? description : videogame.description,
+                releaseDate: releaseDate ? releaseDate : videogame.releaseDate,
+                lastUpdate: FormatLastUpdateDate(new Date())
+            };
+            await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, dataToSend);
         } else if (type === "Add") {
             await axios.post("http://localhost:4567/newgame", {
                 title: title, description: description, releaseDate: releaseDate, lastUpdate: FormatLastUpdateDate(new Date())
