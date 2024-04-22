@@ -173,9 +173,12 @@ public class Application {
                 resp.status(404);
                 return descriptionResponse.getMessage();
             }
-
-            //TODO(just to test for now)
-            game.setReleaseDate(LocalDateTime.now(), LocalDateTime.now());
+            
+            MessageResponse releaseDateResponse = Game.isReleaseDateValid(game.getReleaseDate());
+            if (releaseDateResponse.hasError()) {
+                resp.status(404);
+                return releaseDateResponse.getMessage();
+            }
 
             games.persist(game);
             resp.type("application/json");
