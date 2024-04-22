@@ -34,7 +34,7 @@ public class Game {
     @ManyToMany(mappedBy = "games")
     private final Set<Shelf> inShelves = new HashSet<>();
     
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany()
     @JoinTable(
         name = "games_tagged",
         joinColumns = @JoinColumn(name = "game_id"),
