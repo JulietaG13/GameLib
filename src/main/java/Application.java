@@ -174,22 +174,8 @@ public class Application {
                 return descriptionResponse.getMessage();
             }
 
-            MessageResponse releaseDateResponse = Game.isReleaseDateValid(game.getReleaseDate());
-            if (releaseDateResponse.hasError()) {
-                resp.status(404);
-                return releaseDateResponse.getMessage();
-            }
-
-            MessageResponse lastUpdateResponse = Game.isLastUpdateValid(game.getLastUpdate());
-            if (lastUpdateResponse.hasError()) {
-                resp.status(404);
-                return lastUpdateResponse.getMessage();
-            }
-
             //TODO(just to test for now)
-            //game.setReleaseDate(LocalDateTime.now());
-            //game.setLastUpdate(LocalDateTime.now());
-            //
+            game.setReleaseDate(LocalDateTime.now(), LocalDateTime.now());
 
             games.persist(game);
             resp.type("application/json");
