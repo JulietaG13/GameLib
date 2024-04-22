@@ -39,6 +39,9 @@ public class User {
   @ManyToMany(mappedBy = "dislikedBy")
   private final Set<Review> dislikedReviews = new HashSet<>();
   
+  @ManyToMany(mappedBy = "upvotes")
+  private final Set<Game> upvotedGames = new HashSet<>();
+  
   //TODO(pfp, banner)
 
     /*
@@ -159,6 +162,13 @@ public class User {
     }
   }
   
+  public void addGameUpvote(Game game) {
+    upvotedGames.add(game);
+    if (!game.getUpvotes().contains(this)) {
+      game.addUpvote(this);
+    }
+  }
+  
   // GETTERS - SETTER //
   
   public Long getId() {
@@ -215,6 +225,10 @@ public class User {
   
   public Set<Review> getDislikedReviews() {
     return dislikedReviews;
+  }
+  
+  public Set<Game> getUpvotedGames() {
+    return upvotedGames;
   }
   
   // OTHERS //

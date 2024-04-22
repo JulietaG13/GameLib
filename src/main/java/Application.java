@@ -162,7 +162,7 @@ public class Application {
             final Game game = Game.fromJson(req.body());
             final GameService games = new GameService(em);
 
-            MessageResponse titleResponse = Game.isTitleValid(game.getName());
+            MessageResponse titleResponse = Game.isNameValid(game.getName());
             if (titleResponse.hasError()) {
                 resp.status(404);
                 return titleResponse.getMessage();

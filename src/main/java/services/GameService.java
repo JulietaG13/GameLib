@@ -86,7 +86,7 @@ public class GameService {
         Game game = managedGame.get();
         
         if (!game.getName().equals(gameUpdate.getName())) {
-            game.setTitle(gameUpdate.getName(), lastUpdate);
+            game.setName(gameUpdate.getName(), lastUpdate);
         }
         
         if (!game.getDescription().equals(gameUpdate.getDescription())) {
