@@ -3,6 +3,7 @@ package model;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import entities.TagType;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -19,11 +20,20 @@ public class Tag {
   
   @ManyToMany(mappedBy = "tags")
   private final Set<Game> taggedGames = new HashSet<>();
+
+  @Column(nullable = false)
+  private TagType tagType;
   
   public Tag() {}
   
   public Tag(String name) {
     this.name = name;
+    this.tagType = TagType.OTHER;
+  }
+
+  public Tag(String name, TagType tagType) {
+    this.name = name;
+    this.tagType = tagType;
   }
   
   // JSON //
@@ -37,6 +47,7 @@ public class Tag {
     JsonObject jsonObj = new JsonObject();
     jsonObj.addProperty("id", id);
     jsonObj.addProperty("name", name);
+    jsonObj.addProperty("tag_type", tagType.name());
     jsonObj.add("tagged_games", jsonArray);
     return jsonObj;
   }

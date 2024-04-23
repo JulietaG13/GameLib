@@ -55,7 +55,7 @@ public class Application {
       
       resp.type("application/json");
       resp.status(201);
-      
+
       TagService tagService = new TagService(em);
       JsonArray jsonArray = new JsonArray();
       for (Tag tag : tagService.listAll()) {
@@ -121,29 +121,32 @@ public class Application {
       return user.asJson().toString();
     });
 
-    Spark.post("/deleteuser/:id", "application/json", (req, resp) -> {
+    Spark.post("/deleteuser/:username", "application/json", (req, resp) -> {
       String token = req.headers(Token.PROPERTY_NAME);
       if (token == null || !AccessControlService.isTokenValid(token)) {
         resp.status(401);
         return "Token is invalid or has expired!";
       }
 
+      /*
       long id;
       try {
-        id = Long.parseLong(req.params(":id"));
+        id = Long.parseLong(req.params("id"));
       } catch (NumberFormatException e) {
         resp.status(403);
         return "User ID must be a number!";
       }
+      */
+      String username = req.params("username");
 
       UserService userService = new UserService(em);
-      Optional<User> user = userService.findById(id);
+      Optional<User> user = userService.findByUsername(username);
       if (user.isEmpty()) {
         resp.status(404);
-        return "Theres no user with id " + id + "!";
+        return "Theres no user with username " + username + "!";
       }
 
-      userService.deleteUserByID(id);
+      userService.deleteUserByID(user.get().getId());
 
       resp.type("application/json");
       resp.status(200);
