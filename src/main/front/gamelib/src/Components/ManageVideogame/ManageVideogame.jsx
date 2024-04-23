@@ -5,8 +5,6 @@ import {Navigate, useParams} from "react-router-dom";
 
 function ManageVideogame({type}) {
     const videogameID = useParams();
-    // const [gameCapture, setImage] = useState(null);
-    // console.log(gameCapture);
     //TODO: Add image upload
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -83,81 +81,36 @@ function ManageVideogame({type}) {
         setNavigate(true);
     }
 
-/*
-    const deleteGame = async () => {
-        console.log(1);
-        await axios.delete(`http://localhost:4567/deletegame/${videogameID.videogameID}`)
-            .then(response => {
-                console.log(response.data);
-                console.log(videogame);
-                setVideogame({});
-                console.log(videogame);
-            })
-        console.log(videogame);
-        //setNavigate(true);
-    }
-*/
 
     if(navigate) {
         return <Navigate to={"/"}/>;
     }
 
     return (
-        <form className={"mainPopUP"} onSubmit={submit}>
-            <h1>{type} videogame</h1>
-
-            {/*}
-            <div className={"cover"}>
-                <h3>Upload cover</h3>
-                <input name={"gameCover"} type={"file"} accept={"image/*"}
-                    onChange={e => setImage(e.target.files[0])}
-                />
-            </div>
-            */}
-
-            <div className={"titleDesc"}>
-                <input type={"text"} placeholder={"Add title"} defaultValue={videogame.name}
+        <form className={"mainPopUP flex flex-col items-center"} onSubmit={submit} style={{ width: "50%", justifyContent: 'center' }}>
+            <h1 className={'font-bold text-[30px] mb-2 text-center'}>{type} Videogame</h1>
+            <div className={"titleDesc flex justify-center items-center"}>
+                <input className={'p-1 rounded mb-2'} type={"text"} placeholder={"Add title"} defaultValue={videogame.name}
                        onChange={e => setName(e.target.value)}
                 />
-                <input id={"desc"} type={"text"} placeholder={"Add description"} defaultValue={videogame.description}
+                <input id={"desc"} type={"text"} className={'p-1 rounded mb-2'} placeholder={"Add description"} defaultValue={videogame.description}
                        onChange={e => setDescription(e.target.value)}
                 />
             </div>
 
-            <div className={"releaseDate"}>
-                <h3>Release date</h3>
-                <input type={"datetime-local"} name={"releaseDate"} defaultValue={videogame.releaseDate}
-                       onChange={e => setReleaseDate(e.target.value)}
-                />
+            <div className={"releaseDate font-bold flex justify-start items-center mb-2"}>
+                <div className={'flex justify-center'}>
+                    <input type={"datetime-local"} className={'rounded-b'} name={"releaseDate"} defaultValue={videogame.releaseDate}
+                           onChange={e => setReleaseDate(e.target.value)}
+                    />
+                </div>
             </div>
-
-{/*
-            <div className={"platforms"}>
-                <h3>Platforms</h3>
-                <select name={"Platforms"} multiple>
-                    <option value={"steam"}>Steam</option>
-                    <option value={"xboxSeriesS/X"}>Xbox Series S/X</option>
-                    <option value={"playstation5"}>Playstation 5</option>
-                    <option value={"nintendoSwitch"}>Nintendo Switch</option>
-                </select>
-            </div>
-
-            <div className={"tags"}>
-                <h3>Tags</h3>
-                <select name={"tags"} multiple>
-                    <option value={"shooter"}>Shooter</option>
-                    <option value={"firstPerson"}>First Person</option>
-                    <option value={"survivalHorror"}>Survival Horror</option>
-                    <option value={"rogueLike"}>Rogue-Like</option>
-                </select>
-            </div>
-*/}
-            <div className={"buttons"}>
-                <input type={"button"} value={"Cancel"} onClick={cancel} />
-                {/*{type === "Edit" ? <input type={"button"} value={"Delete"} onClick = {deleteGame} /> : null}*/}
-                <input type={"button"} value={"Add"} onClick={submit} />
+            <div className={"font-bold flex justify-center"}>
+                <input type={"button"} className={'submit cursor-pointer mr-2'} value={"Cancel"} onClick={cancel} />
+                <input type={"button"} value={"Add"} className={'submit cursor-pointer'} onClick={submit} />
             </div>
         </form>
+
     );
 }
 
