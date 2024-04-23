@@ -1,6 +1,7 @@
 package services;
 
 
+import entities.responses.UserResponse;
 import model.User;
 
 import javax.persistence.EntityManager;
@@ -43,6 +44,16 @@ public class UserService {
     public void deleteAll() {
         new ShelfService(entityManager).deleteAll(); // delete child
         entityManager.createQuery("DELETE FROM User").executeUpdate();
+    }
+
+    public void deleteUserByID(Long id) {
+        Optional<User> user = findById(id);
+        EntityTransaction tx = entityManager.getTransaction();
+        tx.begin();
+        entityManager.createQuery("DELETE FROM User U WHERE U.id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
+        tx.commit();
     }
 
     public User persist(User user) {

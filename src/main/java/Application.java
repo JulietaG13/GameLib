@@ -115,6 +115,36 @@ public class Application {
       
       return user.asJson();
     });
+
+    Spark.post("/deleteuser/:id", "application/json", (req, resp) -> {
+      String token = req.headers(Token.PROPERTY_NAME);
+      if (token == null || !AccessControlService.isTokenValid(token)) {
+        resp.status(401);
+        return "Token is invalid or has expired!";
+      }
+
+      long id;
+      try {
+        id = Long.parseLong(req.params(":id"));
+      } catch (NumberFormatException e) {
+        resp.status(403);
+        return "User ID must be a number!";
+      }
+
+      UserService userService = new UserService(em);
+      Optional<User> user = userService.findById(id);
+      if (user.isEmpty()) {
+        resp.status(404);
+        return "Theres no user with id " + id + "!";
+      }
+
+      userService.deleteUserByID(id);
+
+      resp.type("application/json");
+      resp.status(200);
+
+      return user.get().asJson();
+    });
     
     Spark.post("/login", "application/json", (req, resp) -> {
       final User user = User.fromJson(req.body());
