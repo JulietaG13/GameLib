@@ -69,7 +69,7 @@ function HeaderV2() {
             {isLoggedIn ? (
                 <div className="user" onClick={toggleDropdown} ref={dropdownRef}>
                     <h2>{localStorage.getItem('username') || 'Name'}</h2>
-                    <img src={user_icon} width={60} height={60} alt={"user icon"} className={'cursor-pointer'}/>
+                    <img src={user_icon} alt={"user icon"} className={'cursor-pointer'}/>
                     {showDropdown && (
                         <div className="dropdown-content">
                             <a href="#">Profile</a>
