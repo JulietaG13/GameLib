@@ -5,8 +5,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import entities.responses.MessageResponse;
-
 import javax.persistence.*;
+//import java.sql.Blob;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -16,6 +16,9 @@ public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
+//    @Column
+//    private Byte[] gamePicture;
 
     @Column(nullable = false, unique = true)
     private String name;
@@ -48,6 +51,7 @@ public class Game {
     public Game() {}
 
     private Game(GameBuilder builder) {
+//        this.gamePicture = builder.gamePicture;
         this.name = builder.title;
         this.description = builder.description;
         this.releaseDate = builder.releaseDate;
@@ -59,6 +63,7 @@ public class Game {
     }
 
     public static class GameBuilder {
+//        private Byte[] gamePicture;
         private final String title;
         private String description;
         private LocalDateTime releaseDate;
@@ -67,6 +72,11 @@ public class Game {
         public GameBuilder(String title) {
             this.title = title;
         }
+
+//        public GameBuilder gamePicture(Byte[] gamePicture) {
+//            this.gamePicture = gamePicture;
+//            return this;
+//        }
 
         public GameBuilder description(String description) {
             this.description = description;
@@ -107,6 +117,7 @@ public class Game {
     public String asJson() {
         JsonObject jsonObj = new JsonObject();
         jsonObj.addProperty("id", id);
+//        jsonObj.addProperty("gamePicture", Arrays.toString(gamePicture));
         jsonObj.addProperty("title", name);
         jsonObj.addProperty("description", description);
         jsonObj.addProperty("releaseDate", releaseDate.toString());
@@ -172,6 +183,14 @@ public class Game {
     public Long getId() {
         return id;
     }
+
+//    public void setGamePicture(Byte[] gamePicture) {
+//        this.gamePicture = gamePicture;
+//    }
+//
+//    public Byte[] getGamePicture() {
+//        return gamePicture;
+//    }
 
     public String getName() {
         return name;

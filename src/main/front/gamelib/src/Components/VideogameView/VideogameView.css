@@ -1,0 +1,41 @@
+.gameView {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: #4F2E8C;
+    padding: 3%;
+    margin: 10%;
+    border-radius: 25px;
+}
+
+.gameData {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
+.gameData div {
+    padding: 3%
+}
+
+.gamePicture {
+    width: 30%;
+    height: 45%;
+}
+
+.gameAttributes h1 {
+    font-size: 3em;
+}
+.gameAttributes p {
+    font-size: 1.2em;
+}
+
+.reviews {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+.reviews input {
+    width: 100%;
+}

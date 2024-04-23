@@ -5,6 +5,9 @@ import {Navigate, useParams} from "react-router-dom";
 
 function ManageVideogame({type}) {
     const videogameID = useParams();
+    // const [gameCapture, setImage] = useState(null);
+    // console.log(gameCapture);
+    //TODO: Add image upload
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [releaseDate, setReleaseDate] = useState('');
@@ -91,10 +94,12 @@ function ManageVideogame({type}) {
         <form className={"mainPopUP"} onSubmit={submit}>
             <h1>{type} videogame</h1>
 
-            {/*
+            {/*}
             <div className={"cover"}>
                 <h3>Upload cover</h3>
-                <input name={"gameCover"} type={"file"} accept={"image/*"}/>
+                <input name={"gameCover"} type={"file"} accept={"image/*"}
+                    onChange={e => setImage(e.target.files[0])}
+                />
             </div>
             */}
 
