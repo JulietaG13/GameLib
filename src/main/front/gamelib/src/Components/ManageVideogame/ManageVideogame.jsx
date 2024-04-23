@@ -16,21 +16,33 @@ function ManageVideogame({type}) {
     let item = localStorage.getItem('token');
     console.log('token: ' + item);
 
-    useEffect(() => {
+
+     useEffect(() => {
         axios.post('http://localhost:4567/tokenvalidation', {}, {
             headers: {
                 'Content-Type': 'application/json',
                 'token': item
             }
         })
-        if(type === "Edit") {
-            axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
-                .then(response => {
-                    setVideogame(response.data);
-                    console.log(response.data);
-                })
-        }
-    }, [])
+            .then(response => {
+                if (type === "Edit") {
+                    axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
+                        .then(response => {
+                            setVideogame(response.data);
+                            console.log(response.data);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            //setNavigate(true);
+                        });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                setNavigate(true);
+            });
+    }, []);
+
 
     //Sends data to backend
     const submit = async e => {
