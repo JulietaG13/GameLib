@@ -3,6 +3,7 @@ import gamelibLogo from '../Assets/gamelib-logo.jpg';
 import {HiOutlineMagnifyingGlass} from "react-icons/hi2";
 import user_icon from "../Assets/user-icon.png";
 import './Header.css';
+import axios from "axios";
 
 function HeaderV2() {
     const [showDropdown, setShowDropdown] = useState(false);
@@ -17,6 +18,20 @@ function HeaderV2() {
         window.location.href = '/';
     }
 
+    function handleDeleteUser() {
+        axios.post(`http://localhost:4567/deleteuser/${localStorage.getItem('username')}` , {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+                }
+            })
+        .then(response => {
+            console.log(response);
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+        }) .catch (error =>  {
+            console.error('Error:', error);
+    })}
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
     };
@@ -72,6 +87,7 @@ function HeaderV2() {
                         <div className="dropdown-content">
                             <a href="#">Profile</a>
                             <a href="#" onClick={handleLogout}>Logout</a>
+                            <a onClick={handleDeleteUser}>Delete account</a>
                         </div>
                     )}
 
