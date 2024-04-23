@@ -28,21 +28,21 @@ public class Application {
         new Database().startDBServer();
         final EntityManagerFactory factory = Persistence.createEntityManagerFactory("gamelib");
         final EntityManager em = factory.createEntityManager(); // one for all
-
+    
         Spark.port(4567);
-
+    
         storeUsers1(em);
         storeGames1(em);
         storeTags1(em);
         storeReviews1(em);
-
+    
         Spark.get("/users", "application/json", (req, resp) -> {
-
+        
             resp.type("application/json");
             resp.status(201);
-
+        
             UserService userService = new UserService(em);
-
+        
             return gson.toJson(userService.listAll());
         });
     
@@ -79,117 +79,117 @@ public class Application {
             UserService userService = new UserService(em);
             String username = AccessControlService.getUsernameFromToken(token);
             Optional<User> user = userService.findByUsername(username);
-            
+    
             if (user.isEmpty()) {
                 resp.status(404);
                 return "User not found!";
             }
-            
+    
             return user.get().asJson();
         });
-
+    
         Spark.post("/newuser", "application/json", (req, resp) -> {
             final User user = User.fromJson(req.body());
-
+        
             StatusResponse response = AccessControlService.isFormatValid(user);
-            if(response.hasError()) {
+            if (response.hasError()) {
                 resp.status(response.statusCode);
                 return response.getMessage();
             }
-
+        
             if (user.getRol() == null) {    // default
                 user.setRol(Rol.USER);
             }
-
+        
             response = AccessControlService.isUserAvailable(user, em);
-            if(response.hasError()) {
+            if (response.hasError()) {
                 resp.status(response.statusCode);
                 return response.getMessage();
             }
-
+        
             final UserService userService = new UserService(em);
             userService.persist(user);
-
+        
             resp.type("application/json");
             resp.status(201);
-
+        
             return user.asJson();
         });
-
+    
         Spark.post("/login", "application/json", (req, resp) -> {
             final User user = User.fromJson(req.body());
             final String username = user.getUsername();
             final String password = user.getPassword();
-
+        
             StatusResponse usernameResponse = AccessControlService.isUsernameValid(username);
-            if(usernameResponse.hasError()) {
+            if (usernameResponse.hasError()) {
                 resp.status(usernameResponse.statusCode);
                 return usernameResponse.getMessage();
             }
-
+        
             StatusResponse passwordResponse = AccessControlService.isPasswordValid(password);
-            if(passwordResponse.hasError()) {
+            if (passwordResponse.hasError()) {
                 resp.status(passwordResponse.statusCode);
                 return passwordResponse.getMessage();
             }
-
+        
             UserResponse authResponse = AccessControlService.authenticateUser(username, password, em);
-            if(authResponse.hasError()) {
+            if (authResponse.hasError()) {
                 resp.status(authResponse.statusCode);
                 return authResponse.getMessage();
             }
             resp.status(200);
-
+        
             Token token = AccessControlService.generateToken(username);
-
+        
             JsonObject json = JsonParser
                 .parseString(authResponse.getUser().asJson())
                 .getAsJsonObject();
-
+        
             json.addProperty(Token.PROPERTY_NAME, token.getToken());
-
+        
             resp.type("application/json");
             return json;
         });
-
+    
         Spark.post("/newgame", "application/json", (req, resp) -> {
             String token = req.headers(Token.PROPERTY_NAME);
             if (token == null || !AccessControlService.isTokenValid(token)) {
                 resp.status(401);
                 return "Token is invalid or has expired!";
             }
-            
+        
             final Game game = Game.fromJson(req.body());
             final GameService games = new GameService(em);
-
+        
             MessageResponse titleResponse = Game.isNameValid(game.getName());
             if (titleResponse.hasError()) {
                 resp.status(404);
                 return titleResponse.getMessage();
             }
-
+        
             MessageResponse descriptionResponse = Game.isDescriptionValid(game.getDescription());
             if (descriptionResponse.hasError()) {
                 resp.status(404);
                 return descriptionResponse.getMessage();
             }
-            
+        
             MessageResponse releaseDateResponse = Game.isReleaseDateValid(game.getReleaseDate());
             if (releaseDateResponse.hasError()) {
                 resp.status(404);
                 return releaseDateResponse.getMessage();
             }
-
+        
             games.persist(game);
             resp.type("application/json");
             resp.status(201);
-
+        
             return game.asJson();
         });
-
+    
         Spark.get("/getgame/:id", "application/json", (req, resp) -> {
             final GameService gameService = new GameService(em);
-
+        
             long id;
             try {
                 id = Long.parseLong(req.params(":id"));
@@ -197,27 +197,27 @@ public class Application {
                 resp.status(403);
                 return "Game ID must be a number!";
             }
-
+        
             Optional<Game> game = gameService.findById(id);
-
+        
             if (game.isEmpty()) {
                 resp.status(404);
                 return "There's no game with id " + req.params(":id") + "!";
             }
-
+        
             resp.type("application/json");
             resp.status(201);
-
+        
             return game.get().asJson();
         });
-
+    
         Spark.put("/editgame/:id", "application/json", (req, resp) -> {
             String token = req.headers(Token.PROPERTY_NAME);
             if (token == null || !AccessControlService.isTokenValid(token)) {
                 resp.status(401);
                 return "Token is invalid or has expired!";
             }
-            
+        
             final GameService gameService = new GameService(em);
             long id;
             try {
@@ -226,27 +226,27 @@ public class Application {
                 resp.status(403);
                 return "Game ID must be a number!";
             }
-
+        
             Optional<Game> gameToEdit = gameService.findById(id);
-
+        
             if (gameToEdit.isEmpty()) {
                 resp.status(404);
                 return "There's no game with id " + req.params(":id") + "!";
             }
-
+        
             Game gameUpdate = Game.fromJson(req.body());
             //LocalDateTime lastUpdate = LocalDateTime.now();
             LocalDateTime lastUpdate = gameUpdate.getLastUpdate(); //TODO(have front send LocalDateTime)
-
+        
             GameResponse gameResponse = gameService.update(id, gameUpdate, lastUpdate);
             if (gameResponse.hasError()) {
                 resp.status(404);
                 return gameResponse.getMessage();
             }
-
+        
             resp.type("application/json");
             resp.status(201);
-
+        
             return gameResponse.getGame().asJson();
         });
 
@@ -311,6 +311,43 @@ public class Application {
 
             return jsonObj.toString();
         });
+        
+        Spark.post("/newreview/:game_id", "application/json", ((req, resp) -> {
+            String token = req.headers(Token.PROPERTY_NAME);
+            if (token == null || !AccessControlService.isTokenValid(token)) {
+                resp.status(401);
+                return "Token is invalid or has expired!";
+            }
+            
+            Long gameId = Long.parseLong(req.params("game_id"));
+            
+            UserService userService = new UserService(em);
+            GameService gameService = new GameService(em);
+            String username = AccessControlService.getUsernameFromToken(token);
+            Optional<User> user = userService.findByUsername(username);
+            Optional<Game> game = gameService.findById(gameId);
+            
+            if (user.isEmpty()) {   // should not happen but who knows
+                resp.status(404);
+                return "User with username " + username + " does not exist!";
+            }
+    
+            if (game.isEmpty()) {   // should not happen but who knows
+                resp.status(404);
+                return "There is no game with id " + gameId + "!";
+            }
+            
+            ReviewService reviewService = new ReviewService(em);
+            Review review = Review.fromJson(req.body());
+            review.setAuthor(user.get());
+            review.setGame(game.get());
+            
+            reviewService.persist(review);
+            
+            resp.type("application/json");
+            resp.status(201);
+            return review.asJson();
+        }));
 
         Spark.options("/*", (req, res) -> {
             String accessControlRequestHeaders = req.headers("Access-Control-Request-Headers");
