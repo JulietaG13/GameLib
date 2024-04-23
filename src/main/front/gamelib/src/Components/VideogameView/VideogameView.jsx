@@ -58,7 +58,6 @@ function VideogameView() {
                 </div>
 
                 <div className={'gameAttributes'}>
-                    {token !== null ? <input type={"button"} value={"Edit game"} onClick={edit}/> : null}
                     <h1>{videogame.name}</h1>
                     <p>{videogame.description}</p>
                     <p>Date of release: {formatDate(videogame.releaseDate)}</p>
@@ -86,3 +85,5 @@ function formatDate(date) {
 }
 
 export default VideogameView;
+
+// {token !== null ? <input type={"button"} value={"Edit game"} onClick={edit}/> : null}
