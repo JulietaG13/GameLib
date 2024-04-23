@@ -440,7 +440,7 @@ public class Application {
       resp.type("application/json");
       resp.status(201);
     
-      return jsonObj.toString();
+      return jsonArray.toString();
     });
     
     Spark.options("/*", (req, res) -> {

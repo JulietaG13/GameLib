@@ -8,6 +8,8 @@ import Home from "./Components/Home/Home";
 import Library from "./Components/TheLibrary/Library";
 import HeaderV2 from "./Components/Header/HeaderV2";
 
+import ReviewComp from "./Components/ReviewComp/ReviewComp";
+
 function App() {
     return <BrowserRouter>
         <div className={'min-h-[100vh]'}>
@@ -20,6 +22,7 @@ function App() {
                 <Route path="/addVideogame" element={<ABM type={"Add"}/>}/>
                 <Route path="/editVideogame/:videogameID" element={<ABM type={"Edit"}/>}/>
                 <Route path="/videogame/:videogameID" element={<VideogameView/>}/>
+                {/*<Route path="/reviewsOf/:videogameID" element={<ReviewComp/>}/>*/}
             </Routes>
         </div>
     </BrowserRouter>
