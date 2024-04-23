@@ -1,7 +1,9 @@
 import React from "react"
 import '../LoginSignup/LoginSignup.css'
 import {Link} from "react-router-dom";
-import HeaderV2 from "../Header/HeaderV2";
+
+
+
 //Home component
 const Home = () => {
     return(

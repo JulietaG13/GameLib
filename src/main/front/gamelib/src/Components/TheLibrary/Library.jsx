@@ -4,7 +4,8 @@ import GlobalApiForTesting from './GlobalApiForTesting'
 import Banner from './Banner'
 import TrendingGames from './TrendingGames'
 import GamesByGenresId from './GamesByGenresId'
-import Header from '../Header/Header'
+
+
 //first tailwind attempt
 function Library() {
     const [allGamesList, setAllGamesList] = useState([]);

@@ -1,4 +1,4 @@
-import react, {useEffect} from 'react';
+import {useEffect} from 'react';
 
 function GamesByGenresId({gameList}) {
     useEffect(() => {

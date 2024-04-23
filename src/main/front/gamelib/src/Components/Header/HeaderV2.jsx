@@ -2,10 +2,9 @@ import React, {useEffect, useRef, useState} from "react";
 import gamelibLogo from '../Assets/gamelib-logo.jpg';
 import {HiOutlineMagnifyingGlass} from "react-icons/hi2";
 import user_icon from "../Assets/user-icon.png";
+import './Header.css';
 
 function HeaderV2() {
-
-
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -52,7 +51,7 @@ function HeaderV2() {
 
 
     return (
-        <div className={'flex items-center mt-1 bg-gray-200 '}>
+        <div className={'flex items-center mt-1 bg-gray-200'}>
             <a href={'http://localhost:3000/'}>
                 <img src={gamelibLogo} width={60} height={60} className={'ml-3'}/>
             </a>
@@ -70,8 +69,8 @@ function HeaderV2() {
             {isLoggedIn ? (
                 <div className="user" onClick={toggleDropdown} ref={dropdownRef}>
                     <h2>{localStorage.getItem('username') || 'Name'}</h2>
-                    <img src={user_icon} alt={"user icon"}/>
-                    {showDropdown  && (
+                    <img src={user_icon} width={60} height={60} alt={"user icon"} className={'cursor-pointer'}/>
+                    {showDropdown && (
                         <div className="dropdown-content">
                             <a href="#">Profile</a>
                             <a href="#" onClick={handleLogout}>Logout</a>

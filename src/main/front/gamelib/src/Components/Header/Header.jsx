@@ -1,5 +1,3 @@
-// noinspection JSValidateTypes
-
 import React, {useEffect, useRef, useState} from "react";
 import './Header.css';
 
