@@ -348,6 +348,54 @@ public class Application {
       resp.status(201);
       return review.asJson();
     }));
+  
+    Spark.get("/getreviews/:game_id/:max", "application/json", (req, resp) -> {
+  
+      long gameId;
+      try {
+        gameId = Integer.parseInt(req.params("game_id"));
+      } catch (NumberFormatException e) {
+        resp.status(403);
+        return "game_id must be a number!";
+      }
+      
+      int max;
+      try {
+        max = Integer.parseInt(req.params("max"));
+      } catch (NumberFormatException e) {
+        resp.status(403);
+        return "Max number of reviews must be a number!";
+      }
+  
+      ReviewService reviewService = new ReviewService(em);
+      GameService gameService = new GameService(em);
+      Optional<Game> game = gameService.findById(gameId);
+  
+      if (game.isEmpty()) {
+        resp.status(404);
+        return "There is no game with id " + gameId + "!";
+      }
+      
+      List<Review> reviews = reviewService.listByGame(game.get());
+      
+      JsonObject jsonObj = new JsonObject();
+      jsonObj.addProperty("actual", reviews.size());
+    
+      JsonArray jsonArray = new JsonArray();
+      for(Review review : reviews) {
+        JsonObject jsonGame = JsonParser
+            .parseString(review.asJson())
+            .getAsJsonObject();
+        jsonArray.add(jsonGame);
+      }
+    
+      jsonObj.add("reviews", jsonArray);
+      
+      resp.type("application/json");
+      resp.status(201);
+    
+      return jsonObj.toString();
+    });
     
     Spark.options("/*", (req, res) -> {
       String accessControlRequestHeaders = req.headers("Access-Control-Request-Headers");
