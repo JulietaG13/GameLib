@@ -12,32 +12,31 @@ function ManageVideogame({type}) {
     const [navigate, setNavigate] = useState(false);
     const [videogame, setVideogame] = useState({});
     let item = localStorage.getItem('token');
-    console.log('token: ' + item);
 
 
-     useEffect(() => {
+    useEffect(() => {
         axios.post('http://localhost:4567/tokenvalidation', {}, {
             headers: {
                 'Content-Type': 'application/json',
                 'token': item
             }
         })
-            .then(response => {
-                if (type === "Edit") {
-                    axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
-                        .then(response => {
-                            setVideogame(response.data);
-                            console.log(response.data);
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            //setNavigate(true);
-                        });
-                }
-            })
             .catch(error => {
                 console.error('Error:', error);
                 setNavigate(true);
+            })
+            .then(response => {
+                if (type === "Edit") {
+                    axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
+                        .catch(error => {
+                            console.error('Error:', error);
+                            setNavigate(true);
+                        })
+                        .then(response => {
+                            setVideogame(response.data);
+                            //console.log(response.data);
+                        });
+                }
             });
     }, []);
 
@@ -59,7 +58,7 @@ function ManageVideogame({type}) {
                         'Content-Type': 'application/json',
                         'token': item
                 }
-            });
+            }).then(r => setVideogame({}));
         } else if (type === "Add") {
             let dataToSend = {
                 name: name,
@@ -72,7 +71,7 @@ function ManageVideogame({type}) {
                     'Content-Type': 'application/json',
                     'token': item
                 }
-            });
+            }).then(r => setVideogame({}));
         }
         setNavigate(true);
     }
@@ -81,6 +80,32 @@ function ManageVideogame({type}) {
         setNavigate(true);
     }
 
+    const deleteGame = async () => {
+        //console.log(1);
+        await axios.delete(`http://localhost:4567/deletegame/${videogameID.videogameID}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': item
+            }
+        })
+            .then(response => {
+                // console.log("delete response: ");
+                // console.log(response.data)
+                console.log("prev del game: ");
+                console.log(videogame);
+                setVideogame({});
+                console.log("post del game:");
+                console.log(videogame);
+            })
+        console.log("one more time: ");
+        console.log(videogame);
+        setNavigate(true);
+    }
+
+    useEffect(() => {
+        console.log("videogame has been updated: ");
+        console.log(videogame);
+    }, [videogame]);
 
     if(navigate) {
         return <Navigate to={"/"}/>;
@@ -107,6 +132,7 @@ function ManageVideogame({type}) {
             </div>
             <div className={"font-bold flex justify-center"}>
                 <input type={"button"} className={'submit cursor-pointer mr-2'} value={"Cancel"} onClick={cancel} />
+                {type === "Edit" ? <input type={"button"} value={"Delete"} onClick = {deleteGame} /> : null}
                 <input type={"button"} value={"Add"} className={'submit cursor-pointer'} onClick={submit} />
             </div>
         </form>

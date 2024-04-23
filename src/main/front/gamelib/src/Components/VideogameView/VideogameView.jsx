@@ -17,6 +17,10 @@ function VideogameView() {
                 setVideogame(response.data);
                 console.log(response.data);
             })
+            .catch(error => {
+                console.error('Error:', error);
+                setNavigate(true);
+            });
     }, []);
 
     const publishReview = () => {

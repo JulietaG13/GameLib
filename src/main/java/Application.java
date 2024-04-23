@@ -221,7 +221,7 @@ public class Application {
     });
     
     Spark.get("/getgame/:id", "application/json", (req, resp) -> {
-      final GameService gameService = new GameService(em);
+      final GameService gameService = new GameService(factory.createEntityManager());
       
       long id;
       try {
@@ -251,7 +251,7 @@ public class Application {
         return "Token is invalid or has expired!";
       }
       
-      final GameService gameService = new GameService(em);
+      final GameService gameService = new GameService(factory.createEntityManager());
       long id;
       try {
         id = Long.parseLong(req.params(":id"));
@@ -285,9 +285,15 @@ public class Application {
     
     Spark.delete("/deletegame/:id", "application/json", (req, res) -> {
       //TODO(get token from header and validate it)
+      String token = req.headers(Token.PROPERTY_NAME);
+      if (token == null || !AccessControlService.isTokenValid(token)) {
+        res.status(401);
+        return "Token is invalid or has expired!";
+      }
+
       System.out.println(2);
       //System.out.println("Esta línea es absolutamente necesaria para que la eliminacion funcione correctamente");
-      final GameService gameService = new GameService(em);
+      final GameService gameService = new GameService(factory.createEntityManager());
       
       System.out.println(3);
       
@@ -300,18 +306,22 @@ public class Application {
       }
       
       Optional<Game> game = gameService.findById(id);
-      
+
       if (game.isEmpty()) {
         res.status(404);
         return "There's no game with id " + req.params(":id") + "!";
       }
-      
+
+      System.out.println("sape");
+      System.out.println(game.get());
+
       System.out.println(4);
       
       gameService.delete(id);
-      
+
+      res.type("application/json");
       res.status(200);
-      return "Game with id " + req.params(":id") + " has been deleted!";
+      return game.get().asJson();
     });
     
     Spark.get("/latestupdated/:max", "application/json", (req, resp) -> {
@@ -386,7 +396,7 @@ public class Application {
   
       long gameId;
       try {
-        gameId = Integer.parseInt(req.params("game_id"));
+        gameId = Integer.parseInt(req.params(":game_id"));
       } catch (NumberFormatException e) {
         resp.status(403);
         return "game_id must be a number!";
@@ -394,7 +404,7 @@ public class Application {
       
       int max;
       try {
-        max = Integer.parseInt(req.params("max"));
+        max = Integer.parseInt(req.params(":max"));
       } catch (NumberFormatException e) {
         resp.status(403);
         return "Max number of reviews must be a number!";
