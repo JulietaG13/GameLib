@@ -122,7 +122,7 @@ public class Game {
         return gson.fromJson(json, Game.class);
     }
     
-    public String asJson() {
+    public JsonObject asJson() {
         JsonObject jsonObj = new JsonObject();
         jsonObj.addProperty("id", id);
 //        jsonObj.addProperty("gamePicture", Arrays.toString(gamePicture));
@@ -130,7 +130,7 @@ public class Game {
         jsonObj.addProperty("description", description);
         jsonObj.addProperty("releaseDate", releaseDate.toString());
         jsonObj.addProperty("lastUpdate", lastUpdate.toString());
-        return jsonObj.toString();
+        return jsonObj;
     }
     
     // RESTRICTIONS //

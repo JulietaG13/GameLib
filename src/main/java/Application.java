@@ -362,9 +362,7 @@ public class Application {
       
       JsonArray jsonArray = new JsonArray(latestUpdated.size());
       for(Game game : latestUpdated) {
-        JsonObject jsonGame = JsonParser
-            .parseString(game.asJson())
-            .getAsJsonObject();
+        JsonObject jsonGame = game.asJson();
         jsonArray.add(jsonGame);
       }
       
