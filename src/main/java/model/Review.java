@@ -1,6 +1,14 @@
 package model;
 
+import adapters.GsonAdapter;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import services.UserService;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -40,6 +48,37 @@ public class Review {
   
   public Review(String text) {
     this.text = text;
+  }
+  
+  // JSON //
+  
+  public static Review fromJson(String json) {
+    JsonObject jsonObj = JsonParser
+        .parseString(json)
+        .getAsJsonObject();
+    
+    String _text = jsonObj.get("text").getAsString();
+    Review review = new Review(_text);
+    
+    try {
+      Long _id = jsonObj.get("id").getAsLong(); // optional
+      review.setId(_id);
+    } catch (Exception e) {
+      // do nothing
+    }
+    
+    return review;
+  }
+  
+  public String asJson() {
+    JsonObject jsonObj = new JsonObject();
+    jsonObj.addProperty("id", id);
+    jsonObj.addProperty("text", text);
+    jsonObj.addProperty("author_id", author.getId());
+    jsonObj.addProperty("game_id", game.getId());
+    jsonObj.addProperty("likes", likedBy.size());
+    jsonObj.addProperty("dislikes", dislikedBy.size());
+    return jsonObj.toString();
   }
   
   // ADDS? //
