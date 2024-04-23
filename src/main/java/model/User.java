@@ -1,6 +1,7 @@
 package model;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import entities.responses.MessageResponse;
 
 import javax.persistence.*;
@@ -105,8 +106,15 @@ public class User {
   }
   
   public String asJson() {
-    Gson gson = new Gson();
-    return gson.toJson(this);
+    JsonObject jsonObj = new JsonObject();
+    jsonObj.addProperty("id", id);
+    jsonObj.addProperty("username", username);
+    jsonObj.addProperty("email", email);
+    jsonObj.addProperty("password", password);
+    jsonObj.addProperty("biography", biography);
+    jsonObj.addProperty("rol", rol.name());
+
+    return jsonObj.toString();
   }
   
   // RESTRICTIONS //
