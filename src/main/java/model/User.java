@@ -105,7 +105,7 @@ public class User {
     return gson.fromJson(json, User.class);
   }
   
-  public String asJson() {
+  public JsonObject asJson() {
     JsonObject jsonObj = new JsonObject();
     jsonObj.addProperty("id", id);
     jsonObj.addProperty("username", username);
@@ -114,7 +114,7 @@ public class User {
     jsonObj.addProperty("biography", biography);
     jsonObj.addProperty("rol", rol.name());
 
-    return jsonObj.toString();
+    return jsonObj;
   }
   
   // RESTRICTIONS //
