@@ -133,8 +133,8 @@ function ManageVideogame({type}) {
             </div>
             <div className={"font-bold flex justify-center"}>
                 <input type={"button"} className={'submit cursor-pointer mr-2'} value={"Cancel"} onClick={cancel} />
-                {type === "Edit" ? <input type={"button"} value={"Delete"} onClick = {deleteGame} /> : null}
-                <input type={"button"} value={"Add"} className={'submit cursor-pointer'} onClick={submit} />
+                {type === "Edit" ? <input type={"button"} className={'submit cursor-pointer mr-2'} value={"Delete"} onClick = {deleteGame} /> : null}
+                <input type={"button"} value={type} className={'submit cursor-pointer'} onClick={submit} />
             </div>
         </form>
 
