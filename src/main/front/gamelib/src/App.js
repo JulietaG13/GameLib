@@ -1,16 +1,17 @@
 import './App.css';
-import {BrowserRouter, Routes, Route, Outlet, useParams} from "react-router-dom"
+import {BrowserRouter, Routes, Route} from "react-router-dom"
 import Login from "./Components/LoginSignup/Login";
 import {Register} from "./Components/LoginSignup/register";
 import ABM from "./Components/ManageVideogame/ManageVideogame";
 import VideogameView from "./Components/VideogameView/VideogameView";
 import Home from "./Components/Home/Home";
-import Header from "./Components/Header/Header";
 import Library from "./Components/TheLibrary/Library";
+import HeaderV2 from "./Components/Header/HeaderV2";
 
 function App() {
     return <BrowserRouter>
         <div className={'min-h-[100vh]'}>
+            <HeaderV2/>
             <Routes>
                 <Route path="/library" element={<Library/>}/>
                 <Route path="/" element={<Home/>}/>

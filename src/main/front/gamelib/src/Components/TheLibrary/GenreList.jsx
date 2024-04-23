@@ -32,14 +32,14 @@ function GenreList({genreId}) {
  }
 */
     return(
-        <div>
-            <h2 className='text-[30px] font-bold text-white'>Genres</h2>
+        <div className={'pr-40'}>
+            <h2 className='text-[30px] font-bold text-black'>Genres</h2>
             {genreList.map((genre, index) => (
                 <div
                     // Set the active index and genre id when a genre is clicked
                     onClick={()=> {setActivateIndex(index); genreId(genre.id)}}
-                    className={`text-white flex gap-2 items-center mb-2 cursor-pointer hover:bg-gray-800 p-2 ' +
-                    'rounded-lg group' ${activeIndex===index?"bg-gray-950":null}`}>
+                    className={`text-black flex gap-2 items-center mb-2 cursor-pointer hover:bg-gray-800 hover:text-white hover:rounded-xl p-2 ' +
+                    'rounded-lg group' ${activeIndex===index?"bg-gray-950 rounded-xl":null}`} >
                     <img src={genre.image_background}
                         className={`w-[40px] h-[40px]
                         object-cover rounded-lg group-hover:scale-105 transition-all

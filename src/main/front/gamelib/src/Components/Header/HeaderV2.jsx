@@ -1,12 +1,10 @@
 import React, {useEffect, useRef, useState} from "react";
+import gamelibLogo from '../Assets/gamelib-logo.jpg';
+import {HiOutlineMagnifyingGlass} from "react-icons/hi2";
+import user_icon from "../Assets/user-icon.png";
 import './Header.css';
 
-import gamelibLogo from '../Assets/gamelib-logo.jpg';
-import user_icon from '../Assets/user-icon.png';
-import {Link} from "react-router-dom";
-
-//Header component
-function Header() {
+function HeaderV2() {
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -53,31 +51,32 @@ function Header() {
 
 
     return (
-        <div className="viewsContainer">
-            <div className="logo">
-                <img src={gamelibLogo} alt={"GameLib logo"}/>
-                <h2><Link to="/" className={"link"}> GameLib </Link></h2>
+        <div className={'flex items-center mt-1 bg-gray-200'}>
+            <a href={'http://localhost:3000/'}>
+                <img src={gamelibLogo} width={60} height={60} className={'ml-3'}/>
+            </a>
+            <div className={'flex bg-slate-300 p-2 w-full items-center ml-10 mr-20 rounded-full'}>
+                <HiOutlineMagnifyingGlass/>
+                <input type={'text'} placeholder={'Search Games'} className={'bg-transparent outline-none '}/>
             </div>
-            <div className="goTo">
-                <h2><a href="https://youtu.be/dQw4w9WgXcQ?si=ZImQDCkmnZI0wC_z">The Library</a></h2>
+
+            <div className={'mr-48'}>
+                <h2 className={'font-bold text-black'}>
+                    <a href={'http://localhost:3000/library'} className={'text-[25px]'}>Library</a>
+                </h2>
             </div>
-            <div className="goTo">
-                <h2><a href="https://youtu.be/dQw4w9WgXcQ?si=ZImQDCkmnZI0wC_z">My GameShelf</a></h2>
-            </div>
-            <div className="goTo">
-                <h2><a href="https://youtu.be/dQw4w9WgXcQ?si=ZImQDCkmnZI0wC_z">Discover</a></h2>
-            </div>
+
             {isLoggedIn ? (
-            <div className="user" onClick={toggleDropdown} ref={dropdownRef}>
-                <h2>{localStorage.getItem('username') || 'Name'}</h2>
-                <img src={user_icon} alt={"user icon"}/>
-                {showDropdown  && (
-                    <div className="dropdown-content">
-                        <a href="#">Profile</a>
-                        <a href="#" onClick={handleLogout}>Logout</a>
-                    </div>
-                )}
-            </div>
+                <div className="user" onClick={toggleDropdown} ref={dropdownRef}>
+                    <h2>{localStorage.getItem('username') || 'Name'}</h2>
+                    <img src={user_icon} width={60} height={60} alt={"user icon"} className={'cursor-pointer'}/>
+                    {showDropdown && (
+                        <div className="dropdown-content">
+                            <a href="#">Profile</a>
+                            <a href="#" onClick={handleLogout}>Logout</a>
+                        </div>
+                    )}
+                </div>
             ) : (
                 <div className="user">
                     <h2>
@@ -86,9 +85,7 @@ function Header() {
                 </div>
             )}
         </div>
-    );
+    )
 }
 
-
-
-export default Header;
+export default HeaderV2;

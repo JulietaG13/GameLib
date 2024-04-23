@@ -44,33 +44,41 @@ public class Game {
         inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private final Set<Tag> tags = new HashSet<>();
-    
+
+    @ManyToMany()
+    @JoinTable(
+            name = "games_upvoted",
+            joinColumns = @JoinColumn(name = "game_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private final Set<User> upvotes = new HashSet<>();
+
+
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private final Set<Review> reviews = new HashSet<>();
 
     public Game() {}
 
     private Game(GameBuilder builder) {
-//        this.gamePicture = builder.gamePicture;
-        this.name = builder.title;
+        this.name = builder.name;
         this.description = builder.description;
         this.releaseDate = builder.releaseDate;
         this.lastUpdate = builder.lastUpdate;
     }
 
-    public static GameBuilder create(String title) {
-        return new GameBuilder(title);
+    public static GameBuilder create(String name) {
+        return new GameBuilder(name);
     }
 
     public static class GameBuilder {
 //        private Byte[] gamePicture;
-        private final String title;
+        private final String name;
         private String description;
         private LocalDateTime releaseDate;
         private LocalDateTime lastUpdate;
 
-        public GameBuilder(String title) {
-            this.title = title;
+        public GameBuilder(String name) {
+            this.name = name;
         }
 
 //        public GameBuilder gamePicture(Byte[] gamePicture) {
@@ -118,7 +126,7 @@ public class Game {
         JsonObject jsonObj = new JsonObject();
         jsonObj.addProperty("id", id);
 //        jsonObj.addProperty("gamePicture", Arrays.toString(gamePicture));
-        jsonObj.addProperty("title", name);
+        jsonObj.addProperty("name", name);
         jsonObj.addProperty("description", description);
         jsonObj.addProperty("releaseDate", releaseDate.toString());
         jsonObj.addProperty("lastUpdate", lastUpdate.toString());
@@ -127,12 +135,12 @@ public class Game {
     
     // RESTRICTIONS //
     
-    public static MessageResponse isTitleValid(String title) {
-        if (title == null) {
-            return new MessageResponse(true, "Title cannot be null!");
+    public static MessageResponse isNameValid(String name) {
+        if (name == null) {
+            return new MessageResponse(true, "Name cannot be null!");
         }
-        if (title.equals("")) {
-            return new MessageResponse(true, "Title cannot be empty!");
+        if (name.equals("")) {
+            return new MessageResponse(true, "Name cannot be empty!");
         }
         return new MessageResponse(false);
     }
@@ -147,13 +155,6 @@ public class Game {
     public static MessageResponse isReleaseDateValid(LocalDateTime releaseDate) {
         if (releaseDate == null) {
             return new MessageResponse(true, "Release date cannot be null!");
-        }
-        return new MessageResponse(false);
-    }
-
-    public static MessageResponse isLastUpdateValid(LocalDateTime lastUpdate) {
-        if (lastUpdate == null) {
-            return new MessageResponse(true, "Last update cannot be null!");
         }
         return new MessageResponse(false);
     }
@@ -173,6 +174,14 @@ public class Game {
         reviews.add(review);
         review.setGame(this);
     }
+
+
+    public void addUpvote(User user) {
+        upvotes.add(user);
+        if (!user.getUpvotedGames().contains(this)) {
+            user.addGameUpvote(this);
+        }
+     }
     
     // GETTERS - SETTERS //
     
@@ -196,8 +205,8 @@ public class Game {
         return name;
     }
     
-    public void setTitle(String title, LocalDateTime lastUpdate) {
-        this.name = title;
+    public void setName(String name, LocalDateTime lastUpdate) {
+        this.name = name;
         this.lastUpdate = lastUpdate;
     }
 
@@ -233,5 +242,19 @@ public class Game {
 
     public Set<Tag> getTags() {
         return tags;
+    }
+
+    public Set<User> getUpvotes() {
+        return upvotes;
+    }
+
+    // OTHERS //
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj.getClass() != Game.class) {
+            return false;
+        }
+        return Objects.equals(this.id, ((Game) obj).id);
     }
 }

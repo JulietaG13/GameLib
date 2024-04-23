@@ -1,11 +1,10 @@
-import React, {useEffect, useState} from "react"
+import React, {useState} from "react"
 import './LoginSignup.css'
 
 import password_icon from '../Assets/password icon.png'
 import {Link, Navigate} from "react-router-dom";
 import axios from "axios";
 import user_icon from '../Assets/user-icon.png'
-import Header from "../Header/Header";
 
 
 
@@ -20,7 +19,7 @@ const Login = () => {
 
 
 
-    const handleLogin = async e => {
+    const handleLogin = async () => {
         setErrorMessage('')
         try {
             //sends data to backend
