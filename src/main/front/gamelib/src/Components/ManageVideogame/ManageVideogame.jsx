@@ -28,13 +28,14 @@ function ManageVideogame({type}) {
             .then(response => {
                 if (type === "Edit") {
                     axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
+                        .then(response => {
+                            console.log("HOLA QUE TAL")
+                            setVideogame(response.data);
+                            //console.log(response.data);
+                        })
                         .catch(error => {
                             console.error('Error:', error);
                             setNavigate(true);
-                        })
-                        .then(response => {
-                            setVideogame(response.data);
-                            //console.log(response.data);
                         });
                 }
             });
