@@ -39,7 +39,7 @@ function ManageVideogame({type}) {
 
         if (type === "Edit") {
             let dataToSend = {
-                title: name ? name : videogame.name,
+                name: name ? name : videogame.name,
                 description: description ? description : videogame.description,
                 releaseDate: releaseDate ? releaseDate : videogame.releaseDate,
                 lastUpdate: FormatLastUpdateDate(new Date())

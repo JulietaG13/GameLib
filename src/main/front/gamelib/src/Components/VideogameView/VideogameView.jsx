@@ -20,7 +20,15 @@ function VideogameView() {
     }, []);
 
     const publishReview = () => {
-
+        if (review === '') return;
+        axios.post(`http://localhost:4567/newreview/${videogameID.videogameID}`, {
+            'text': review
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': token
+            }
+        }).then(r => setReview(''));
     }
 
     const edit = () => {
@@ -51,18 +59,22 @@ function VideogameView() {
 
                 <div className={'gameAttributes'}>
                     {token !== null ? <input type={"button"} value={"Edit game"} onClick={edit}/> : null}
-                    <h1>{videogame.title}</h1>
+                    <h1>{videogame.name}</h1>
                     <p>{videogame.description}</p>
                     <p>Date of release: {formatDate(videogame.releaseDate)}</p>
                 </div>
 
             </div>
 
-            <div className={'reviews'} >
-                <input type={'text'} placeholder={'Add your review'} onClick={publishReview}
-                onChange={e => setReview(e.target.value)}
+            <form className={'reviews'} onSubmit={publishReview} >
+                <input id={'1'} type={'text'} placeholder={'Add your review'}
+                       value={review}
+                    onChange={e =>
+                        setReview(e.target.value)
+                    }
                 />
-            </div>
+                <input id={'2'} type={"button"} value={"Publish"} onClick={publishReview} />
+            </form>
 
         </div>
     );

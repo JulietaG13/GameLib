@@ -36,6 +36,9 @@
     justify-content: center;
     width: 100%;
 }
-.reviews input {
-    width: 100%;
+.reviews input #1 {
+    width: 80%;
+}
+.reviews input #2 {
+    width: 20%;
 }
