@@ -51,21 +51,19 @@ function HeaderV2() {
 
 
     return (
-        <div className={'flex items-center mt-1 bg-gray-200'}>
+        <div className={'flex items-center bg-[#dd5538]'}>
             <a href={'http://localhost:3000/'}>
                 <img src={gamelibLogo} width={60} height={60} className={'ml-3'}/>
             </a>
-            <div className={'flex bg-slate-300 p-2 w-full items-center ml-10 mr-20 rounded-full'}>
+            <div className={'flex bg-slate-300 p-2 w-full h-12 items-center ml-10 mr-20 rounded-full'}>
                 <HiOutlineMagnifyingGlass/>
                 <input type={'text'} placeholder={'Search Games'} className={'bg-transparent outline-none '}/>
             </div>
-
             <div className={'mr-48'}>
                 <h2 className={'font-bold text-black'}>
                     <a href={'http://localhost:3000/library'} className={'text-[25px]'}>Library</a>
                 </h2>
             </div>
-
             {isLoggedIn ? (
                 <div className="user" onClick={toggleDropdown} ref={dropdownRef}>
                     <h2>{localStorage.getItem('username') || 'Name'}</h2>
@@ -76,7 +74,9 @@ function HeaderV2() {
                             <a href="#" onClick={handleLogout}>Logout</a>
                         </div>
                     )}
+
                 </div>
+
             ) : (
                 <div className="user">
                     <h2>
