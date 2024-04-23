@@ -33,7 +33,7 @@ public class ReviewService {
         .getResultList();
   }
   
-  public List<Review> listByAuthor(Game game) {
+  public List<Review> listByGame(Game game) {
     return entityManager.createQuery("SELECT r FROM Review r WHERE r.game = :game", Review.class)
         .setParameter("game", game)
         .getResultList();
