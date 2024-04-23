@@ -50,6 +50,21 @@ public class Application {
 
       return jsonArray.toString();
     });
+
+    Spark.get("/games", "application/json", (req, resp) -> {
+
+      resp.type("application/json");
+      resp.status(201);
+
+      GameService gameService = new GameService(em);
+
+      JsonArray jsonArray = new JsonArray();
+      for (Game game : gameService.listAll()) {
+        jsonArray.add(game.asJson());
+      }
+
+      return jsonArray.toString();
+    });
     
     Spark.get("/tags", "application/json", (req, resp) -> {
       
