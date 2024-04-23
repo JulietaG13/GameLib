@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Navigate, useParams} from "react-router-dom";
 import axios from "axios";
+import ReviewComp from "../ReviewComp/ReviewComp";
 import './VideogameView.css';
 import standByCover from '../Assets/standByCover.png';
 
@@ -78,6 +79,10 @@ function VideogameView() {
                 />
                 <input id={'2'} type={"button"} value={"Publish"} onClick={publishReview} />
             </form>
+
+            <div className={"reviewsSection"} >
+                <ReviewComp id={videogameID.videogameID} />
+            </div>
 
         </div>
     );

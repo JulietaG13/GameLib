@@ -25,7 +25,7 @@ function ReviewComp() {
         <div className="commentBox" >
             <ul>
                 {comments.map((comment) => (
-                    <li className="text">
+                    <li key={comment.id} className="comment">
                         <img src={user_icon} alt={"user_icon"}/>
                         <p>{comment.text}</p>
                     </li>
