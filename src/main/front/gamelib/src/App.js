@@ -6,10 +6,12 @@ import ABM from "./Components/ManageVideogame/ManageVideogame";
 import Home from "./Components/Home/Home";
 import Header from "./Components/Header/Header";
 import Library from "./Components/TheLibrary/Library";
+import HeaderV2 from "./Components/Header/HeaderV2";
 
 function App() {
     return <BrowserRouter>
         <div className={'min-h-[100vh]'}>
+            <HeaderV2/>
             <Routes>
                 <Route path="/library" element={<Library/>}/>
                 <Route path="/" element={<Home/>}/>
