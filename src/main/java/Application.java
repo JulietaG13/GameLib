@@ -42,8 +42,13 @@ public class Application {
       resp.status(201);
       
       UserService userService = new UserService(em);
-      
-      return gson.toJson(userService.listAll());
+
+      JsonArray jsonArray = new JsonArray();
+      for (User user : userService.listAll()) {
+        jsonArray.add(user.asJson());
+      }
+
+      return jsonArray.toString();
     });
     
     Spark.get("/tags", "application/json", (req, resp) -> {
@@ -113,7 +118,7 @@ public class Application {
       resp.type("application/json");
       resp.status(201);
       
-      return user.asJson();
+      return user.asJson().toString();
     });
 
     Spark.post("/deleteuser/:id", "application/json", (req, resp) -> {
@@ -143,7 +148,7 @@ public class Application {
       resp.type("application/json");
       resp.status(200);
 
-      return user.get().asJson();
+      return user.get().asJson().toString();
     });
     
     Spark.post("/login", "application/json", (req, resp) -> {
@@ -172,9 +177,7 @@ public class Application {
       
       Token token = AccessControlService.generateToken(username);
       
-      JsonObject json = JsonParser
-          .parseString(authResponse.getUser().asJson())
-          .getAsJsonObject();
+      JsonObject json = authResponse.getUser().asJson();
       
       json.addProperty(Token.PROPERTY_NAME, token.getToken());
       
