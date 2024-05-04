@@ -6,6 +6,7 @@ import {Navigate, useParams} from "react-router-dom";
 function ManageVideogame({type}) {
     const videogameID = useParams();
     //TODO: Add image upload
+    const [gamePicture, setGamePicture] = useState('');
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [releaseDate, setReleaseDate] = useState('');
@@ -59,6 +60,7 @@ function ManageVideogame({type}) {
         e.preventDefault()
 
         let dataToSend = {
+            //gamePicture: gamePicture,
             name: name,
             description: description,
             releaseDate: releaseDate,
@@ -76,6 +78,7 @@ function ManageVideogame({type}) {
         e.preventDefault()
 
         let dataToSend = {
+            //gamePicture: gamePicture ? gamePicture : videogame.gamePicture,
             name: name ? name : videogame.name,
             description: description ? description : videogame.description,
             releaseDate: releaseDate ? releaseDate : videogame.releaseDate,
@@ -132,7 +135,11 @@ function ManageVideogame({type}) {
             <h1 className={'font-bold text-[30px] mb-2 text-center'}>{type} Videogame</h1>
 
             {/*<div>*/}
-            {/*    <input className={'cover'} type={'File'}/>*/}
+            {/*    <input className={'cover'}*/}
+            {/*           type={'File'}*/}
+            {/*           accept={'image/*'}*/}
+            {/*           onChange={e => setGamePicture(FormatBase64Image(e.target.files[0]))}*/}
+            {/*    />*/}
             {/*</div>*/}
 
             <div className={"titleDesc flex justify-center items-center"}>
@@ -181,6 +188,15 @@ function ManageVideogame({type}) {
         </form>
     );
 }
+
+// function FormatBase64Image(image) {
+//     let reader = new FileReader();
+//     reader.readAsDataURL(image);
+//     reader.onload = function() {
+//         return reader.result;
+//     };
+//     return reader.result.toString();
+// }
 
 function FormatLastUpdateDate(lastUpdate) {
     let formatedDate = lastUpdate.getFullYear() + '-' +

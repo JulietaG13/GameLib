@@ -6,7 +6,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import entities.responses.MessageResponse;
 import javax.persistence.*;
-//import java.sql.Blob;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -18,7 +17,7 @@ public class Game {
     private Long id;
 
 //    @Column
-//    private Byte[] gamePicture;
+//    private String gamePicture;
 
     @Column(nullable = false, unique = true)
     private String name;
@@ -74,26 +73,26 @@ public class Game {
     }
 
     public static class GameBuilder {
+        private String description;
 //        private Byte[] gamePicture;
         private final String name;
-        private String description;
         private LocalDateTime releaseDate;
         private LocalDateTime lastUpdate;
-
-        public GameBuilder(String name) {
-            this.name = name;
-        }
 
 //        public GameBuilder gamePicture(Byte[] gamePicture) {
 //            this.gamePicture = gamePicture;
 //            return this;
 //        }
 
+        public GameBuilder(String name) {
+    this.name = name;
+}
+
         public GameBuilder description(String description) {
             this.description = description;
             return this;
         }
-        
+
         public GameBuilder releaseDate(LocalDateTime releaseDate) {
             this.releaseDate = releaseDate;
             return this;
@@ -179,7 +178,6 @@ public class Game {
         review.setGame(this);
     }
 
-
     public void addUpvote(User user) {
         upvotes.add(user);
         if (!user.getUpvotedGames().contains(this)) {
@@ -211,7 +209,7 @@ public class Game {
     
     public void setName(String name, LocalDateTime lastUpdate) {
         this.name = name;
-        this.lastUpdate = lastUpdate;
+        this.setLastUpdate(lastUpdate);
     }
 
     public String getDescription() {
@@ -220,7 +218,7 @@ public class Game {
     
     public void setDescription(String description, LocalDateTime lastUpdate) {
         this.description = description;
-        this.lastUpdate = lastUpdate;
+        this.setLastUpdate(lastUpdate);
     }
     
     public LocalDateTime getReleaseDate() {
@@ -229,7 +227,7 @@ public class Game {
     
     public void setReleaseDate(LocalDateTime releaseDate, LocalDateTime lastUpdate) {
         this.releaseDate = releaseDate;
-        this.lastUpdate = lastUpdate;
+        this.setLastUpdate(lastUpdate);
     }
     
     public LocalDateTime getLastUpdate() {
