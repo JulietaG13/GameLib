@@ -41,7 +41,7 @@ public class Tag {
   public JsonObject asJson() {
     JsonArray jsonArray = new JsonArray();
     for (Game game : taggedGames) {
-      JsonObject jsonGame = JsonParser.parseString(game.asJson()).getAsJsonObject();
+      JsonObject jsonGame = game.asJson();
       jsonArray.add(jsonGame);
     }
     JsonObject jsonObj = new JsonObject();

@@ -36,6 +36,9 @@ public class Game {
 
     @ManyToMany(mappedBy = "games")
     private final Set<Shelf> inShelves = new HashSet<>();
+
+    @Column(name = "background_image", nullable = false)
+    private String backgroundImage = "https://i.pinimg.com/originals/05/ac/17/05ac17fb09440e9071908ef00efef134.png";
     
     @ManyToMany()
     @JoinTable(
@@ -122,15 +125,16 @@ public class Game {
         return gson.fromJson(json, Game.class);
     }
     
-    public String asJson() {
+    public JsonObject asJson() {
         JsonObject jsonObj = new JsonObject();
         jsonObj.addProperty("id", id);
 //        jsonObj.addProperty("gamePicture", Arrays.toString(gamePicture));
         jsonObj.addProperty("name", name);
         jsonObj.addProperty("description", description);
+        jsonObj.addProperty("background_image", backgroundImage);
         jsonObj.addProperty("releaseDate", releaseDate.toString());
         jsonObj.addProperty("lastUpdate", lastUpdate.toString());
-        return jsonObj.toString();
+        return jsonObj;
     }
     
     // RESTRICTIONS //

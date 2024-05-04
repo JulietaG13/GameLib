@@ -1,7 +1,7 @@
 package services;
 
 
-import entities.responses.UserResponse;
+import model.Game;
 import model.User;
 
 import javax.persistence.EntityManager;
@@ -48,8 +48,14 @@ public class UserService {
 
     public void deleteUserByID(Long id) {
         Optional<User> user = findById(id);
+        // if (user.isEmpty())
         EntityTransaction tx = entityManager.getTransaction();
+
         tx.begin();
+        entityManager.createQuery("DELETE FROM Review R WHERE R.author = :user")
+                .setParameter("user", user.get())
+                .executeUpdate();
+
         entityManager.createQuery("DELETE FROM User U WHERE U.id = :id")
                 .setParameter("id", id)
                 .executeUpdate();
