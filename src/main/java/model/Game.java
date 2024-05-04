@@ -16,8 +16,8 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-//    @Column
-//    private String gamePicture;
+    @Column(nullable = false)
+    private String gamePicture;
 
     @Column(nullable = false, unique = true)
     private String name;
@@ -62,6 +62,7 @@ public class Game {
     public Game() {}
 
     private Game(GameBuilder builder) {
+        this.gamePicture = builder.gamePicture;
         this.name = builder.name;
         this.description = builder.description;
         this.releaseDate = builder.releaseDate;
@@ -74,7 +75,7 @@ public class Game {
 
     public static class GameBuilder {
         private String description;
-//        private Byte[] gamePicture;
+        private String gamePicture;
         private final String name;
         private LocalDateTime releaseDate;
         private LocalDateTime lastUpdate;
@@ -87,6 +88,11 @@ public class Game {
         public GameBuilder(String name) {
     this.name = name;
 }
+
+        public GameBuilder gamePicture(String gamePicture) {
+            this.gamePicture = gamePicture;
+            return this;
+        }
 
         public GameBuilder description(String description) {
             this.description = description;
@@ -104,6 +110,9 @@ public class Game {
         }
 
         public Game build() {
+            if (gamePicture == null) {
+                throw new IllegalArgumentException();
+            }
             if (description == null) {
                 throw new IllegalArgumentException();
             }
@@ -127,7 +136,7 @@ public class Game {
     public JsonObject asJson() {
         JsonObject jsonObj = new JsonObject();
         jsonObj.addProperty("id", id);
-//        jsonObj.addProperty("gamePicture", Arrays.toString(gamePicture));
+        jsonObj.addProperty("gamePicture", gamePicture);
         jsonObj.addProperty("name", name);
         jsonObj.addProperty("description", description);
         jsonObj.addProperty("background_image", backgroundImage);
@@ -137,6 +146,16 @@ public class Game {
     }
     
     // RESTRICTIONS //
+
+    public static MessageResponse isGamePictureValid(String gamePicture) {
+        if (gamePicture == null) {
+            return new MessageResponse(true, "Game picture cannot be null!");
+        }
+        if (gamePicture.equals("")) {
+            return new MessageResponse(true, "Game picture cannot be empty!");
+        }
+        return new MessageResponse(false);
+    }
     
     public static MessageResponse isNameValid(String name) {
         if (name == null) {
@@ -195,13 +214,14 @@ public class Game {
         return id;
     }
 
-//    public void setGamePicture(Byte[] gamePicture) {
-//        this.gamePicture = gamePicture;
-//    }
-//
-//    public Byte[] getGamePicture() {
-//        return gamePicture;
-//    }
+    public String getGamePicture() {
+        return gamePicture;
+    }
+
+    public void setGamePicture(String gamePicture, LocalDateTime lastUpdate) {
+        this.gamePicture = gamePicture;
+        this.setLastUpdate(lastUpdate);
+    }
 
     public String getName() {
         return name;

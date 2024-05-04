@@ -32,9 +32,9 @@ public class Application {
     Spark.port(4567);
     
     storeUsers1(em);
-    storeGames1(em);
-    storeTags1(em);
-    storeReviews1(em);
+//    storeGames1(em);
+//    storeTags1(em);
+//    storeReviews1(em);
     
     Spark.get("/users", "application/json", (req, resp) -> {
       
@@ -212,6 +212,12 @@ public class Application {
       
       final Game game = Game.fromJson(req.body());
       final GameService games = new GameService(em);
+
+      MessageResponse pictureResponse = Game.isGamePictureValid(game.getGamePicture());
+        if (pictureResponse.hasError()) {
+          resp.status(404);
+          return pictureResponse.getMessage();
+        }
       
       MessageResponse titleResponse = Game.isNameValid(game.getName());
       if (titleResponse.hasError()) {

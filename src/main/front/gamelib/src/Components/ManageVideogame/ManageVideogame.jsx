@@ -12,6 +12,8 @@ function ManageVideogame({type}) {
     const [releaseDate, setReleaseDate] = useState('');
     const [navigate, setNavigate] = useState(false);
     const [videogame, setVideogame] = useState({});
+    const [errorMessage, setErrorMessage] = useState('');
+
     let item = localStorage.getItem('token');
     let config = {
         headers: {
@@ -35,7 +37,7 @@ function ManageVideogame({type}) {
                 if (type === "Edit") {
                     axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
                         .then(response => {
-                            console.log("HOLA QUE TAL")
+                            //console.log("HOLA QUE TAL")
                             setVideogame(response.data);
                             //console.log(response.data);
                         })
@@ -56,38 +58,62 @@ function ManageVideogame({type}) {
 
     }
 
+    function manageSuccess() {
+        setVideogame({});
+        setNavigate(true);
+    }
+
+    function manageFailure(error) {
+        console.log(error.response)
+        if (error.response.status) {
+            setErrorMessage(error.response.data)
+        } else {
+            setErrorMessage("Something went wrong")
+        }
+        console.error('Error:', error);
+    }
+
     const addVideogame = async e => {
         e.preventDefault()
 
         let dataToSend = {
-            //gamePicture: gamePicture,
+            gamePicture: gamePicture,
             name: name,
             description: description,
             releaseDate: releaseDate,
             lastUpdate: FormatLastUpdateDate(new Date())
         };
         await axios.post("http://localhost:4567/newgame", dataToSend, config)
-            .then(r => setVideogame({}))
+            .then(r =>
+                manageSuccess()
+            )
             .catch(error => {
-                console.log("Error: ", error);
+                manageFailure(error);
             });
-        setNavigate(true);
+        // setNavigate(true);
     }
 
     const editVideogame = async e => {
         e.preventDefault()
 
         let dataToSend = {
-            //gamePicture: gamePicture ? gamePicture : videogame.gamePicture,
+            gamePicture: gamePicture ? gamePicture : videogame.gamePicture,
             name: name ? name : videogame.name,
             description: description ? description : videogame.description,
             releaseDate: releaseDate ? releaseDate : videogame.releaseDate,
             lastUpdate: FormatLastUpdateDate(new Date())
         };
         await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, dataToSend, config)
-            .then(r => setVideogame({}))
+            .then(r => manageSuccess())
             .catch(error => {
-                console.log("Error: ", error);
+                console.log(error.response)
+                if (error.response.status) {
+                    setErrorMessage(error.response.data)
+                }
+                else {
+                    setErrorMessage("Something went wrong")
+                }
+                console.error('Error:', error);
             });
 
         setNavigate(true);
@@ -106,7 +132,7 @@ function ManageVideogame({type}) {
                 // console.log(response.data)
                 console.log("prev del game: ");
                 console.log(videogame);
-                setVideogame({});
+                manageSuccess();
                 console.log("post del game:");
                 console.log(videogame);
             })
@@ -124,6 +150,11 @@ function ManageVideogame({type}) {
     //     console.log(videogame);
     // }, [videogame]);
 
+    // useEffect(() => {
+    //     console.log("gamePicture has been updated!")
+    //     console.log(gamePicture)
+    // }, [gamePicture]);
+
     if(navigate) {
         return <Navigate to={"/"}/>;
     }
@@ -131,16 +162,20 @@ function ManageVideogame({type}) {
     return (
         <form className={"mainPopUP flex flex-col items-center"}
               onSubmit={type === "Edit" ? editVideogame : addVideogame}
-              style={{ width: "50%", justifyContent: 'center' }}>
+              style={{width: "50%", justifyContent: 'center'}}>
             <h1 className={'font-bold text-[30px] mb-2 text-center'}>{type} Videogame</h1>
 
-            {/*<div>*/}
-            {/*    <input className={'cover'}*/}
-            {/*           type={'File'}*/}
-            {/*           accept={'image/*'}*/}
-            {/*           onChange={e => setGamePicture(FormatBase64Image(e.target.files[0]))}*/}
-            {/*    />*/}
-            {/*</div>*/}
+            <div>
+                <input className={'cover'}
+                       type={'File'}
+                       accept={'image/*'}
+                       onChange={e => {
+                           FormatBase64Image(e.target.files[0])
+                               .then(result => setGamePicture(result))
+                               .catch(error => console.error(error));
+                       }}
+                />
+            </div>
 
             <div className={"titleDesc flex justify-center items-center"}>
                 <input className={'p-1 rounded mb-2'}
@@ -170,6 +205,10 @@ function ManageVideogame({type}) {
                 </div>
             </div>
 
+            <div>
+                <ErrorMessage message={errorMessage}/>
+            </div>
+
             <div className={"font-bold flex justify-center"}>
                 <input type={"button"}
                        className={'submit cursor-pointer mr-2'}
@@ -177,7 +216,8 @@ function ManageVideogame({type}) {
                        onClick={cancel}
                 />
 
-                {type === "Edit" ? <input type={"button"} className={'submit cursor-pointer mr-2'} value={"Delete"} onClick = {deleteGame} /> : null}
+                {type === "Edit" ? <input type={"button"} className={'submit cursor-pointer mr-2'} value={"Delete"}
+                                          onClick={deleteGame}/> : null}
 
                 <input type={"button"}
                        value={type}
@@ -189,14 +229,18 @@ function ManageVideogame({type}) {
     );
 }
 
-// function FormatBase64Image(image) {
-//     let reader = new FileReader();
-//     reader.readAsDataURL(image);
-//     reader.onload = function() {
-//         return reader.result;
-//     };
-//     return reader.result.toString();
-// }
+function FormatBase64Image(image) {
+    return new Promise((resolve, reject) => {
+        let reader = new FileReader();
+        reader.readAsDataURL(image);
+        reader.onload = function() {
+            resolve(reader.result);
+        };
+        reader.onerror = function(error) {
+            reject(error);
+        };
+    });
+}
 
 function FormatLastUpdateDate(lastUpdate) {
     let formatedDate = lastUpdate.getFullYear() + '-' +

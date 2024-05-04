@@ -84,6 +84,10 @@ public class GameService {
         }
         tx.commit();
         Game game = managedGame.get();
+
+        if (gameUpdate.getGamePicture() != null && !game.getGamePicture().equals(gameUpdate.getGamePicture())) {
+            game.setGamePicture(gameUpdate.getGamePicture(), lastUpdate);
+        }
         
         if (gameUpdate.getName() != null && !game.getName().equals(gameUpdate.getName())) {
             game.setName(gameUpdate.getName(), lastUpdate);
