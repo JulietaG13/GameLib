@@ -12,7 +12,12 @@ function ManageVideogame({type}) {
     const [navigate, setNavigate] = useState(false);
     const [videogame, setVideogame] = useState({});
     let item = localStorage.getItem('token');
-
+    let config = {
+        headers: {
+            'Content-Type': 'application/json',
+            'token': item
+        }
+    };
 
     useEffect(() => {
         axios.post('http://localhost:4567/tokenvalidation', {}, {
@@ -41,43 +46,47 @@ function ManageVideogame({type}) {
             });
     }, []);
 
+    const ErrorMessage = ({ message }) => {
+        return (
+            <div className={message ? 'formErrorHandling' : ''}>
+                {message}
+            </div>
+        );
 
-    //Sends data to backend
-    const submit = async e => {
-        //Prevents page to reload
+    }
+
+    const addVideogame = async e => {
         e.preventDefault()
 
-        if (type === "Edit") {
-            let dataToSend = {
-                name: name ? name : videogame.name,
-                description: description ? description : videogame.description,
-                releaseDate: releaseDate ? releaseDate : videogame.releaseDate,
-                lastUpdate: FormatLastUpdateDate(new Date())
-            };
-            await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, dataToSend, {
-                headers: {
-                        'Content-Type': 'application/json',
-                        'token': item
-                }
-            }).then(r => setVideogame({}));
-        } else if (type === "Add") {
-            let dataToSend = {
-                name: name,
-                description: description,
-                releaseDate: releaseDate,
-                lastUpdate: FormatLastUpdateDate(new Date())
-            };
-            await axios.post("http://localhost:4567/newgame", dataToSend, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'token': item
-                }
-            }).then(r => setVideogame({}));
-        }
+        let dataToSend = {
+            name: name,
+            description: description,
+            releaseDate: releaseDate,
+            lastUpdate: FormatLastUpdateDate(new Date())
+        };
+        await axios.post("http://localhost:4567/newgame", dataToSend, config)
+            .then(r => setVideogame({}))
+            .catch(error => {
+                console.log("Error: ", error);
+            });
         setNavigate(true);
     }
 
-    const cancel = () => {
+    const editVideogame = async e => {
+        e.preventDefault()
+
+        let dataToSend = {
+            name: name ? name : videogame.name,
+            description: description ? description : videogame.description,
+            releaseDate: releaseDate ? releaseDate : videogame.releaseDate,
+            lastUpdate: FormatLastUpdateDate(new Date())
+        };
+        await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, dataToSend, config)
+            .then(r => setVideogame({}))
+            .catch(error => {
+                console.log("Error: ", error);
+            });
+
         setNavigate(true);
     }
 
@@ -103,41 +112,73 @@ function ManageVideogame({type}) {
         setNavigate(true);
     }
 
-    useEffect(() => {
-        console.log("videogame has been updated: ");
-        console.log(videogame);
-    }, [videogame]);
+    const cancel = () => {
+        setNavigate(true);
+    }
+
+    // useEffect(() => {
+    //     console.log("videogame has been updated: ");
+    //     console.log(videogame);
+    // }, [videogame]);
 
     if(navigate) {
         return <Navigate to={"/"}/>;
     }
 
     return (
-        <form className={"mainPopUP flex flex-col items-center"} onSubmit={submit} style={{ width: "50%", justifyContent: 'center' }}>
+        <form className={"mainPopUP flex flex-col items-center"}
+              onSubmit={type === "Edit" ? editVideogame : addVideogame}
+              style={{ width: "50%", justifyContent: 'center' }}>
             <h1 className={'font-bold text-[30px] mb-2 text-center'}>{type} Videogame</h1>
+
+            {/*<div>*/}
+            {/*    <input className={'cover'} type={'File'}/>*/}
+            {/*</div>*/}
+
             <div className={"titleDesc flex justify-center items-center"}>
-                <input className={'p-1 rounded mb-2'} type={"text"} placeholder={"Add title"} defaultValue={videogame.name}
+                <input className={'p-1 rounded mb-2'}
+                       type={"text"}
+                       placeholder={"Add title"}
+                       defaultValue={videogame.name}
                        onChange={e => setName(e.target.value)}
                 />
-                <input id={"desc"} type={"text"} className={'p-1 rounded mb-2'} placeholder={"Add description"} defaultValue={videogame.description}
+
+                <input id={"desc"}
+                       type={"text"}
+                       className={'p-1 rounded mb-2'}
+                       placeholder={"Add description"}
+                       defaultValue={videogame.description}
                        onChange={e => setDescription(e.target.value)}
                 />
             </div>
 
             <div className={"releaseDate font-bold flex justify-start items-center mb-2"}>
                 <div className={'flex justify-center'}>
-                    <input type={"datetime-local"} className={'rounded-b'} name={"releaseDate"} defaultValue={videogame.releaseDate}
+                    <input type={"datetime-local"}
+                           className={'rounded-b'}
+                           name={"releaseDate"}
+                           defaultValue={videogame.releaseDate}
                            onChange={e => setReleaseDate(e.target.value)}
                     />
                 </div>
             </div>
+
             <div className={"font-bold flex justify-center"}>
-                <input type={"button"} className={'submit cursor-pointer mr-2'} value={"Cancel"} onClick={cancel} />
+                <input type={"button"}
+                       className={'submit cursor-pointer mr-2'}
+                       value={"Cancel"}
+                       onClick={cancel}
+                />
+
                 {type === "Edit" ? <input type={"button"} className={'submit cursor-pointer mr-2'} value={"Delete"} onClick = {deleteGame} /> : null}
-                <input type={"button"} value={type} className={'submit cursor-pointer'} onClick={submit} />
+
+                <input type={"button"}
+                       value={type}
+                       className={'submit cursor-pointer'}
+                       onClick={type === "Edit" ? editVideogame : addVideogame}
+                />
             </div>
         </form>
-
     );
 }
 
