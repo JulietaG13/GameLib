@@ -97,7 +97,7 @@ function ManageVideogame({type}) {
         e.preventDefault()
 
         let dataToSend = {
-            gamePicture: gamePicture ? gamePicture : videogame.gamePicture,
+            gamePicture: "gamePicture ? gamePicture : videogame.gamePicture",
             name: name ? name : videogame.name,
             description: description ? description : videogame.description,
             releaseDate: releaseDate ? releaseDate : videogame.releaseDate,
@@ -150,10 +150,13 @@ function ManageVideogame({type}) {
     //     console.log(videogame);
     // }, [videogame]);
 
-    // useEffect(() => {
-    //     console.log("gamePicture has been updated!")
-    //     console.log(gamePicture)
-    // }, [gamePicture]);
+    useEffect(() => {
+        console.log("gamePicture has been updated!")
+        console.log(gamePicture)
+        let sizeInBytes = (gamePicture.length * 3/4);
+        let sizeInKilobytes = sizeInBytes / 1024;
+        console.log("Size of gamePicture in Kilobytes: ", sizeInKilobytes);
+    }, [gamePicture]);
 
     if(navigate) {
         return <Navigate to={"/"}/>;
