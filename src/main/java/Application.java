@@ -209,15 +209,15 @@ public class Application {
         resp.status(401);
         return "Token is invalid or has expired!";
       }
-      
+
       final Game game = Game.fromJson(req.body());
       final GameService games = new GameService(em);
 
       MessageResponse pictureResponse = Game.isGamePictureValid(game.getGamePicture());
-        if (pictureResponse.hasError()) {
-          resp.status(404);
-          return pictureResponse.getMessage();
-        }
+      if (pictureResponse.hasError()) {
+        resp.status(404);
+        return pictureResponse.getMessage();
+      }
       
       MessageResponse titleResponse = Game.isNameValid(game.getName());
       if (titleResponse.hasError()) {
