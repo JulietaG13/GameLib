@@ -32,9 +32,9 @@ public class Application {
     Spark.port(4567);
     
     storeUsers1(em);
-//    storeGames1(em);
-//    storeTags1(em);
-//    storeReviews1(em);
+    storeGames1(em);
+    storeTags1(em);
+    storeReviews1(em);
     
     Spark.get("/users", "application/json", (req, resp) -> {
       
@@ -501,23 +501,28 @@ public class Application {
     GameService gameService = new GameService(entityManager);
     ShelfService shelfService = new ShelfService(entityManager);
     UserService userService = new UserService(entityManager);
+
+    String gamePicture = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAkACQAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAKAAoDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9BbX/AILufBvVz8d9WtPjx+zzH4Z8D2cUHhIXep39vqc+orBMLkXlu8Qe5t/tAgET6cs5dDJ/FtByvhb/AMHN/wCx/dfDLw5J4w+OnhWHxdJpds2tpo/hzX205L4xKbgWxmsllMIl37DIqvt27gDkV/OF/wAF2PCel+B/+CvXx90vRdM0/R9MtvFMphtLG3S3gi3Rxu21EAUZZmY4HJYnqa/qH/ZI/wCCXH7MviT9lL4Y6jqP7OnwJ1DUNQ8J6Vc3V1c+AdKlmuZXs4meR3aAlmZiSWJJJJJoA//Z";
     
     User user = User.create("IOwnAShelf").email("shelves@mail.com").password("1234").build();
     Shelf shelf = new Shelf(user, "elf on a shelf");
     Game game1 = Game
         .create("awesome game")
+        .gamePicture(gamePicture)
         .description("just an awesome game")
         .releaseDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
         .lastUpdate(LocalDateTime.now())
         .build();
     Game game2 = Game
         .create("another awesome game")
+        .gamePicture(gamePicture)
         .description("just another awesome game")
         .releaseDate(LocalDateTime.now().plusMonths(4).truncatedTo(ChronoUnit.SECONDS))
         .lastUpdate(LocalDateTime.now().plusMonths(4))
         .build();
     Game game3 = Game
         .create("even another awesome game")
+        .gamePicture(gamePicture)
         .description("also an awesome game")
         .releaseDate(LocalDateTime.now().plusMonths(2).truncatedTo(ChronoUnit.SECONDS))
         .lastUpdate(LocalDateTime.now().plusMonths(2))
@@ -538,6 +543,8 @@ public class Application {
   private static void storeTags1(EntityManager entityManager) {
     TagService tagService = new TagService(entityManager);
     GameService gameService = new GameService(entityManager);
+
+    String gamePicture = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAkACQAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAKAAoDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9BbX/AILufBvVz8d9WtPjx+zzH4Z8D2cUHhIXep39vqc+orBMLkXlu8Qe5t/tAgET6cs5dDJ/FtByvhb/AMHN/wCx/dfDLw5J4w+OnhWHxdJpds2tpo/hzX205L4xKbgWxmsllMIl37DIqvt27gDkV/OF/wAF2PCel+B/+CvXx90vRdM0/R9MtvFMphtLG3S3gi3Rxu21EAUZZmY4HJYnqa/qH/ZI/wCCXH7MviT9lL4Y6jqP7OnwJ1DUNQ8J6Vc3V1c+AdKlmuZXs4meR3aAlmZiSWJJJJJoA//Z";
     
     if(tagService.listAll().isEmpty()) {
       for(int i = 1; i < 5; i++) {
@@ -550,12 +557,14 @@ public class Application {
     
     Game game1 = Game
         .create("tagged game 1")
+        .gamePicture(gamePicture)
         .description("a game with 1 tag")
         .releaseDate(LocalDateTime.now().plusDays(2).truncatedTo(ChronoUnit.SECONDS))
         .lastUpdate(LocalDateTime.now().plusDays(2))
         .build();
     Game game2 = Game
         .create("tagged game 2")
+        .gamePicture(gamePicture)
         .description("a game with 3 tags")
         .releaseDate(LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.SECONDS))
         .lastUpdate(LocalDateTime.now().plusDays(3))
@@ -573,6 +582,8 @@ public class Application {
     ReviewService reviewService = new ReviewService(entityManager);
     UserService userService = new UserService(entityManager);
     GameService gameService = new GameService(entityManager);
+
+    String gamePicture = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAkACQAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAKAAoDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9BbX/AILufBvVz8d9WtPjx+zzH4Z8D2cUHhIXep39vqc+orBMLkXlu8Qe5t/tAgET6cs5dDJ/FtByvhb/AMHN/wCx/dfDLw5J4w+OnhWHxdJpds2tpo/hzX205L4xKbgWxmsllMIl37DIqvt27gDkV/OF/wAF2PCel+B/+CvXx90vRdM0/R9MtvFMphtLG3S3gi3Rxu21EAUZZmY4HJYnqa/qH/ZI/wCCXH7MviT9lL4Y6jqP7OnwJ1DUNQ8J6Vc3V1c+AdKlmuZXs4meR3aAlmZiSWJJJJJoA//Z";
     
     if (reviewService.listAll().isEmpty()) {
       User u1 = User.create("i made 1 review").email("review1@mail.com").password("qwerty123").build();
@@ -580,8 +591,8 @@ public class Application {
       userService.persist(u1);
       userService.persist(u2);
       
-      Game g1 = Game.create("game with 2 user reviews").description("the game has 2 reviews each by different users").releaseDate(LocalDateTime.now().plusDays(11).truncatedTo(ChronoUnit.SECONDS)).build();
-      Game g2 = Game.create("game reviewd by same user").description("the game has 2 reviews by the same user").releaseDate(LocalDateTime.now().plusDays(13).truncatedTo(ChronoUnit.SECONDS)).build();
+      Game g1 = Game.create("game with 2 user reviews").gamePicture(gamePicture).description("the game has 2 reviews each by different users").releaseDate(LocalDateTime.now().plusDays(11).truncatedTo(ChronoUnit.SECONDS)).build();
+      Game g2 = Game.create("game reviewd by same user").gamePicture(gamePicture).description("the game has 2 reviews by the same user").releaseDate(LocalDateTime.now().plusDays(13).truncatedTo(ChronoUnit.SECONDS)).build();
       gameService.persist(g1);
       gameService.persist(g2);
       
