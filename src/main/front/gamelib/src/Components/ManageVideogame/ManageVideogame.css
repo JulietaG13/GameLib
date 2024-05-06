@@ -16,7 +16,12 @@
 .cover{
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
+}
+.cover img {
+    width: 200px;
+    height: 200px;
+    border-radius: 1em;
 }
 .titleDesc{
     flex-direction: column;

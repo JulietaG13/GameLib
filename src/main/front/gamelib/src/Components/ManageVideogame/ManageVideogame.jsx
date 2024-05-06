@@ -5,7 +5,6 @@ import {Navigate, useParams} from "react-router-dom";
 
 function ManageVideogame({type}) {
     const videogameID = useParams();
-    //TODO: Add image upload
     const [gamePicture, setGamePicture] = useState('');
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -37,7 +36,6 @@ function ManageVideogame({type}) {
                 if (type === "Edit") {
                     axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
                         .then(response => {
-                            //console.log("HOLA QUE TAL")
                             setVideogame(response.data);
                             //console.log(response.data);
                         })
@@ -58,30 +56,15 @@ function ManageVideogame({type}) {
 
     }
 
-    function manageSuccess() {
-        setVideogame({});
-        setNavigate(true);
-    }
-
-    function manageFailure(error) {
-        console.log(error.response)
-        if (error.response.status) {
-            setErrorMessage(error.response.data)
-        } else {
-            setErrorMessage("Something went wrong")
-        }
-        console.error('Error:', error);
-    }
-
     const addVideogame = async e => {
         e.preventDefault()
 
         let dataToSend = {
-            gamePicture: gamePicture,
             name: name,
             description: description,
             releaseDate: releaseDate,
-            lastUpdate: FormatLastUpdateDate(new Date())
+            lastUpdate: FormatLastUpdateDate(new Date()),
+            gamePicture: gamePicture
         };
         await axios.post("http://localhost:4567/newgame", dataToSend, config)
             .then(r =>
@@ -97,11 +80,11 @@ function ManageVideogame({type}) {
         e.preventDefault()
 
         let dataToSend = {
-            gamePicture: "gamePicture ? gamePicture : videogame.gamePicture",
             name: name ? name : videogame.name,
             description: description ? description : videogame.description,
             releaseDate: releaseDate ? releaseDate : videogame.releaseDate,
-            lastUpdate: FormatLastUpdateDate(new Date())
+            lastUpdate: FormatLastUpdateDate(new Date()),
+            gamePicture: gamePicture ? gamePicture : videogame.gamePicture
         };
         await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, dataToSend, config)
             .then(r => manageSuccess())
@@ -141,6 +124,21 @@ function ManageVideogame({type}) {
         setNavigate(true);
     }
 
+    function manageSuccess() {
+        setVideogame({});
+        setNavigate(true);
+    }
+
+    function manageFailure(error) {
+        console.log(error.response)
+        if (error.response.status) {
+            setErrorMessage(error.response.data)
+        } else {
+            setErrorMessage("Something went wrong")
+        }
+        console.error('Error:', error);
+    }
+
     const cancel = () => {
         setNavigate(true);
     }
@@ -168,9 +166,8 @@ function ManageVideogame({type}) {
               style={{width: "50%", justifyContent: 'center'}}>
             <h1 className={'font-bold text-[30px] mb-2 text-center'}>{type} Videogame</h1>
 
-            <div>
-                <input className={'cover'}
-                       type={'File'}
+            <div className={'cover'}>
+                <input type={'File'}
                        accept={'image/*'}
                        onChange={e => {
                            FormatBase64Image(e.target.files[0])
@@ -178,6 +175,13 @@ function ManageVideogame({type}) {
                                .catch(error => console.error(error));
                        }}
                 />
+                {/*{gamePicture === '' ? null : <img src={gamePicture} alt={"gamePicture"}/>}*/}
+                {/*<img src={videogame === null ? gamePicture : videogame.gamePicture} alt={"gamePicture"}/>*/}
+                {Object.keys(videogame).length === 0 ?
+                    (gamePicture === '' ? null : <img src={gamePicture} alt={"gamePicture"}/>) :
+                    (videogame.gamePicture === null ? (gamePicture === '' ? null : <img src={gamePicture} alt={"gamePicture"}/>) :
+                        <img src={videogame.gamePicture} alt={"gamePicture"}/>)
+                }
             </div>
 
             <div className={"titleDesc flex justify-center items-center"}>
@@ -219,7 +223,9 @@ function ManageVideogame({type}) {
                        onClick={cancel}
                 />
 
-                {type === "Edit" ? <input type={"button"} className={'submit cursor-pointer mr-2'} value={"Delete"}
+                {type === "Edit" ? <input type={"button"}
+                                          className={'submit cursor-pointer mr-2'}
+                                          value={"Delete"}
                                           onClick={deleteGame}/> : null}
 
                 <input type={"button"}
