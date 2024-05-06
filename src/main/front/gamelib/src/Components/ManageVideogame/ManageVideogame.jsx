@@ -148,13 +148,18 @@ function ManageVideogame({type}) {
     //     console.log(videogame);
     // }, [videogame]);
 
+    // useEffect(() => {
+    //     console.log("gamePicture has been updated!")
+    //     console.log(gamePicture)
+    //     let sizeInBytes = (gamePicture.length * 3/4);
+    //     let sizeInKilobytes = sizeInBytes / 1024;
+    //     console.log("Size of gamePicture in Kilobytes: ", sizeInKilobytes);
+    // }, [gamePicture]);
+
     useEffect(() => {
-        console.log("gamePicture has been updated!")
-        console.log(gamePicture)
-        let sizeInBytes = (gamePicture.length * 3/4);
-        let sizeInKilobytes = sizeInBytes / 1024;
-        console.log("Size of gamePicture in Kilobytes: ", sizeInKilobytes);
-    }, [gamePicture]);
+        console.log("releaseDate has been updated!")
+        console.log(releaseDate)
+    })
 
     if(navigate) {
         return <Navigate to={"/"}/>;
