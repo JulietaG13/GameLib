@@ -19,12 +19,11 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Lob
-    @Column(nullable = false, columnDefinition = "CLOB")
-    private String gamePicture;
-
     @Column(nullable = false, unique = true)
     private String name;
+
+    @ManyToOne
+    private User owner;
 
     @Column(nullable = false)
     private String description;
@@ -35,10 +34,14 @@ public class Game {
     @Column(nullable = false)
     private LocalDateTime lastUpdate;
 
-    //TODO(gameLogo, gamePicture, gameBanner)
+    //TODO(gameLogo, cover, gameBanner)
 
     @ManyToMany(mappedBy = "games")
     private final Set<Shelf> inShelves = new HashSet<>();
+
+    @Lob
+    @Column(nullable = false, columnDefinition = "CLOB")
+    private String cover = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAkACQAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAKAAoDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9BbX/AILufBvVz8d9WtPjx+zzH4Z8D2cUHhIXep39vqc+orBMLkXlu8Qe5t/tAgET6cs5dDJ/FtByvhb/AMHN/wCx/dfDLw5J4w+OnhWHxdJpds2tpo/hzX205L4xKbgWxmsllMIl37DIqvt27gDkV/OF/wAF2PCel+B/+CvXx90vRdM0/R9MtvFMphtLG3S3gi3Rxu21EAUZZmY4HJYnqa/qH/ZI/wCCXH7MviT9lL4Y6jqP7OnwJ1DUNQ8J6Vc3V1c+AdKlmuZXs4meR3aAlmZiSWJJJJJoA//Z";
 
     @Column(name = "background_image", nullable = false)
     private String backgroundImage = "https://i.pinimg.com/originals/05/ac/17/05ac17fb09440e9071908ef00efef134.png";
@@ -66,11 +69,12 @@ public class Game {
     public Game() {}
 
     private Game(GameBuilder builder) {
-        this.gamePicture = builder.gamePicture;
         this.name = builder.name;
+        this.owner = builder.owner;
         this.description = builder.description;
         this.releaseDate = builder.releaseDate;
         this.lastUpdate = builder.lastUpdate;
+        this.cover = builder.cover;
     }
 
     public static GameBuilder create(String name) {
@@ -79,27 +83,28 @@ public class Game {
 
     public static class GameBuilder {
         private String description;
-        private String gamePicture;
+        private User owner;
         private final String name;
         private LocalDateTime releaseDate;
         private LocalDateTime lastUpdate;
+        private String cover;
 
-//        public GameBuilder gamePicture(Byte[] gamePicture) {
-//            this.gamePicture = gamePicture;
+//        public GameBuilder cover(Byte[] cover) {
+//            this.cover = cover;
 //            return this;
 //        }
 
         public GameBuilder(String name) {
-    this.name = name;
-}
-
-        public GameBuilder gamePicture(String gamePicture) {
-            this.gamePicture = gamePicture;
-            return this;
+            this.name = name;
         }
 
         public GameBuilder description(String description) {
             this.description = description;
+            return this;
+        }
+
+        public GameBuilder owner(User owner) {
+            this.owner = owner;
             return this;
         }
 
@@ -113,12 +118,17 @@ public class Game {
             return this;
         }
 
+        public GameBuilder cover(String cover) {
+            this.cover = cover;
+            return this;
+        }
+
         public Game build() {
-            if (gamePicture == null) {
-                throw new IllegalArgumentException();
-            }
             if (description == null) {
                 throw new IllegalArgumentException();
+            }
+            if (cover == null) {
+                cover = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAkACQAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAKAAoDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9BbX/AILufBvVz8d9WtPjx+zzH4Z8D2cUHhIXep39vqc+orBMLkXlu8Qe5t/tAgET6cs5dDJ/FtByvhb/AMHN/wCx/dfDLw5J4w+OnhWHxdJpds2tpo/hzX205L4xKbgWxmsllMIl37DIqvt27gDkV/OF/wAF2PCel+B/+CvXx90vRdM0/R9MtvFMphtLG3S3gi3Rxu21EAUZZmY4HJYnqa/qH/ZI/wCCXH7MviT9lL4Y6jqP7OnwJ1DUNQ8J6Vc3V1c+AdKlmuZXs4meR3aAlmZiSWJJJJJoA//Z";
             }
             if (releaseDate == null) {
                 releaseDate = LocalDateTime.now();
@@ -140,9 +150,9 @@ public class Game {
     public JsonObject asJson() {
         JsonObject jsonObj = new JsonObject();
         jsonObj.addProperty("id", id);
-        jsonObj.addProperty("gamePicture", gamePicture);
         jsonObj.addProperty("name", name);
         jsonObj.addProperty("description", description);
+        jsonObj.addProperty("cover", cover);
         jsonObj.addProperty("background_image", backgroundImage);
         jsonObj.addProperty("releaseDate", releaseDate.toString());
         jsonObj.addProperty("lastUpdate", lastUpdate.toString());
@@ -151,15 +161,17 @@ public class Game {
     
     // RESTRICTIONS //
 
-    public static Responses isGamePictureValid(String gamePicture) {
-        if (gamePicture == null) {
+    /*
+    public static Responses isGamePictureValid(String cover) {
+        if (cover == null) {
             return new ErrorResponse(404, "Game picture cannot be null!");
         }
-        if (gamePicture.isEmpty()) {
+        if (cover.isEmpty()) {
             return new ErrorResponse(404, "Game picture cannot be empty!");
         }
         return new StatusResponse(200);
     }
+    */
     
     public static Responses isNameValid(String name) {
         if (name == null) {
@@ -219,11 +231,11 @@ public class Game {
     }
 
     public String getGamePicture() {
-        return gamePicture;
+        return cover;
     }
 
-    public void setGamePicture(String gamePicture, LocalDateTime lastUpdate) {
-        this.gamePicture = gamePicture;
+    public void setGamePicture(String cover, LocalDateTime lastUpdate) {
+        this.cover = cover;
         this.setLastUpdate(lastUpdate);
     }
 
@@ -234,6 +246,14 @@ public class Game {
     public void setName(String name, LocalDateTime lastUpdate) {
         this.name = name;
         this.setLastUpdate(lastUpdate);
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
     public String getDescription() {

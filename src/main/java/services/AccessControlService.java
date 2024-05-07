@@ -1,5 +1,6 @@
 package services;
 
+import entities.Rol;
 import entities.responses.ErrorResponse;
 import entities.responses.StatusResponse;
 import entities.responses.UserResponse;
@@ -8,6 +9,7 @@ import interfaces.Responses;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import model.Game;
 import model.User;
 
 import javax.persistence.EntityManager;

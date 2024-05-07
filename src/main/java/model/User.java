@@ -2,10 +2,12 @@ package model;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import entities.Rol;
 import entities.responses.ErrorResponse;
 import entities.responses.StatusResponse;
 import interfaces.Responses;
 
+import javax.naming.NoPermissionException;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Objects;
@@ -32,6 +34,9 @@ public class User {
   
   @Column(nullable = false)
   private Rol rol;
+
+  @OneToMany(mappedBy = "owner")
+  private final Set<Game> developed = new HashSet<>();
   
   @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
   private final Set<Review> reviews = new HashSet<>();
@@ -152,6 +157,12 @@ public class User {
   }
   
   // ADDS? //
+
+  public void addDeveloped(Game game) {
+    if (this.rol != Rol.DEVELOPER) return; //throw new NoPermissionException("User not allowed to have developed games");
+    developed.add(game);
+    game.setOwner(this);
+  }
   
   public void addReview(Review review) {
     reviews.add(review);
@@ -227,6 +238,10 @@ public class User {
   
   public void setRol(Rol rol) {
     this.rol = rol;
+  }
+
+  public Set<Game> getDeveloped() {
+    return developed;
   }
   
   public Set<Review> getLikedReviews() {
