@@ -82,3 +82,15 @@ select{
     font-weight: 700;
     cursor: pointer;
 }
+
+.loadingScreen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    padding: 3%;
+    margin: 10% 20%;
+    /*width: 50em;*/
+    /*height: 10em;*/
+    border-radius: 25px;
+}

@@ -11,7 +11,11 @@ function ManageVideogame({type}) {
     const [releaseDate, setReleaseDate] = useState('');
     const [navigate, setNavigate] = useState(false);
     const [videogame, setVideogame] = useState({});
+
     const [errorMessage, setErrorMessage] = useState('');
+
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
 
     let item = localStorage.getItem('token');
     let config = {
@@ -37,6 +41,7 @@ function ManageVideogame({type}) {
                     axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
                         .then(response => {
                             setVideogame(response.data);
+                            setIsLoading(false);
                             //console.log(response.data);
                         })
                         .catch(error => {
@@ -126,6 +131,7 @@ function ManageVideogame({type}) {
 
     function manageSuccess() {
         setVideogame({});
+        setIsSaving(true);
         setNavigate(true);
     }
 
@@ -163,6 +169,14 @@ function ManageVideogame({type}) {
 
     if(navigate) {
         return <Navigate to={"/"}/>;
+    }
+
+    if (isLoading) {
+        return standByScreen("Loading videogame...");
+
+    }
+    if (isSaving) {
+        return standByScreen("Saving videogame...");
     }
 
     return (
@@ -265,6 +279,14 @@ function FormatLastUpdateDate(lastUpdate) {
         String(lastUpdate.getSeconds()).padStart(2, '0');
     console.log(formatedDate);
     return formatedDate;
+}
+
+function standByScreen(msg) {
+    return (
+        <div className={"loadingScreen"}>
+            <h1>{msg}</h1>
+        </div>
+    )
 }
 
 export default ManageVideogame;

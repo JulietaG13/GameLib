@@ -1,9 +1,10 @@
 .gameView {
     display: flex;
-    align-items: center;
+    /*align-items: center;*/
     justify-content: center;
     flex-direction: column;
-    background-color: #4F2E8C;
+    /*background-color: #4F2E8C;*/
+    background-color: #ffffff;
     padding: 3%;
     margin: 10%;
     border-radius: 25px;
@@ -23,9 +24,15 @@
     width: 30%;
     height: 45%;
 }
+.gamePicture img {
+    width: 100%;
+    height: 100%;
+}
 
 .gameAttributes h1 {
     font-size: 3em;
+    color: #ff6d11;
+    text-decoration: underline;
 }
 .gameAttributes p {
     font-size: 1.2em;
@@ -34,11 +41,20 @@
 .reviews {
     display: flex;
     justify-content: center;
-    width: 100%;
 }
-.reviews input #1 {
-    width: 80%;
+
+.reviewsSection .comment p {
+    word-break: break-all;
 }
-.reviews input #2 {
-    width: 20%;
+
+.loadingScreen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    padding: 3%;
+    margin: 10% 20%;
+    /*width: 50em;*/
+    /*height: 10em;*/
+    border-radius: 25px;
 }
