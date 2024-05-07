@@ -1,20 +1,16 @@
 package entities.responses;
 
+import interfaces.Responses;
 import model.User;
 
-public class UserResponse extends StatusResponse {
+public class UserResponse implements Responses {
   private final User user;
   
-  public UserResponse(boolean hasError, User user, int statusCode, String message) {
-    super(hasError, statusCode, message);
+  public UserResponse(User user) {
     this.user = user;
   }
-  
-  public UserResponse(boolean hasError, User user, int statusCode) {
-    super(hasError, statusCode);
-    this.user = user;
-  }
-  
+
+  @Override
   public User getUser() {
     return user;
   }

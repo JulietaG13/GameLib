@@ -1,12 +1,15 @@
 package services;
 
-import entities.responses.MessageResponse;
+import entities.Rol;
+import entities.responses.ErrorResponse;
 import entities.responses.StatusResponse;
-import entities.Token;
 import entities.responses.UserResponse;
+import entities.Token;
+import interfaces.Responses;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import model.Game;
 import model.User;
 
 import javax.persistence.EntityManager;
@@ -18,62 +21,62 @@ public class AccessControlService {
     
     private static final String SECRET_KEY = "12000dpi0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    public static StatusResponse isFormatValid(User user) {
-        StatusResponse usernameResponse = isUsernameValid(user.getUsername());
+    public static Responses isFormatValid(User user) {
+        Responses usernameResponse = isUsernameValid(user.getUsername());
         if (usernameResponse.hasError()) {
             return usernameResponse;
         }
-        
-        StatusResponse emailResponse = isEmailValid(user.getPassword());
+
+        Responses emailResponse = isEmailValid(user.getEmail());
         if (emailResponse.hasError()) {
             return emailResponse;
         }
-        
-        StatusResponse passwordResponse = isPasswordValid(user.getPassword());
+
+        Responses passwordResponse = isPasswordValid(user.getPassword());
         if (passwordResponse.hasError()) {
             return passwordResponse;
         }
         
-        return new StatusResponse(false, 200);
+        return new StatusResponse(200);
     }
     
-    public static StatusResponse isUsernameValid(String username) {
-        MessageResponse messageResponse = User.isUsernameValid(username);
-        if(messageResponse.hasError()) {
-            return new StatusResponse(true, 404, messageResponse.getMessage());
+    public static Responses isUsernameValid(String username) {
+        Responses response = User.isUsernameValid(username);
+        if(response.hasError()) {
+            return new ErrorResponse(404, response.getMessage());
         }
-        return new StatusResponse(false, 200);
+        return new StatusResponse(200);
     }
     
-    public static StatusResponse isPasswordValid(String password) {
-        MessageResponse messageResponse = User.isPasswordValid(password);
-        if(messageResponse.hasError()) {
-            return new StatusResponse(true, 404, messageResponse.getMessage());
+    public static Responses isPasswordValid(String password) {
+        Responses response = User.isPasswordValid(password);
+        if(response.hasError()) {
+            return new ErrorResponse(404, response.getMessage());
         }
-        return new StatusResponse(false, 200);
+        return new StatusResponse(200);
     }
     
-    public static StatusResponse isEmailValid(String email) {
-        MessageResponse messageResponse = User.isEmailValid(email);
-        if(messageResponse.hasError()) {
-            return new StatusResponse(true, 404, messageResponse.getMessage());
+    public static Responses isEmailValid(String email) {
+        Responses response = User.isEmailValid(email);
+        if(response.hasError()) {
+            return new ErrorResponse(404, response.getMessage());
         }
-        return new StatusResponse(false, 200);
+        return new StatusResponse(200);
     }
 
-    public static StatusResponse isUserAvailable(User user, EntityManager em) {
+    public static Responses isUserAvailable(User user, EntityManager em) {
         final UserService userService = new UserService(em);
 
         if (userService.usernameInUse(user)) {
-            return new StatusResponse(true, 403, "Username already exists!");
+            return new ErrorResponse(403, "Username already exists!");
         }
         if (userService.emailInUse(user)) {
-            return new StatusResponse(true, 403, "Email already in use!");
+            return new ErrorResponse(403, "Email already in use!");
         }
-        return new StatusResponse(false, 200);
+        return new StatusResponse(200);
     }
 
-    public static UserResponse authenticateUser(String username, String password, EntityManager entityManager) {
+    public static Responses authenticateUser(String username, String password, EntityManager entityManager) {
         UserService userService = new UserService(entityManager);
         EntityTransaction tx = entityManager.getTransaction();
 
@@ -82,13 +85,13 @@ public class AccessControlService {
         tx.commit();
 
         if (possibleUser.isEmpty()) {
-            return new UserResponse(true, null, 404, "User does not exist!");
+            return new ErrorResponse( 404, "User does not exist!");
         }
 
         if (!possibleUser.get().getPassword().equals(password)) {
-            return new UserResponse(true, null, 404, "Password is incorrect!");
+            return new ErrorResponse( 404, "Password is incorrect!");
         }
-        return new UserResponse(false, possibleUser.get(), 200);
+        return new UserResponse(possibleUser.get());
     }
     
     //   TOKENS   //

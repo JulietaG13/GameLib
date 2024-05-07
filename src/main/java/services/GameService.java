@@ -1,8 +1,12 @@
 package services;
 
+import entities.Rol;
+import entities.responses.ErrorResponse;
 import entities.responses.GameResponse;
+import interfaces.Responses;
 import model.Game;
 import model.Tag;
+import model.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -74,16 +78,20 @@ public class GameService {
         entityManager.createQuery("DELETE FROM Game").executeUpdate();
     }
     
-    public GameResponse update(Long id, Game gameUpdate, LocalDateTime lastUpdate) {
+    public Responses update(User user, Long id, Game gameUpdate, LocalDateTime lastUpdate) {
         EntityTransaction tx = entityManager.getTransaction();
         
         tx.begin();
         Optional<Game> managedGame = findById(id);
         if (managedGame.isEmpty()) {
-            return new GameResponse(true, "Theres no game with id " + id + "!");
+            return new ErrorResponse(404, "Theres no game with id " + id + "!");
         }
         tx.commit();
         Game game = managedGame.get();
+
+        if (!isUserAllowedToManageGame(user, game)) {
+            return new ErrorResponse(403, "You are not allowed to change the game!");
+        }
 
         if (gameUpdate.getGamePicture() != null && !game.getGamePicture().equals(gameUpdate.getGamePicture())) {
             game.setGamePicture(gameUpdate.getGamePicture(), lastUpdate);
@@ -105,29 +113,42 @@ public class GameService {
         
         persist(game);
         
-        return new GameResponse(false, game, "OK!");
+        return new GameResponse(game);
     }
     
-    public GameResponse addTag(Game game, Tag tag) {
+    public Responses addTag(User user, Game game, Tag tag) {
         EntityTransaction tx = entityManager.getTransaction();
         
         tx.begin();
         Optional<Game> managedGame = findById(game.getId());
         Optional<Tag> managedTag = new TagService(entityManager).findById(tag.getId());
         if (managedGame.isEmpty()) {
-            return new GameResponse(true, "Theres no game with id " + game.getId() + "!");
+            return new ErrorResponse(404, "Theres no game with id " + game.getId() + "!");
         }
         if (managedTag.isEmpty()) {
-            return new GameResponse(true, "Theres no tag with id " + tag.getId() + "!");
+            return new ErrorResponse(404, "Theres no tag with id " + tag.getId() + "!");
         }
         tx.commit();
+
+        if (!isUserAllowedToManageGame(user, managedGame.get())) {
+            return new ErrorResponse(403, "You are not allowed to change the game!");
+        }
         
         managedGame.get().addTag(managedTag.get());
         persist(managedGame.get());
         
-        return new GameResponse(false, managedGame.get(), "OK!");
+        return new GameResponse(managedGame.get());
     }
-    
+
+    private boolean isUserAllowedToManageGame(User user, Game game) {
+        if (user.getRol() == Rol.ADMIN) return true;
+        return user.getRol() == Rol.DEVELOPER && user.equals(game.getOwner());
+    }
+
+    public boolean isUserAllowed(User user) {
+        return user.getRol() != Rol.USER;
+    }
+
     public Game persist(Game game) {
         EntityTransaction tx = entityManager.getTransaction();
         tx.begin();

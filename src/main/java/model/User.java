@@ -2,8 +2,12 @@ package model;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import entities.responses.MessageResponse;
+import entities.Rol;
+import entities.responses.ErrorResponse;
+import entities.responses.StatusResponse;
+import interfaces.Responses;
 
+import javax.naming.NoPermissionException;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Objects;
@@ -30,6 +34,9 @@ public class User {
   
   @Column(nullable = false)
   private Rol rol;
+
+  @OneToMany(mappedBy = "owner")
+  private final Set<Game> developed = new HashSet<>();
   
   @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
   private final Set<Review> reviews = new HashSet<>();
@@ -119,37 +126,43 @@ public class User {
   
   // RESTRICTIONS //
   
-  public static MessageResponse isUsernameValid(String username) {
+  public static Responses isUsernameValid(String username) {
     if (username == null) {
-      return new MessageResponse(true, "Username cannot be null!");
+      return new ErrorResponse(404, "Username cannot be null!");
     }
-    if (username.equals("")) {
-      return new MessageResponse(true, "Username cannot be empty!");
+    if (username.isEmpty()) {
+      return new ErrorResponse(404, "Username cannot be empty!");
     }
-    return new MessageResponse(false);
+    return new StatusResponse(200);
   }
   
-  public static MessageResponse isPasswordValid(String password) {
+  public static Responses isPasswordValid(String password) {
     if (password == null) {
-      return new MessageResponse(true, "Password cannot be null!");
+      return new ErrorResponse(404, "Password cannot be null!");
     }
-    if (password.equals("")) {
-      return new MessageResponse(true, "Password cannot be empty!");
+    if (password.isEmpty()) {
+      return new ErrorResponse(404, "Password cannot be empty!");
     }
-    return new MessageResponse(false);
+    return new StatusResponse(200);
   }
   
-  public static MessageResponse isEmailValid(String email) {
+  public static Responses isEmailValid(String email) {
     if (email == null) {
-      return new MessageResponse(true, "Email cannot be null!");
+      return new ErrorResponse(404, "Email cannot be null!");
     }
-    if (email.equals("")) {
-      return new MessageResponse(true, "Email cannot be empty!");
+    if (email.isEmpty()) {
+      return new ErrorResponse(404, "Email cannot be empty!");
     }
-    return new MessageResponse(false);
+    return new StatusResponse(200);
   }
   
   // ADDS? //
+
+  public void addDeveloped(Game game) {
+    if (this.rol != Rol.DEVELOPER) return; //throw new NoPermissionException("User not allowed to have developed games");
+    developed.add(game);
+    game.setOwner(this);
+  }
   
   public void addReview(Review review) {
     reviews.add(review);
@@ -225,6 +238,10 @@ public class User {
   
   public void setRol(Rol rol) {
     this.rol = rol;
+  }
+
+  public Set<Game> getDeveloped() {
+    return developed;
   }
   
   public Set<Review> getLikedReviews() {

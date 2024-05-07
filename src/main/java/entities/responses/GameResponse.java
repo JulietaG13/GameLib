@@ -1,35 +1,16 @@
 package entities.responses;
 
-import interfaces.Response;
+import interfaces.Responses;
 import model.Game;
 
-public class GameResponse implements Response {
-  private final boolean hasError;
+public class GameResponse implements Responses {
   private final Game game;
-  private final String message;
   
-  public GameResponse(boolean hasError, Game game, String message) {
-    this.hasError = hasError;
-    this.message = message;
+  public GameResponse(Game game) {
     this.game = game;
   }
-  
-  public GameResponse(boolean hasError, String message) {
-    this.hasError = hasError;
-    this.message = message;
-    this.game = null;
-  }
-  
+
   @Override
-  public boolean hasError() {
-    return hasError;
-  }
-  
-  @Override
-  public String getMessage() {
-    return message;
-  }
-  
   public Game getGame() {
     return game;
   }
