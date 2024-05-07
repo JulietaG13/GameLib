@@ -1,0 +1,89 @@
+.gameView {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+    /*background-color: white;*/
+}
+
+.gameView h2 {
+    font-size: 2em;
+    color: white;
+}
+.gameView p {
+    color: white;
+    word-break: break-all;
+}
+
+.titleDiv {
+    padding: 2%;
+
+    /*background-color: green;*/
+}
+.titleDiv h1 {
+    font-size: 3em;
+    color: #ff6d11;
+    text-decoration: underline;
+    word-break: break-all;
+}
+
+.dataDiv {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    background-color: #3f21aa;
+}
+.dataDiv div {
+    padding: 1%;
+}
+
+.gamePictureDiv {
+    width: 100%;
+}
+.gamePictureDiv img {
+    width: 100%;
+    height: 100%;
+}
+
+.newsDiv {
+    display: flex;
+    align-items: flex-start;
+    width: 50%;
+    height: 100%;
+}
+
+.moreDataDiv {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+
+    /*margin-left: 30%;*/
+    /*background-color: red;*/
+}
+
+.attributesDiv {
+    width: 100%;
+    border-bottom: 0.1em solid white;
+}
+
+.reviewsDiv img {
+    width: 7%;
+    height: 7%;
+}
+
+.reviewDiv {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    margin: 0.7em;
+    background-color: #5b3fbf;
+}
+
+#special {
+    opacity: 0;
+}
+
+/*img {*/
+/*    width: 100px;*/
+/*    height: 100px;*/
+/*}*/

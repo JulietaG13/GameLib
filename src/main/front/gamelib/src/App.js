@@ -3,7 +3,7 @@ import {BrowserRouter, Routes, Route} from "react-router-dom"
 import Login from "./Components/LoginSignup/Login";
 import {Register} from "./Components/LoginSignup/register";
 import ABM from "./Components/ManageVideogame/ManageVideogame";
-import VideogameView from "./Components/VideogameView/VideogameView";
+import VideogameView from "./Components/VideogameView/VideogameView2";
 import Home from "./Components/Home/Home";
 import Library from "./Components/TheLibrary/Library";
 import HeaderV2 from "./Components/Header/HeaderV2";
