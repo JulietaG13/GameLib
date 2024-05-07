@@ -4,7 +4,10 @@ import adapters.GsonAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import entities.responses.MessageResponse;
+import entities.responses.ErrorResponse;
+import entities.responses.StatusResponse;
+import interfaces.Responses;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -148,38 +151,38 @@ public class Game {
     
     // RESTRICTIONS //
 
-    public static MessageResponse isGamePictureValid(String gamePicture) {
+    public static Responses isGamePictureValid(String gamePicture) {
         if (gamePicture == null) {
-            return new MessageResponse(true, "Game picture cannot be null!");
+            return new ErrorResponse(404, "Game picture cannot be null!");
         }
-        if (gamePicture.equals("")) {
-            return new MessageResponse(true, "Game picture cannot be empty!");
+        if (gamePicture.isEmpty()) {
+            return new ErrorResponse(404, "Game picture cannot be empty!");
         }
-        return new MessageResponse(false);
+        return new StatusResponse(200);
     }
     
-    public static MessageResponse isNameValid(String name) {
+    public static Responses isNameValid(String name) {
         if (name == null) {
-            return new MessageResponse(true, "Name cannot be null!");
+            return new ErrorResponse(404, "Name cannot be null!");
         }
-        if (name.equals("")) {
-            return new MessageResponse(true, "Name cannot be empty!");
+        if (name.isEmpty()) {
+            return new ErrorResponse(404, "Name cannot be empty!");
         }
-        return new MessageResponse(false);
+        return new StatusResponse(200);
     }
     
-    public static MessageResponse isDescriptionValid(String description) {
+    public static Responses isDescriptionValid(String description) {
         if (description == null) {
-            return new MessageResponse(true, "Description cannot be null!");
+            return new ErrorResponse(404, "Description cannot be null!");
         }
-        return new MessageResponse(false);
+        return new StatusResponse(200);
     }
 
-    public static MessageResponse isReleaseDateValid(LocalDateTime releaseDate) {
+    public static Responses isReleaseDateValid(LocalDateTime releaseDate) {
         if (releaseDate == null) {
-            return new MessageResponse(true, "Release date cannot be null!");
+            return new ErrorResponse(404, "Release date cannot be null!");
         }
-        return new MessageResponse(false);
+        return new StatusResponse(200);
     }
     
     // ADDS? //

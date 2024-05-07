@@ -2,7 +2,9 @@ package model;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import entities.responses.MessageResponse;
+import entities.responses.ErrorResponse;
+import entities.responses.StatusResponse;
+import interfaces.Responses;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -119,34 +121,34 @@ public class User {
   
   // RESTRICTIONS //
   
-  public static MessageResponse isUsernameValid(String username) {
+  public static Responses isUsernameValid(String username) {
     if (username == null) {
-      return new MessageResponse(true, "Username cannot be null!");
+      return new ErrorResponse(404, "Username cannot be null!");
     }
-    if (username.equals("")) {
-      return new MessageResponse(true, "Username cannot be empty!");
+    if (username.isEmpty()) {
+      return new ErrorResponse(404, "Username cannot be empty!");
     }
-    return new MessageResponse(false);
+    return new StatusResponse(200);
   }
   
-  public static MessageResponse isPasswordValid(String password) {
+  public static Responses isPasswordValid(String password) {
     if (password == null) {
-      return new MessageResponse(true, "Password cannot be null!");
+      return new ErrorResponse(404, "Password cannot be null!");
     }
-    if (password.equals("")) {
-      return new MessageResponse(true, "Password cannot be empty!");
+    if (password.isEmpty()) {
+      return new ErrorResponse(404, "Password cannot be empty!");
     }
-    return new MessageResponse(false);
+    return new StatusResponse(200);
   }
   
-  public static MessageResponse isEmailValid(String email) {
+  public static Responses isEmailValid(String email) {
     if (email == null) {
-      return new MessageResponse(true, "Email cannot be null!");
+      return new ErrorResponse(404, "Email cannot be null!");
     }
-    if (email.equals("")) {
-      return new MessageResponse(true, "Email cannot be empty!");
+    if (email.isEmpty()) {
+      return new ErrorResponse(404, "Email cannot be empty!");
     }
-    return new MessageResponse(false);
+    return new StatusResponse(200);
   }
   
   // ADDS? //

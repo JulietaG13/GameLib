@@ -1,6 +1,8 @@
 package services;
 
+import entities.responses.ErrorResponse;
 import entities.responses.GameResponse;
+import interfaces.Responses;
 import model.Game;
 import model.Tag;
 
@@ -74,13 +76,13 @@ public class GameService {
         entityManager.createQuery("DELETE FROM Game").executeUpdate();
     }
     
-    public GameResponse update(Long id, Game gameUpdate, LocalDateTime lastUpdate) {
+    public Responses update(Long id, Game gameUpdate, LocalDateTime lastUpdate) {
         EntityTransaction tx = entityManager.getTransaction();
         
         tx.begin();
         Optional<Game> managedGame = findById(id);
         if (managedGame.isEmpty()) {
-            return new GameResponse(true, "Theres no game with id " + id + "!");
+            return new ErrorResponse(404, "Theres no game with id " + id + "!");
         }
         tx.commit();
         Game game = managedGame.get();
@@ -105,27 +107,27 @@ public class GameService {
         
         persist(game);
         
-        return new GameResponse(false, game, "OK!");
+        return new GameResponse(game);
     }
     
-    public GameResponse addTag(Game game, Tag tag) {
+    public Responses addTag(Game game, Tag tag) {
         EntityTransaction tx = entityManager.getTransaction();
         
         tx.begin();
         Optional<Game> managedGame = findById(game.getId());
         Optional<Tag> managedTag = new TagService(entityManager).findById(tag.getId());
         if (managedGame.isEmpty()) {
-            return new GameResponse(true, "Theres no game with id " + game.getId() + "!");
+            return new ErrorResponse(404, "Theres no game with id " + game.getId() + "!");
         }
         if (managedTag.isEmpty()) {
-            return new GameResponse(true, "Theres no tag with id " + tag.getId() + "!");
+            return new ErrorResponse(404, "Theres no tag with id " + tag.getId() + "!");
         }
         tx.commit();
         
         managedGame.get().addTag(managedTag.get());
         persist(managedGame.get());
         
-        return new GameResponse(false, managedGame.get(), "OK!");
+        return new GameResponse(managedGame.get());
     }
     
     public Game persist(Game game) {

@@ -2,11 +2,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import entities.responses.GameResponse;
-import entities.responses.MessageResponse;
-import entities.responses.StatusResponse;
 import entities.Token;
-import entities.responses.UserResponse;
+import interfaces.Responses;
 import model.*;
 import persistence.Database;
 import services.*;
@@ -111,9 +108,9 @@ public class Application {
     Spark.post("/newuser", "application/json", (req, resp) -> {
       final User user = User.fromJson(req.body());
       
-      StatusResponse response = AccessControlService.isFormatValid(user);
+      Responses response = AccessControlService.isFormatValid(user);
       if (response.hasError()) {
-        resp.status(response.statusCode);
+        resp.status(response.getStatusCode());
         return response.getMessage();
       }
       
@@ -123,7 +120,7 @@ public class Application {
       
       response = AccessControlService.isUserAvailable(user, em);
       if (response.hasError()) {
-        resp.status(response.statusCode);
+        resp.status(response.getStatusCode());
         return response.getMessage();
       }
       
@@ -173,22 +170,22 @@ public class Application {
       final User user = User.fromJson(req.body());
       final String username = user.getUsername();
       final String password = user.getPassword();
-      
-      StatusResponse usernameResponse = AccessControlService.isUsernameValid(username);
+
+      Responses usernameResponse = AccessControlService.isUsernameValid(username);
       if (usernameResponse.hasError()) {
-        resp.status(usernameResponse.statusCode);
+        resp.status(usernameResponse.getStatusCode());
         return usernameResponse.getMessage();
       }
-      
-      StatusResponse passwordResponse = AccessControlService.isPasswordValid(password);
+
+      Responses passwordResponse = AccessControlService.isPasswordValid(password);
       if (passwordResponse.hasError()) {
-        resp.status(passwordResponse.statusCode);
+        resp.status(passwordResponse.getStatusCode());
         return passwordResponse.getMessage();
       }
-      
-      UserResponse authResponse = AccessControlService.authenticateUser(username, password, em);
+
+      Responses authResponse = AccessControlService.authenticateUser(username, password, em);
       if (authResponse.hasError()) {
-        resp.status(authResponse.statusCode);
+        resp.status(authResponse.getStatusCode());
         return authResponse.getMessage();
       }
       resp.status(200);
@@ -213,25 +210,25 @@ public class Application {
       final Game game = Game.fromJson(req.body());
       final GameService games = new GameService(em);
 
-      MessageResponse pictureResponse = Game.isGamePictureValid(game.getGamePicture());
+      Responses pictureResponse = Game.isGamePictureValid(game.getGamePicture());
       if (pictureResponse.hasError()) {
         resp.status(404);
         return pictureResponse.getMessage();
       }
       
-      MessageResponse titleResponse = Game.isNameValid(game.getName());
+      Responses titleResponse = Game.isNameValid(game.getName());
       if (titleResponse.hasError()) {
         resp.status(404);
         return titleResponse.getMessage();
       }
       
-      MessageResponse descriptionResponse = Game.isDescriptionValid(game.getDescription());
+      Responses descriptionResponse = Game.isDescriptionValid(game.getDescription());
       if (descriptionResponse.hasError()) {
         resp.status(404);
         return descriptionResponse.getMessage();
       }
       
-      MessageResponse releaseDateResponse = Game.isReleaseDateValid(game.getReleaseDate());
+      Responses releaseDateResponse = Game.isReleaseDateValid(game.getReleaseDate());
       if (releaseDateResponse.hasError()) {
         resp.status(404);
         return releaseDateResponse.getMessage();
@@ -295,7 +292,7 @@ public class Application {
       //LocalDateTime lastUpdate = LocalDateTime.now();
       LocalDateTime lastUpdate = gameUpdate.getLastUpdate(); //TODO(have front send LocalDateTime)
       
-      GameResponse gameResponse = gameService.update(id, gameUpdate, lastUpdate);
+      Responses gameResponse = gameService.update(id, gameUpdate, lastUpdate);
       if (gameResponse.hasError()) {
         resp.status(404);
         return gameResponse.getMessage();

@@ -1,35 +1,28 @@
 package entities.responses;
 
-import interfaces.Response;
+import interfaces.Responses;
 
-public class StatusResponse implements Response {
-    private final boolean hasError;
-    private final String message;
-    public final int statusCode;
+public class StatusResponse implements Responses {
+    private int status;
+    private Responses response;
 
-    public StatusResponse(boolean hasError, int statusCode, String message) {
-        this.hasError = hasError;
-        this.statusCode = statusCode;
-        this.message = message;
+    public StatusResponse(int status, Responses response) {
+        this.status = status;
+        this.response = response;
     }
 
-    public StatusResponse(boolean hasError, int statusCode) {
-        this.hasError = hasError;
-        this.statusCode = statusCode;
-        if (hasError) {
-            this.message = "Error.";
-        } else {
-            this.message = "OK!";
-        }
+    public StatusResponse(int status) {
+        this.status = status;
+        this.response = null;
     }
-    
+
     @Override
-    public boolean hasError() {
-        return hasError;
+    public Responses getResponse() {
+        return response;
     }
-    
+
     @Override
-    public String getMessage() {
-        return message;
+    public Integer getStatusCode() {
+        return status;
     }
 }
