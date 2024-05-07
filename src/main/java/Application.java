@@ -13,6 +13,7 @@ import spark.Spark;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -143,6 +144,29 @@ public class Application {
       resp.status(201);
       
       return user.asJson().toString();
+    });
+
+    Spark.get("/getuser/:username", "application/json", (req, resp) -> {
+      final GameService gameService = new GameService(factory.createEntityManager());
+
+      String username = req.params(":username");
+      if (username == null || username.isEmpty()) {
+        resp.status(404);
+        return "Username not found!";
+      }
+
+      UserService userService = new UserService(em);
+      Optional<User> user = userService.findByUsername(username);
+
+      if (user.isEmpty()) {
+        resp.status(404);
+        return "There is no User " + username +"!";
+      }
+
+      resp.type("application/json");
+      resp.status(201);
+
+      return user.get().asJson();
     });
 
     Spark.post("/deleteuser/:username", "application/json", (req, resp) -> {
