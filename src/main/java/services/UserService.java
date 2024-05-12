@@ -1,7 +1,5 @@
 package services;
 
-
-import model.Game;
 import model.User;
 
 import javax.persistence.EntityManager;
@@ -23,7 +21,7 @@ public class UserService {
 
     public Optional<User> findByUsername(String username) {
         return entityManager
-                .createQuery("SELECT u FROM User u WHERE u.username LIKE :username", User.class)
+                .createQuery("SELECT u FROM User u WHERE LOWER(u.username) LIKE LOWER(:username)", User.class)
                 .setParameter("username", username).getResultList()
                 .stream()
                 .findFirst();
@@ -31,7 +29,7 @@ public class UserService {
 
     public Optional<User> findByEmail(String email) {
         return entityManager
-                .createQuery("SELECT u FROM User u WHERE u.email LIKE :email", User.class)
+                .createQuery("SELECT u FROM User u WHERE LOWER(u.email) LIKE LOWER(:email)", User.class)
                 .setParameter("email", email).getResultList()
                 .stream()
                 .findFirst();

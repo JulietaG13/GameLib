@@ -7,11 +7,11 @@ import VideogameView from "./Components/VideogameView/VideogameView2";
 import Home from "./Components/Home/Home";
 import Library from "./Components/TheLibrary/Library";
 import HeaderV2 from "./Components/Header/HeaderV2";
+import Profile from "./Components/Profile/Profile";
 
 function App() {
     return <BrowserRouter>
         <div className={'min-h-[100vh]'}>
-            <HeaderV2/>
             <Routes>
                 <Route path="/library" element={<Library/>}/>
                 <Route path="/" element={<Home/>}/>
@@ -20,6 +20,7 @@ function App() {
                 <Route path="/addVideogame" element={<ABM type={"Add"}/>}/>
                 <Route path="/editVideogame/:videogameID" element={<ABM type={"Edit"}/>}/>
                 <Route path="/videogame/:videogameID" element={<VideogameView/>}/>
+                <Route path="/profile/:username" element={<Profile/>}/>
             </Routes>
         </div>
     </BrowserRouter>
