@@ -29,7 +29,7 @@
 
 .dataDiv {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     flex-direction: row;
     background-color: #3f21aa;
 }
