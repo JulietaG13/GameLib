@@ -1,9 +1,11 @@
+body {
+    background-color: #3f21aa;
+}
+
 .gameView {
     display: flex;
     justify-content: center;
     flex-direction: column;
-
-    /*background-color: white;*/
 }
 
 .gameView h2 {
@@ -16,9 +18,8 @@
 }
 
 .titleDiv {
+    background-color: #e5e7eb;
     padding: 2%;
-
-    /*background-color: green;*/
 }
 .titleDiv h1 {
     font-size: 3em;
@@ -31,7 +32,6 @@
     display: flex;
     align-items: flex-start;
     flex-direction: row;
-    background-color: #3f21aa;
 }
 .dataDiv div {
     padding: 1%;
@@ -56,9 +56,6 @@
     display: flex;
     align-items: flex-start;
     flex-direction: column;
-
-    /*margin-left: 30%;*/
-    /*background-color: red;*/
 }
 
 .attributesDiv {
@@ -82,8 +79,3 @@
 #special {
     opacity: 0;
 }
-
-/*img {*/
-/*    width: 100px;*/
-/*    height: 100px;*/
-/*}*/
