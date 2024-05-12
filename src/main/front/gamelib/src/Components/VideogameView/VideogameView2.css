@@ -37,10 +37,10 @@
     padding: 1%;
 }
 
-.gamePictureDiv {
+.coverDiv {
     width: 100%;
 }
-.gamePictureDiv img {
+.coverDiv img {
     width: 100%;
     height: 100%;
 }

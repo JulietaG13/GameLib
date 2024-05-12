@@ -5,7 +5,7 @@ import {Navigate, useParams} from "react-router-dom";
 
 function ManageVideogame({type}) {
     const videogameID = useParams();
-    const [gamePicture, setGamePicture] = useState('');
+    const [cover, setCover] = useState('');
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [releaseDate, setReleaseDate] = useState('');
@@ -48,6 +48,8 @@ function ManageVideogame({type}) {
                             console.error('Error:', error);
                             setNavigate(true);
                         });
+                } else {
+                    setIsLoading(false);
                 }
             });
     }, []);
@@ -69,7 +71,7 @@ function ManageVideogame({type}) {
             description: description,
             releaseDate: releaseDate,
             lastUpdate: FormatLastUpdateDate(new Date()),
-            gamePicture: gamePicture
+            cover: cover
         };
         await axios.post("http://localhost:4567/newgame", dataToSend, config)
             .then(r =>
@@ -89,7 +91,7 @@ function ManageVideogame({type}) {
             description: description ? description : videogame.description,
             releaseDate: releaseDate ? releaseDate : videogame.releaseDate,
             lastUpdate: FormatLastUpdateDate(new Date()),
-            gamePicture: gamePicture ? gamePicture : videogame.gamePicture
+            cover: cover ? cover : videogame.cover
         };
         await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, dataToSend, config)
             .then(r => manageSuccess())
@@ -154,13 +156,13 @@ function ManageVideogame({type}) {
     //     console.log(videogame);
     // }, [videogame]);
 
-    // useEffect(() => {
-    //     console.log("gamePicture has been updated!")
-    //     console.log(gamePicture)
-    //     let sizeInBytes = (gamePicture.length * 3/4);
-    //     let sizeInKilobytes = sizeInBytes / 1024;
-    //     console.log("Size of gamePicture in Kilobytes: ", sizeInKilobytes);
-    // }, [gamePicture]);
+    useEffect(() => {
+        console.log("cover has been updated!")
+        console.log(cover)
+        let sizeInBytes = (cover.length * 3/4);
+        let sizeInKilobytes = sizeInBytes / 1024;
+        console.log("Size of cover in Kilobytes: ", sizeInKilobytes);
+    }, [cover]);
 
     useEffect(() => {
         console.log("releaseDate has been updated!")
@@ -190,16 +192,16 @@ function ManageVideogame({type}) {
                        accept={'image/*'}
                        onChange={e => {
                            FormatBase64Image(e.target.files[0])
-                               .then(result => setGamePicture(result))
+                               .then(result => setCover(result))
                                .catch(error => console.error(error));
                        }}
                 />
-                {/*{gamePicture === '' ? null : <img src={gamePicture} alt={"gamePicture"}/>}*/}
-                {/*<img src={videogame === null ? gamePicture : videogame.gamePicture} alt={"gamePicture"}/>*/}
+                {/*{cover === '' ? null : <img src={cover} alt={"cover"}/>}*/}
+                {/*<img src={videogame === null ? cover : videogame.cover} alt={"cover"}/>*/}
                 {Object.keys(videogame).length === 0 ?
-                    (gamePicture === '' ? null : <img src={gamePicture} alt={"gamePicture"}/>) :
-                    (videogame.gamePicture === null ? (gamePicture === '' ? null : <img src={gamePicture} alt={"gamePicture"}/>) :
-                        <img src={videogame.gamePicture} alt={"gamePicture"}/>)
+                    (cover === '' ? null : <img src={cover} alt={"cover1"}/>) :
+                    (videogame.cover === null ? (cover === '' ? null : <img src={cover} alt={"cover2"}/>) :
+                        <img src={videogame.cover} alt={"cover3"}/>)
                 }
             </div>
 

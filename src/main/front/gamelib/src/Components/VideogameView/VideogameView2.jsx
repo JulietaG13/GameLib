@@ -60,8 +60,8 @@ function VideogameView2() {
             </div>
 
             <div className={"dataDiv"} >
-                <div className={"gamePictureDiv"} >
-                    <img src={videogame.gamePicture} alt={"Game Cover"} />
+                <div className={"coverDiv"} >
+                    <img src={videogame.cover} alt={"Game Cover"} />
                 </div>
 
                 <div className={"moreDataDiv"} >
