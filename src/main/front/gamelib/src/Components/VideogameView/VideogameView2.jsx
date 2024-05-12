@@ -85,19 +85,18 @@ function VideogameView2() {
                             <input id={'2'} type={"button"} value={"Publish"} onClick={publishReview}/>
                         </form>
 
-                        {reviews.length === 0 &&
+                        {reviews.length === 0 ?
                             <div className={"reviewDiv"}>
                                 <img id={"special"} src={user_icon} alt={"user_icon"}/>
                                 <p>Be the first one to review!</p>
-                            </div>
+                            </div> :
+                            reviews.map ((review) => (
+                                <div key={review.id} className={"reviewDiv"}>
+                                    <img src={user_icon} alt={"user_icon"}/>
+                                    <p>{review.text}</p>
+                                </div>
+                            ))
                         }
-
-                        {reviews.map ((review) => (
-                            <div key={review.id} className={"reviewDiv"}>
-                                <img src={user_icon} alt={"user_icon"}/>
-                                <p>{review.text}</p>
-                            </div>
-                        ))}
                     </div>
                 </div>
 

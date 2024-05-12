@@ -1,11 +1,8 @@
-body {
-    background-color: #3f21aa;
-}
-
 .gameView {
     display: flex;
-    justify-content: center;
     flex-direction: column;
+    height: 100vh;
+    background-color: #3f21aa;
 }
 
 .gameView h2 {
@@ -32,6 +29,7 @@ body {
     display: flex;
     align-items: flex-start;
     flex-direction: row;
+    /*background-color: #3f21aa;*/
 }
 .dataDiv div {
     padding: 1%;
