@@ -16,15 +16,14 @@ function ManageVideogame({type}) {
 
     const [errorMessage, setErrorMessage] = useState('');
 
-    const [navigate, setNavigate] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [navigate, setNavigate] = useState(false);
 
-    let item = localStorage.getItem('token');
     let config = {
         headers: {
             'Content-Type': 'application/json',
-            'token': item
+            'token': localStorage.getItem('token')
         }
     };
 
@@ -32,7 +31,7 @@ function ManageVideogame({type}) {
         axios.post('http://localhost:4567/tokenvalidation', {}, {
             headers: {
                 'Content-Type': 'application/json',
-                'token': item
+                'token': localStorage.getItem('token')
             }
         })
             .catch(error => {
@@ -127,7 +126,7 @@ function ManageVideogame({type}) {
         await axios.delete(`http://localhost:4567/deletegame/${videogameID.videogameID}`, {
             headers: {
                 'Content-Type': 'application/json',
-                'token': item
+                'token': localStorage.getItem('token')
             }
         })
             .then(response => {
