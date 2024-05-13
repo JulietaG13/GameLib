@@ -34,7 +34,7 @@ public class Game {
     @Column(nullable = false)
     private LocalDateTime lastUpdate;
 
-    //TODO(gameLogo, cover, gameBanner)
+    //TODO(gameLogo, gameBanner)
 
     @ManyToMany(mappedBy = "games")
     private final Set<Shelf> inShelves = new HashSet<>();
@@ -88,11 +88,6 @@ public class Game {
         private LocalDateTime releaseDate;
         private LocalDateTime lastUpdate;
         private String cover;
-
-//        public GameBuilder cover(Byte[] cover) {
-//            this.cover = cover;
-//            return this;
-//        }
 
         public GameBuilder(String name) {
             this.name = name;
