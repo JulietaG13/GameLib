@@ -5,15 +5,18 @@ import {Navigate, useParams} from "react-router-dom";
 
 function ManageVideogame({type}) {
     const videogameID = useParams();
+    const [tags, setTags] = useState([]);
+
     const [cover, setCover] = useState('');
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [releaseDate, setReleaseDate] = useState('');
-    const [navigate, setNavigate] = useState(false);
+    const [selectedTags, setSelectedTags] = useState([]);
     const [videogame, setVideogame] = useState({});
 
     const [errorMessage, setErrorMessage] = useState('');
 
+    const [navigate, setNavigate] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -37,12 +40,21 @@ function ManageVideogame({type}) {
                 setNavigate(true);
             })
             .then(response => {
+                axios.get('http://localhost:4567/tags')
+                    .catch(error => {
+                        console.error('Error:', error);
+                        setNavigate(true);
+                    })
+                    .then(response => {
+                        setTags(response.data);
+                        console.log(response.data);
+                    })
                 if (type === "Edit") {
                     axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
                         .then(response => {
                             setVideogame(response.data);
                             setIsLoading(false);
-                            //console.log(response.data);
+                            console.log(response.data);
                         })
                         .catch(error => {
                             console.error('Error:', error);
@@ -89,6 +101,7 @@ function ManageVideogame({type}) {
         let dataToSend = {
             name: name ? name : videogame.name,
             description: description ? description : videogame.description,
+            // selectedTags: selectedTags,
             releaseDate: releaseDate ? releaseDate : videogame.releaseDate,
             lastUpdate: FormatLastUpdateDate(new Date()),
             cover: cover ? cover : videogame.cover
@@ -156,23 +169,22 @@ function ManageVideogame({type}) {
     //     console.log(videogame);
     // }, [videogame]);
 
-    useEffect(() => {
-        console.log("cover has been updated!")
-        console.log(cover)
-        let sizeInBytes = (cover.length * 3/4);
-        let sizeInKilobytes = sizeInBytes / 1024;
-        console.log("Size of cover in Kilobytes: ", sizeInKilobytes);
-    }, [cover]);
+    // useEffect(() => {
+    //     console.log("cover has been updated!")
+    //     console.log(cover)
+    //     let sizeInBytes = (cover.length * 3/4);
+    //     let sizeInKilobytes = sizeInBytes / 1024;
+    //     console.log("Size of cover in Kilobytes: ", sizeInKilobytes);
+    // }, [cover]);
 
     useEffect(() => {
-        console.log("releaseDate has been updated!")
-        console.log(releaseDate)
+        console.log("tags have been updated: ");
+        console.log(selectedTags);
     })
 
     if(navigate) {
         return <Navigate to={"/"}/>;
     }
-
     if (isLoading) {
         return standByScreen("Loading videogame...");
 
@@ -220,6 +232,28 @@ function ManageVideogame({type}) {
                        defaultValue={videogame.description}
                        onChange={e => setDescription(e.target.value)}
                 />
+            </div>
+
+            <div className={"tagsSelectionDiv"}>
+                <h2>Select tags:</h2>
+                <div className={"tagsDiv"}>
+                    {tags.map((tag, index) => (
+                        <div key={index} className={"tagDiv"}>
+                            <input
+                                type="checkbox"
+                                checked={selectedTags.includes(tag.name)}
+                                onChange={() => {
+                                    if (selectedTags.includes(tag.name)) {
+                                        setSelectedTags(selectedTags.filter(t => t !== tag.name));
+                                    } else {
+                                        setSelectedTags([...selectedTags, tag.name]);
+                                    }
+                                }}
+                            />
+                            <label className={"flex items-center"} >{tag.name}</label>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             <div className={"releaseDate font-bold flex justify-start items-center mb-2"}>
