@@ -48,16 +48,12 @@ public class User {
   
   @ManyToMany(mappedBy = "upvotes")
   private final Set<Game> upvotedGames = new HashSet<>();
-  
-  //TODO(pfp, banner)
 
-    /*
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private final List<Publication> publications = new ArrayList<>();
+  @Lob
+  @Column(columnDefinition = "CLOB")
+  private String pfp;
 
-    @ManyToMany(mappedBy = "liked")
-    private final List<Publication> likes = new ArrayList<>();
-    */
+  //TODO(banner)
   
   public User() {}
   
@@ -117,9 +113,17 @@ public class User {
     jsonObj.addProperty("username", username);
     jsonObj.addProperty("email", email);
     jsonObj.addProperty("password", password);
-    jsonObj.addProperty("biography", biography);
     jsonObj.addProperty("rol", rol.name());
+    return jsonObj;
+  }
 
+  public JsonObject asJsonProfile() {
+    JsonObject jsonObj = new JsonObject();
+    jsonObj.addProperty("id", id);
+    jsonObj.addProperty("username", username);
+    jsonObj.addProperty("rol", rol.name());
+    jsonObj.addProperty("biography", biography);
+    jsonObj.addProperty("pfp", pfp);
     return jsonObj;
   }
   
@@ -253,6 +257,14 @@ public class User {
   
   public Set<Game> getUpvotedGames() {
     return upvotedGames;
+  }
+
+  public String getPfp() {
+    return pfp;
+  }
+
+  public void setPfp(String pfp) {
+    this.pfp = pfp;
   }
   
   // OTHERS //
