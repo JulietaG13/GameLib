@@ -6,6 +6,7 @@ import TrendingGames from './TrendingGames'
 import GamesByGenresId from './GamesByGenresId'
 import GamesFromDB from './GamesFromDB'
 import axios from "axios";
+import HeaderV2 from "../Header/HeaderV2";
 
 
 //first tailwind attempt
@@ -45,19 +46,22 @@ function Library() {
     }
 
     return(
-        <div className='grid grid-cols-4 p-5 bg-gray-200  '>
-            <div className='h-full hidden md:block'>
-                <GenreList genreId={(genreId) => getGameListByGenreId(genreId)}/>
-            </div>
-            <div className='cold-span-4 md:col-span-3'>
-                {allGamesList?.length>0 && gameListByGenres.length>0 && gamesFromDB.length>0?
-                    <div>
-                        <Banner gameBanner={allGamesList[8]}/>
-                        <TrendingGames gameList={allGamesList}/>
-                        <GamesByGenresId gameList={gameListByGenres}/>
-                        <GamesFromDB gamesFromDB={gamesFromDB}/>
-                    </div>
-                :null}
+        <div>
+            <HeaderV2/>
+            <div className='grid grid-cols-4 p-5 bg-gray-200  '>
+                <div className='h-full hidden md:block'>
+                    <GenreList genreId={(genreId) => getGameListByGenreId(genreId)}/>
+                </div>
+                <div className='cold-span-4 md:col-span-3'>
+                    {allGamesList?.length>0 && gameListByGenres.length>0 && gamesFromDB.length>0?
+                        <div>
+                            <Banner gameBanner={allGamesList[8]}/>
+                            <TrendingGames gameList={allGamesList}/>
+                            <GamesByGenresId gameList={gameListByGenres}/>
+                            <GamesFromDB gamesFromDB={gamesFromDB}/>
+                        </div>
+                    :null}
+                </div>
             </div>
         </div>
     )

@@ -1,14 +1,9 @@
 package model;
 
-import adapters.GsonAdapter;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import services.UserService;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -109,6 +104,10 @@ public class Review {
   
   public void setAuthor(User user) {
     author = user;
+  }
+
+  public User getAuthor() {
+    return author;
   }
   
   public void setGame(Game game) {

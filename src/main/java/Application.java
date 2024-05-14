@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import entities.Rol;
 import entities.Token;
 import entities.responses.UserResponse;
+import example.BDExample;
 import interfaces.Responses;
 import model.*;
 import persistence.Database;
@@ -14,7 +15,6 @@ import spark.Spark;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -46,6 +46,7 @@ public class Application {
     storeGames1(em);
     storeTags1(em);
     storeReviews1(em);
+    new BDExample(em).store();
     
     Spark.get("/users", "application/json", (req, resp) -> {
       
@@ -152,8 +153,6 @@ public class Application {
     });
 
     Spark.get("/getuser/:username", "application/json", (req, resp) -> {
-      final GameService gameService = new GameService(factory.createEntityManager());
-
       String username = req.params(":username");
       if (username == null || username.isEmpty()) {
         resp.status(404);
@@ -169,9 +168,30 @@ public class Application {
       }
 
       resp.type("application/json");
-      resp.status(201);
+      resp.status(200);
 
       return user.get().asJson();
+    });
+
+    Spark.get("/getprofile/:username", "application/json", (req, resp) -> {
+      String username = req.params(":username");
+      if (username == null || username.isEmpty()) {
+        resp.status(404);
+        return "Username not found!";
+      }
+
+      UserService userService = new UserService(em);
+      Optional<User> user = userService.findByUsername(username);
+
+      if (user.isEmpty()) {
+        resp.status(404);
+        return "There is no User " + username +"!";
+      }
+
+      resp.type("application/json");
+      resp.status(200);
+
+      return user.get().asJsonProfile();
     });
 
     Spark.post("/deleteuser/:username", "application/json", (req, resp) -> {

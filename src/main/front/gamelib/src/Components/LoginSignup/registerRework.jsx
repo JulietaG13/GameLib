@@ -3,11 +3,13 @@ import React, {useState} from 'react';
 import axios from "axios";
 import {Link, Navigate} from "react-router-dom";
 
-const LoginRework = () => {
-    const [username, setMail] = useState('');
+const RegisterRework = () => {
+    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [navigate, setNavigate] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [isDeveloper, setIsDeveloper] = useState(false);
 
 
 
@@ -20,24 +22,18 @@ const LoginRework = () => {
     };
 
 
-    const handleLogin = async () => {
-        setErrorMessage('')
+    const handleRegister = async e => {
+        //prevents page to reload
+        e.preventDefault()
         try {
-            //sends data to backend
-            const response = await axios.post('http://localhost:4567/login', {
-                username: username, password: password
+            //posts data to back
+            await axios.post("http://localhost:4567/newuser", {
+                username: username, email: email, password: password, rol: isDeveloper ? "DEVELOPER" : "USER"
             });
-
-            const {token, refreshToken} = response.data;
-
-            localStorage.setItem('token', token);
-            localStorage.setItem('refreshToken', refreshToken);
-            localStorage.setItem('username', username);
-
+            //redirects to login page
             setNavigate(true);
         }
         catch (error) {
-            console.log(error.response)
             if (error.response.status) {
                 setErrorMessage(error.response.data)
             }
@@ -51,8 +47,14 @@ const LoginRework = () => {
 
     //if navigate is true, redirects to home page, this happens only when logged successfully
     if (navigate) {
-        return <Navigate to={"/library"}/>
+        return <Navigate to={"/login"}/>
     }
+
+
+    const handleDeveloperCheckboxChange = (event) => {
+        // Update the state variable based on the checkbox status
+        setIsDeveloper(event.target.checked);
+    };
 
 
     return (
@@ -77,15 +79,20 @@ const LoginRework = () => {
                 </h1>
                 {/*Subtitle*/}
                 <div className={"w-full flex flex-col max-w-[700px]"}>
-                    <h3 className={"text-2xl font-semibold mb-4"}>Login</h3>
-                    <p className={"text-base mb-2"}>Welcome back! Please enter your credentials.</p>
+                    <h3 className={"text-2xl font-semibold mb-4"}>Register</h3>
+                    <p className={"text-base mb-2"}>Welcome!</p>
 
-                    {/*Email input */}
                     <div className={"w-full flex flex-col"}>
+                        {/*Email input */}
+                        <input type="text"
+                               placeholder={"Email"}
+                               className={"w-full text-black py-4 my-2 border-b border-black bg-transparent outline-none focus:outline-none"}
+                               onChange={e => setEmail(e.target.value)}
+                        />
                         <input type="text"
                                placeholder={"Username"}
                                className={"w-full text-black py-4 my-2 border-b border-black bg-transparent outline-none focus:outline-none"}
-                               onChange={e => setMail(e.target.value)}
+                               onChange={e => setUsername(e.target.value)}
                         />
                         {/*Password input */}
                         <input type="password"
@@ -96,24 +103,29 @@ const LoginRework = () => {
 
 
                     </div>
+                    {/*Is developer checkbox */}
+                    <div>
+                        <input type="checkbox" id="developer" name="developer" value="developer" onChange={handleDeveloperCheckboxChange}/>
+                        <label htmlFor="developer" className={"text-black"}>Are you a developer?</label>
+                    </div>
+
                     <div >
                         <ErrorMessage message={errorMessage} />
                     </div>
-                    {/*Login button*/}
+                    {/*Register button*/}
                     <div className={"w-full flex flex-col my-4"}>
                         <button
-                            className={"w-full text-white bg-black rounded-md my-2 p-4 text-center flex items-center justify-center font-bold"}  onClick={handleLogin}>
-                           Login
+                            className={"w-full text-white bg-black rounded-md my-2 p-4 text-center flex items-center justify-center font-bold"}  onClick={handleRegister}>
+                            Register
                         </button>
                     </div>
                 </div>
 
-
                 {/*Bottom*/}
                 <div className={"w-full flex items-center justify-center my-2 max-w-[700px]"}>
-                    <p className={"text-sm font-normal text-black"}>Don't have an account?
+                    <p className={"text-sm font-normal text-black"}>Already have an account?
                         <span className={"pl-2 font-bold underline underline-offset-auto cursor-pointer"}>
-                            <Link to={"/register"}>Sign up for free</Link>
+                            <Link to={"/login"}>Log in now!</Link>
                         </span>
                     </p>
                 </div>
@@ -122,4 +134,4 @@ const LoginRework = () => {
     )
 }
 
-export default LoginRework;
+export default RegisterRework;
