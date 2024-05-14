@@ -114,6 +114,10 @@ public class Review {
   public void setGame(Game game) {
     this.game = game;
   }
+
+  public Game getGame() {
+    return game;
+  }
   
   public Set<User> getLiked() {
     return likedBy;
