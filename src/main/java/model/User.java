@@ -53,8 +53,10 @@ public class User {
   @Column(columnDefinition = "CLOB")
   private String pfp;
 
-  //TODO(banner)
-  
+  @Lob
+  @Column(columnDefinition = "CLOB")
+  private String banner;
+
   public User() {}
   
   public static UserBuilder create(String username) {
@@ -124,6 +126,7 @@ public class User {
     jsonObj.addProperty("rol", rol.name());
     jsonObj.addProperty("biography", biography);
     jsonObj.addProperty("pfp", pfp);
+    jsonObj.addProperty("banner", banner);
     return jsonObj;
   }
   
@@ -266,7 +269,15 @@ public class User {
   public void setPfp(String pfp) {
     this.pfp = pfp;
   }
-  
+
+  public String getBanner() {
+    return banner;
+  }
+
+  public void setBanner(String banner) {
+    this.banner = banner;
+  }
+
   // OTHERS //
   
   @Override
