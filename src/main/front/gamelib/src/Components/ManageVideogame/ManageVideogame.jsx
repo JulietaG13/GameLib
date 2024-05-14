@@ -38,7 +38,8 @@ function ManageVideogame({type}) {
                 console.error('Error:', error);
                 setNavigate(true);
             })
-            .then(response => {
+            .then(userResponseData => {
+                checkIfUser(userResponseData, setNavigate);
                 axios.get('http://localhost:4567/tags')
                     .catch(error => {
                         console.error('Error:', error);
@@ -50,10 +51,12 @@ function ManageVideogame({type}) {
                     })
                 if (type === "Edit") {
                     axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
-                        .then(response => {
-                            setVideogame(response.data);
+                        .then(gameResponseData => {
+                            checkOwnership(gameResponseData, userResponseData, setNavigate);
+
+                            setVideogame(gameResponseData.data);
                             setIsLoading(false);
-                            console.log(response.data);
+                            console.log(gameResponseData.data);
                         })
                         .catch(error => {
                             console.error('Error:', error);
@@ -130,8 +133,6 @@ function ManageVideogame({type}) {
             }
         })
             .then(response => {
-                // console.log("delete response: ");
-                // console.log(response.data)
                 console.log("prev del game: ");
                 console.log(videogame);
                 manageSuccess();
@@ -292,6 +293,32 @@ function ManageVideogame({type}) {
     );
 }
 
+function checkIfUser(userResponseData, setNavigate) {
+    if (!userResponseData || !userResponseData.data || userResponseData.data.rol === "USER") {
+        setNavigate(true);
+    }
+}
+
+function checkOwnership(gameResponseData, userResponseData, setNavigate) {
+    if (!gameResponseData || !gameResponseData.data || !userResponseData || !userResponseData.data) {
+        setNavigate(true);
+    }
+    if (userResponseData.data.rol === "ADMIN") {
+        return;
+    }
+    if (gameResponseData.data.owner_id !== userResponseData.data.id) {
+        setNavigate(true);
+    }
+}
+
+function standByScreen(msg) {
+    return (
+        <div className={"loadingScreen"}>
+            <h1>{msg}</h1>
+        </div>
+    )
+}
+
 function FormatBase64Image(image) {
     return new Promise((resolve, reject) => {
         let reader = new FileReader();
@@ -314,14 +341,6 @@ function FormatLastUpdateDate(lastUpdate) {
         String(lastUpdate.getSeconds()).padStart(2, '0');
     console.log(formatedDate);
     return formatedDate;
-}
-
-function standByScreen(msg) {
-    return (
-        <div className={"loadingScreen"}>
-            <h1>{msg}</h1>
-        </div>
-    )
 }
 
 export default ManageVideogame;
