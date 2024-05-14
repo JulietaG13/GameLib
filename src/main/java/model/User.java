@@ -7,7 +7,6 @@ import entities.responses.ErrorResponse;
 import entities.responses.StatusResponse;
 import interfaces.Responses;
 
-import javax.naming.NoPermissionException;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Objects;
