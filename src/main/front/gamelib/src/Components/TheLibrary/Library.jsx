@@ -22,10 +22,10 @@ function Library() {
     }, []);
 
     const getGamesFromDB = () => {
-        const response = axios.get('http://localhost:4567/games').then((response) => {
+        axios.get('http://localhost:4567/games').then((response) => {
             console.log("gamesFromDB:", response)
             setGamesFromDB(response.data)
-        })
+        });
     }
 
     const getAllGamesList = () => {

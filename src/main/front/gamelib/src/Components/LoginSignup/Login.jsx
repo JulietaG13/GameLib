@@ -1,15 +1,9 @@
-import React, {useState} from "react"
-import './LoginSignup.css'
-
-import password_icon from '../Assets/password icon.png'
-import {Link, Navigate} from "react-router-dom";
+import gamelib_logo from '../Assets/Designer(3).jpeg'
+import React, {useState} from 'react';
 import axios from "axios";
-import user_icon from '../Assets/user-icon.png'
-
-
+import {Link, Navigate} from "react-router-dom";
 
 const Login = () => {
-    //React code, provides a variable and a set to provide the variable data
     const [username, setMail] = useState('');
     const [password, setPassword] = useState('');
     const [navigate, setNavigate] = useState(false);
@@ -17,6 +11,13 @@ const Login = () => {
 
 
 
+    const ErrorMessage = ({ message }) => {
+        return (
+            <div className={message ? 'formErrorHandling' : ''}>
+                {message}
+            </div>
+        );
+    };
 
 
     const handleLogin = async () => {
@@ -29,13 +30,11 @@ const Login = () => {
 
             const {token, refreshToken} = response.data;
 
-            //saves token in local storage
             localStorage.setItem('token', token);
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('username', username);
 
             setNavigate(true);
-
         }
         catch (error) {
             console.log(error.response)
@@ -49,57 +48,78 @@ const Login = () => {
         }
     }
 
-    //Displays error message if there is one
-    const ErrorMessage = ({ message }) => {
-        return (
-            <div className={message ? 'formErrorHandling' : ''}>
-                {message}
-            </div>
-        );
-    };
 
     //if navigate is true, redirects to home page, this happens only when logged successfully
     if (navigate) {
-        return <Navigate to={"/"}/>
+        return <Navigate to={"/library"}/>
     }
 
-    return(
-        <form className={"static-form"} onSubmit={handleLogin}>
-            <div className='container'>
-                <div className='header'>
-                    <div className="text">{"Login"}</div>
-                    <div className="underline"></div>
-                </div>
-                <div className="inputs">
-                    <div className="input">
-                        <img src={user_icon} alt=""/>
-                        <input type="text" placeholder={"User"}
-                        onChange={e => setMail(e.target.value)}
 
-                        />
-                    </div>
-                    <div className="input">
-                        <img src={password_icon} alt=""/>
-                        <input type="password" placeholder={"Password"}
-                        onChange={e => setPassword(e.target.value)}
-
-                        />
-                    </div>
+    return (
+        //Main container
+        <div className={"w-full h-screen flex items-start"}>
+            {/*Left side*/}
+            <div className={"relative w-1/2 h-full flex flex-col"}>
+                <img src={gamelib_logo} className={"w-full h-full object-cover brightness-50"} alt={""}/>
+                <div className={"absolute top-[15%] left-[10%] flex flex-col"}>
+                    <h1 className={"text-6xl text-white font-bold my-4"}>
+                        Welcome to GameLib
+                    </h1>
+                    <p className={"text-4xl text-white font-normal"}>Join now for free!</p>
                 </div>
-                <div >
-                    <ErrorMessage message={errorMessage} />
-                </div>
-                <div className="new-here">New here? <Link to="/register" className={"link"}> Register </Link></div>
-                <div className="submit-container">
-                    <div className={"submit"}
-                         onClick={handleLogin}>Login
-                    </div>
-                </div>
-
             </div>
-        </form>
-    );
-};
+
+            {/*Right side*/}
+            <div className={"w-1/2 h-full flex flex-col p-20 justify-between"}>
+                {/*Main Title */}
+                <h1 className={"text-3xl text-black font-semibold"}>
+                    Incredible title
+                </h1>
+                {/*Subtitle*/}
+                <div className={"w-full flex flex-col max-w-[700px]"}>
+                    <h3 className={"text-2xl font-semibold mb-4"}>Login</h3>
+                    <p className={"text-base mb-2"}>Welcome back! Please enter your credentials.</p>
+
+                    {/*Email input */}
+                    <div className={"w-full flex flex-col"}>
+                        <input type="text"
+                               placeholder={"Username"}
+                               className={"w-full text-black py-4 my-2 border-b border-black bg-transparent outline-none focus:outline-none"}
+                               onChange={e => setMail(e.target.value)}
+                        />
+                        {/*Password input */}
+                        <input type="password"
+                               placeholder={"Password"}
+                               className={"bg-transparent  w-full text-black py-4 my-2 border-b border-black outline-none focus:outline-none"}
+                               onChange={e => setPassword(e.target.value)}
+                        />
+
+
+                    </div>
+                    <div >
+                        <ErrorMessage message={errorMessage} />
+                    </div>
+                    {/*Login button*/}
+                    <div className={"w-full flex flex-col my-4"}>
+                        <button
+                            className={"w-full text-white bg-black rounded-md my-2 p-4 text-center flex items-center justify-center font-bold"}  onClick={handleLogin}>
+                           Login
+                        </button>
+                    </div>
+                </div>
+
+
+                {/*Bottom*/}
+                <div className={"w-full flex items-center justify-center my-2 max-w-[700px]"}>
+                    <p className={"text-sm font-normal text-black"}>Don't have an account?
+                        <span className={"pl-2 font-bold underline underline-offset-auto cursor-pointer"}>
+                            <Link to={"/register"}>Sign up for free</Link>
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    )
+}
+
 export default Login;
-
-

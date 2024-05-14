@@ -1,8 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import gamelibLogo from '../Assets/gamelib-logo.jpg';
-import {HiOutlineMagnifyingGlass} from "react-icons/hi2";
 import user_icon from "../Assets/user-icon.png";
-import './Header.css';
 import axios from "axios";
 import {Link} from "react-router-dom";
 
@@ -12,7 +10,9 @@ function HeaderV2() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     function handleLogout() {
-        validateLogin()
+        if (!isLoggedIn) {
+            window.location.href = '/login';
+        }
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('username');
@@ -21,7 +21,7 @@ function HeaderV2() {
     }
 
     function handleDeleteUser() {
-        validateLogin()
+        console.log("ola delete user")
         axios.post(`http://localhost:4567/deleteuser/${localStorage.getItem('username')}` , {}, {
             headers: {
                 'Content-Type': 'application/json',
@@ -59,12 +59,16 @@ function HeaderV2() {
 
 
     useEffect(() => {
+        validateLogin()
+    }, []);
+
+    function validateLogin() {
         // Check if user is logged in using token
         axios.post('http://localhost:4567/tokenvalidation', {}, {
             headers: {
                 'Content-Type': 'application/json',
                 'token': localStorage.getItem('token')
-                }
+            }
             }
         ).then(() => {
             setIsLoggedIn(true);
@@ -72,19 +76,6 @@ function HeaderV2() {
         ).catch(e => {
             console.error('Error:', e);
             setIsLoggedIn(false);
-        })
-    }, []);
-
-    function validateLogin() {
-        // Check if user is logged in using token
-        axios.post('http://localhost:4567/tokenvalidation', {}, {}
-        ).then(() => {
-            setIsLoggedIn(true);
-            }
-        ).catch(e => {
-            console.error('Error:', e);
-            setIsLoggedIn(false);
-            window.location.href = '/login';
         })
     }
 
@@ -94,7 +85,6 @@ function HeaderV2() {
                 <img src={gamelibLogo} width={60} height={60} className={'ml-3'} alt={""}/>
             </a>
             <div className={'flex bg-slate-300 p-2 w-full h-12 items-center ml-10 mr-20 rounded-full'}>
-                <HiOutlineMagnifyingGlass/>
                 <input type={'text'} placeholder={'Search Games'} className={'bg-transparent outline-none '}/>
             </div>
             <div className={'mr-48'}>
@@ -103,11 +93,12 @@ function HeaderV2() {
                 </h2>
             </div>
             {isLoggedIn ? (
-                <div className="user" onClick={toggleDropdown} ref={dropdownRef}>
+                <div className="flex flex-row justify-end p-1 items-center relative"  ref={dropdownRef}>
                     <h2>{localStorage.getItem('username') || 'Name'}</h2>
-                    <img src={user_icon} alt={"user icon"} className={'cursor-pointer'}/>
+                    <img src={user_icon} alt={"user icon"} className={'cursor-pointer w-[5em] h-[4-em]'}
+                         onClick={toggleDropdown}/>
                     {showDropdown && (
-                        <div className="dropdown-content">
+                            <div className="dropdown-content absolute bg-gray-100 w-40 py-2 shadow-md z-10 top-full right-10 flex flex-col pl-2 rounded-b-xl rounded-t-md">
                             <Link to={`/profile/${localStorage.getItem("username")}`}>Profile</Link>
                             <a href="#" onClick={handleLogout}>Logout</a>
                             <a onClick={handleDeleteUser}>Delete account</a>

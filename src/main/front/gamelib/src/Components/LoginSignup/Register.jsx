@@ -62,7 +62,7 @@ const RegisterRework = () => {
         <div className={"w-full h-screen flex items-start"}>
             {/*Left side*/}
             <div className={"relative w-1/2 h-full flex flex-col"}>
-                <img src={gamelib_logo} className={"w-full h-full object-cover brightness-50"}/>
+                <img src={gamelib_logo} className={"w-full h-full object-cover brightness-50"} alt={""}/>
                 <div className={"absolute top-[15%] left-[10%] flex flex-col"}>
                     <h1 className={"text-6xl text-white font-bold my-4"}>
                         Welcome to GameLib
