@@ -18,6 +18,7 @@ function VideogameView2() {
         axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
             .then(response => {
                 setVideogame(response.data);
+                console.log(response.data);
                 setIsLoading(false);
             })
             .catch(error => {
@@ -30,7 +31,7 @@ function VideogameView2() {
         axios.get(`http://localhost:4567/getreviews/${videogameID.videogameID}/2`)
             .then(response => {
                 setReviews(response.data);
-                console.log(response.data);
+                // console.log(response.data);
             })
             .catch(error => {
                 console.log(error);
@@ -54,18 +55,19 @@ function VideogameView2() {
     if (isLoading) {return loadingScreen();}
 
     return (
-        <main className={"gameView"} >
-            <div className={"titleDiv"} >
+        <main className={"gameView"}>
+            <img id={"backImg"} src={videogame.background_image} alt={"Game Background"}/>
+            <div className={"titleDiv"}>
                 <h1>{videogame.name}</h1>
             </div>
 
-            <div className={"dataDiv"} >
-                <div className={"coverDiv"} >
-                    <img src={videogame.cover} alt={"Game Cover"} />
+            <div className={"dataDiv"}>
+                <div className={"coverDiv"}>
+                    <img src={videogame.cover} alt={"Game Cover"}/>
                 </div>
 
-                <div className={"moreDataDiv"} >
-                    <div className={"attributesDiv"} >
+                <div className={"moreDataDiv"}>
+                    <div className={"attributesDiv"}>
                         <h2>About the game:</h2>
                         <p>{videogame.description}</p>
                         <p>Date of release: {FormatDate(videogame.releaseDate)}</p>
@@ -90,7 +92,7 @@ function VideogameView2() {
                                 <img id={"special"} src={user_icon} alt={"user_icon"}/>
                                 <p>Be the first one to review!</p>
                             </div> :
-                            reviews.map ((review) => (
+                            reviews.map((review) => (
                                 <div key={review.id} className={"reviewDiv"}>
                                     <img src={user_icon} alt={"user_icon"}/>
                                     <p>{review.text}</p>
@@ -100,7 +102,7 @@ function VideogameView2() {
                     </div>
                 </div>
 
-                <div className={"newsDiv"} >
+                <div className={"newsDiv"}>
                     <h2>News:</h2>
                 </div>
             </div>
