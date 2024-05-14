@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import entities.Rol;
 import entities.Token;
 import entities.responses.UserResponse;
+import example.BDExample;
 import interfaces.Responses;
 import model.*;
 import persistence.Database;
@@ -14,7 +15,6 @@ import spark.Spark;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -46,6 +46,7 @@ public class Application {
     storeGames1(em);
     storeTags1(em);
     storeReviews1(em);
+    new BDExample(em).store();
     
     Spark.get("/users", "application/json", (req, resp) -> {
       
