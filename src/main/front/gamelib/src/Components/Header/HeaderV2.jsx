@@ -4,6 +4,7 @@ import {HiOutlineMagnifyingGlass} from "react-icons/hi2";
 import user_icon from "../Assets/user-icon.png";
 import './Header.css';
 import axios from "axios";
+import {Link} from "react-router-dom";
 
 function HeaderV2() {
     const [showDropdown, setShowDropdown] = useState(false);
@@ -11,14 +12,16 @@ function HeaderV2() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     function handleLogout() {
+        validateLogin()
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('username');
         setIsLoggedIn(false);
-        window.location.href = '/';
+        window.location.href = '/library';
     }
 
     function handleDeleteUser() {
+        validateLogin()
         axios.post(`http://localhost:4567/deleteuser/${localStorage.getItem('username')}` , {}, {
             headers: {
                 'Content-Type': 'application/json',
@@ -32,43 +35,63 @@ function HeaderV2() {
         }) .catch (error =>  {
             console.error('Error:', error);
     })}
-    const toggleDropdown = () => {
+
+    let toggleDropdown;
+    toggleDropdown = () => {
         setShowDropdown(!showDropdown);
     };
 
     useEffect(() => {
-        function handleClickOutside(event) {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setShowDropdown(false);
+            function handleClickOutside(event) {
+                if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                    setShowDropdown(false);
+                }
             }
-        }
-
-        // Add event listener when the component mounts
-        document.addEventListener("mousedown", handleClickOutside);
-
-        // Remove event listener when the component unmounts
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
+            // Add event listener when the component mounts
+            document.addEventListener("mousedown", handleClickOutside);
+            // Remove event listener when the component unmounts
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        },
+        []);
 
 
 
     useEffect(() => {
         // Check if user is logged in using token
-        if (localStorage.getItem('token')) {
+        axios.post('http://localhost:4567/tokenvalidation', {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+                }
+            }
+        ).then(() => {
             setIsLoggedIn(true);
-        } else {
+            }
+        ).catch(e => {
+            console.error('Error:', e);
             setIsLoggedIn(false);
-        }
+        })
     }, []);
 
-
+    function validateLogin() {
+        // Check if user is logged in using token
+        axios.post('http://localhost:4567/tokenvalidation', {}, {}
+        ).then(() => {
+            setIsLoggedIn(true);
+            }
+        ).catch(e => {
+            console.error('Error:', e);
+            setIsLoggedIn(false);
+            window.location.href = '/login';
+        })
+    }
 
     return (
-        <div className={'flex items-center bg-[#dd5538]'}>
+        <div className={'flex items-center bg-[#ff8341] h-20'}>
             <a href={'http://localhost:3000/'}>
-                <img src={gamelibLogo} width={60} height={60} className={'ml-3'}/>
+                <img src={gamelibLogo} width={60} height={60} className={'ml-3'} alt={""}/>
             </a>
             <div className={'flex bg-slate-300 p-2 w-full h-12 items-center ml-10 mr-20 rounded-full'}>
                 <HiOutlineMagnifyingGlass/>
@@ -85,7 +108,7 @@ function HeaderV2() {
                     <img src={user_icon} alt={"user icon"} className={'cursor-pointer'}/>
                     {showDropdown && (
                         <div className="dropdown-content">
-                            <a href="#">Profile</a>
+                            <Link to={`/profile/${localStorage.getItem("username")}`}>Profile</Link>
                             <a href="#" onClick={handleLogout}>Logout</a>
                             <a onClick={handleDeleteUser}>Delete account</a>
                         </div>
@@ -94,11 +117,9 @@ function HeaderV2() {
                 </div>
 
             ) : (
-                <div className="user">
-                    <h2>
-                        <a href="/login">Login</a>
-                    </h2>
-                </div>
+                <h2 className={"font-bold mr-10 text-[20px]"}>
+                    <a href="/login">Login</a>
+                </h2>
             )}
         </div>
     )

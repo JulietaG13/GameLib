@@ -1,8 +1,60 @@
 import gamelib_logo from '../Assets/Designer(3).jpeg'
-import React from 'react';
-
+import React, {useState} from 'react';
+import axios from "axios";
+import {Link, Navigate} from "react-router-dom";
 
 const LoginRework = () => {
+    const [username, setMail] = useState('');
+    const [password, setPassword] = useState('');
+    const [navigate, setNavigate] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+
+
+
+    const ErrorMessage = ({ message }) => {
+        return (
+            <div className={message ? 'formErrorHandling' : ''}>
+                {message}
+            </div>
+        );
+    };
+
+
+    const handleLogin = async () => {
+        setErrorMessage('')
+        try {
+            //sends data to backend
+            const response = await axios.post('http://localhost:4567/login', {
+                username: username, password: password
+            });
+
+            const {token, refreshToken} = response.data;
+
+            localStorage.setItem('token', token);
+            localStorage.setItem('refreshToken', refreshToken);
+            localStorage.setItem('username', username);
+
+            setNavigate(true);
+        }
+        catch (error) {
+            console.log(error.response)
+            if (error.response.status) {
+                setErrorMessage(error.response.data)
+            }
+            else {
+                setErrorMessage("Something went wrong")
+            }
+            console.error('Error:', error);
+        }
+    }
+
+
+    //if navigate is true, redirects to home page, this happens only when logged successfully
+    if (navigate) {
+        return <Navigate to={"/library"}/>
+    }
+
+
     return (
         //Main container
         <div className={"w-full h-screen flex items-start"}>
@@ -32,27 +84,37 @@ const LoginRework = () => {
                     <div className={"w-full flex flex-col"}>
                         <input type="text"
                                placeholder={"Username"}
-                               className={"w-full text-black py-4 my-2 border-b border-black bg-transparent outline-none focus:outline-none"}/>
+                               className={"w-full text-black py-4 my-2 border-b border-black bg-transparent outline-none focus:outline-none"}
+                               onChange={e => setMail(e.target.value)}
+                        />
                         {/*Password input */}
                         <input type="password"
                                placeholder={"Password"}
-                               className={"bg-transparent  w-full text-black py-4 my-2 border-b border-black outline-none focus:outline-none"}/>
+                               className={"bg-transparent  w-full text-black py-4 my-2 border-b border-black outline-none focus:outline-none"}
+                               onChange={e => setPassword(e.target.value)}
+                        />
+
+
+                    </div>
+                    <div >
+                        <ErrorMessage message={errorMessage} />
                     </div>
                     {/*Login button*/}
                     <div className={"w-full flex flex-col my-4"}>
                         <button
-                            className={"w-full text-white bg-black rounded-md my-2 p-4 text-center flex items-center justify-center font-bold"}>Log
-                            in
+                            className={"w-full text-white bg-black rounded-md my-2 p-4 text-center flex items-center justify-center font-bold"}  onClick={handleLogin}>
+                           Login
                         </button>
                     </div>
                 </div>
 
 
-
                 {/*Bottom*/}
                 <div className={"w-full flex items-center justify-center my-2 max-w-[700px]"}>
                     <p className={"text-sm font-normal text-black"}>Don't have an account?
-                        <span className={"pl-2 font-bold underline underline-offset-auto cursor-pointer"}>Sign up for free </span>
+                        <span className={"pl-2 font-bold underline underline-offset-auto cursor-pointer"}>
+                            <Link to={"/register"}>Sign up for free</Link>
+                        </span>
                     </p>
                 </div>
             </div>
