@@ -118,6 +118,10 @@ public class Application {
       
       return user.get().asJson();
     });
+
+//    Spark.post("isOwner", "application/json", (req, resp) -> {
+//
+//    });
     
     Spark.post("/newuser", "application/json", (req, resp) -> {
       final User user = User.fromJson(req.body());

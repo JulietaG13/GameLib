@@ -1,7 +1,7 @@
 .gameView {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    /*min-height: 100vh;*/
 }
 
 .gameView h2 {
@@ -27,6 +27,7 @@
     display: flex;
     align-items: flex-start;
     flex-direction: row;
+    min-height: 100vh;
     background-color: #3f21aa;
 }
 .dataDiv div {
