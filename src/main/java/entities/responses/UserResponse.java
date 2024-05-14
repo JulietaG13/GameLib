@@ -14,4 +14,8 @@ public class UserResponse implements Responses {
   public User getUser() {
     return user;
   }
+
+  public static String genericMessage() {
+    return "\"\"\"Something went wrong\"\"\"";
+  }
 }

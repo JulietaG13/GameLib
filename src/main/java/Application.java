@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import entities.Rol;
 import entities.Token;
+import entities.responses.UserResponse;
 import interfaces.Responses;
 import model.*;
 import persistence.Database;
@@ -210,19 +211,19 @@ public class Application {
       Responses usernameResponse = AccessControlService.isUsernameValid(username);
       if (usernameResponse.hasError()) {
         resp.status(usernameResponse.getStatusCode());
-        return usernameResponse.getMessage();
+        return UserResponse.genericMessage();
       }
 
       Responses passwordResponse = AccessControlService.isPasswordValid(password);
       if (passwordResponse.hasError()) {
         resp.status(passwordResponse.getStatusCode());
-        return passwordResponse.getMessage();
+        return UserResponse.genericMessage();
       }
 
       Responses authResponse = AccessControlService.authenticateUser(username, password, em);
       if (authResponse.hasError()) {
         resp.status(authResponse.getStatusCode());
-        return authResponse.getMessage();
+        return UserResponse.genericMessage();
       }
       resp.status(200);
       
