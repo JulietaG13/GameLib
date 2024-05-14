@@ -23,8 +23,7 @@
 }
 
 .goTo{
-    display: flex;
-    flex-direction: row;
+    display: flex;    flex-direction: row;
     flex: 1 1 0;
     padding: 1%;
     align-items: center;
@@ -40,11 +39,7 @@
     justify-content: right;
     position: relative;
 }
-.user img{
-    width: 5em;
-    height:4em;
-    padding-right: 4%;
-}
+
 
 a {
     color: inherit;
