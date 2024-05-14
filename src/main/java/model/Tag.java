@@ -51,6 +51,14 @@ public class Tag {
     jsonObj.add("tagged_games", jsonArray);
     return jsonObj;
   }
+
+  public JsonObject asJsonWithoutGames() {
+    JsonObject jsonObj = new JsonObject();
+    jsonObj.addProperty("id", id);
+    jsonObj.addProperty("name", name);
+    jsonObj.addProperty("tag_type", tagType.name());
+    return jsonObj;
+  }
   
   // ADDS? //
   
