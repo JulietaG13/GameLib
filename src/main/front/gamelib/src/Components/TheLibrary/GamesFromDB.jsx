@@ -34,7 +34,7 @@ function GamesFromDB({gamesFromDB}) {
                     <Link to={'/videogame/' + game.id}>
                         <div
                             className={'bg-black p-1.5 rounded-lg hover:scale-110 ease-in-out duration-300 cursor-pointer'}>
-                            <img src={game.background_image} className={'w-full h-[260px] rounded-xl object-cover'}/>
+                            <img src={game.background_image} className={'w-full h-[260px] rounded-xl object-cover'} alt={""}/>
                             <h2 className={'text-white pt-1 text-lg font-bold truncate'}>
                                 {game.name}
                             </h2>
