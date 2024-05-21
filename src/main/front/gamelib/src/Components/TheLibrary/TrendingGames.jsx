@@ -1,4 +1,5 @@
 import React from 'react'
+import {Link} from "react-router-dom";
 
 function TrendingGames({gameList}) {
 
@@ -8,8 +9,10 @@ function TrendingGames({gameList}) {
             <div className={'hidden md:grid md:grid-cols-3  gap-5 lg:grid-cols-4'}>
                 {gameList.map((game, index) => index<4&&(
                     <div className={'bg-black rounded-xl p-0.1 hover:scale-110 transition-all duration-300 ease-in-out cursor-pointer'}>
-                        <img src={game.background_image} className={'h-[500px] rounded-lg object-cover'}/>
-                        <h2 className={'text-white text-[23px] font-bold px-3'}>{game.name}</h2>
+                        <Link to={'/videogame/' + game.id}>
+                            <img src={game.background_image} className={'h-[500px] rounded-lg object-cover'}/>
+                            <h2 className={'text-white text-[23px] font-bold px-3'}>{game.name}</h2>
+                        </Link>
                     </div>
                 ))}
             </div>
