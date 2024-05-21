@@ -2,14 +2,8 @@ package example;
 
 import entities.Rol;
 import entities.TagType;
-import model.Game;
-import model.Review;
-import model.Tag;
-import model.User;
-import services.GameService;
-import services.ReviewService;
-import services.TagService;
-import services.UserService;
+import model.*;
+import services.*;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -85,6 +79,16 @@ public class BDExample {
                 if (r.getGame() != null) reviewService.addReview(r, r.getAuthor(), r.getGame());
             });
         }
+
+        // shelves
+        List<Shelf> shelves = getExampleShelf(new ArrayList<>(allUsers));
+        ShelfService shelfService = new ShelfService(entityManager);
+        for (Shelf shelf : shelves) {
+            shelfService.persist(shelf);
+            for (int i = (int) (Math.random() * 5); i < games.size(); i += 3) {
+                shelfService.addGame(shelf, shelf.getOwner(), games.get(i));
+            }
+        }
     }
 
     static {
@@ -150,5 +154,24 @@ public class BDExample {
         }
         Collections.shuffle(reviews);
         return reviews;
+    }
+
+    public static List<Shelf> getExampleShelf(List<User> owners) {
+        List<Shelf> shelves = new ArrayList<>();
+
+        for (int i = 0; i < owners.size(); i += 2) {
+            User owner = owners.get(i);
+            String name = owner.getUsername() + "'s shelf";
+            shelves.add(new Shelf(owner, name));
+            if (i % 4 == 0) {
+                name = owner.getUsername() + "'s second shelf";
+                shelves.add(new Shelf(owner, name));
+            }
+            if (i % 8 == 0) {
+                name = owner.getUsername() + "'s third shelf";
+                shelves.add(new Shelf(owner, name));
+            }
+        }
+        return shelves;
     }
 }
