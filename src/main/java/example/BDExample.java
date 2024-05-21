@@ -13,15 +13,12 @@ import services.UserService;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class BDExample {
     private static Set<User> allUsers = new HashSet<>();
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     public BDExample(EntityManager entityManager) {
         this.entityManager = entityManager;
@@ -75,13 +72,18 @@ public class BDExample {
         games.forEach(gameService::persist);
 
         ReviewService reviewService = new ReviewService(entityManager);
-        for (Game game : games) {
-            List<Review> reviewsForGame = reviews.stream()
-                    .filter(r -> Math.random() < 0.2)
-                    .collect(Collectors.toList());
+        for (int i = 0; i < games.size(); i++) {
+            Game game = games.get(i);
 
-            reviewsForGame.forEach(game::addReview);
-            reviews.forEach(r -> reviewService.addReview(r, r.getAuthor(), game));
+            if (i > reviews.size() / 2) {
+                break;
+            }
+            game.addReview(reviews.get(i));
+            game.addReview(reviews.get(reviews.size() - 1 - i));
+
+            reviews.forEach(r -> {
+                if (r.getGame() != null) reviewService.addReview(r, r.getAuthor(), r.getGame());
+            });
         }
     }
 
@@ -135,14 +137,18 @@ public class BDExample {
         List<Review> reviews = new ArrayList<>();
 
         for (User user : allUsers) {
-            if (Math.random() < 0.2) continue;
-            Review r1 = new Review("I, " + user.getUsername() + ", think that this game is very game :)");
-            Review r2 = new Review("I, " + user.getUsername() + ", think that this game is kinda trash >:(");
-            r1.setAuthor(user);
-            r2.setAuthor(user);
-            reviews.add(r1);
-            reviews.add(r2);
+            if (Math.random() < 0.5) {
+                Review r = new Review("I, " + user.getUsername() + ", think that this game is very game :)");
+                r.setAuthor(user);
+                reviews.add(r);
+            }
+            if (Math.random() < 0.5) {
+                Review r = new Review("I, " + user.getUsername() + ", think that this game is kinda trash >:(");
+                r.setAuthor(user);
+                reviews.add(r);
+            }
         }
+        Collections.shuffle(reviews);
         return reviews;
     }
 }
