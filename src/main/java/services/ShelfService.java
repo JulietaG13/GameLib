@@ -32,7 +32,7 @@ public class ShelfService {
 
     public List<Shelf> listByUser(User user) {
         return entityManager
-                .createQuery("SELECT s FROM Shelf s JOIN User u ON s.user = u WHERE u.username LIKE :username", Shelf.class)
+                .createQuery("SELECT s FROM Shelf s JOIN User u ON s.owner = u WHERE u.username LIKE :username", Shelf.class)
                 .setParameter("username", user.getUsername()).getResultList();
     }
 
