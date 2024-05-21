@@ -65,7 +65,7 @@ public class Review {
     return review;
   }
   
-  public String asJson() {
+  public JsonObject asJson() {
     JsonObject jsonObj = new JsonObject();
     jsonObj.addProperty("id", id);
     jsonObj.addProperty("text", text);
@@ -73,7 +73,7 @@ public class Review {
     jsonObj.addProperty("game_id", game.getId());
     jsonObj.addProperty("likes", likedBy.size());
     jsonObj.addProperty("dislikes", dislikedBy.size());
-    return jsonObj.toString();
+    return jsonObj;
   }
   
   // ADDS? //
