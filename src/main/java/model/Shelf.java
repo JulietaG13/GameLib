@@ -49,7 +49,7 @@ public class Shelf {
         JsonObject jsonObj = new JsonObject();
         jsonObj.addProperty("id", id);
         jsonObj.addProperty("name", name);
-        jsonObj.addProperty("owner", owner.toString());
+        jsonObj.addProperty("owner_id", owner.getId());
         jsonObj.add("games", array);
         return jsonObj;
     }
