@@ -1,7 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import entities.Rol;
 import entities.Token;
 import entities.responses.UserResponse;
@@ -10,6 +9,7 @@ import interfaces.Responses;
 import model.*;
 import persistence.Database;
 import services.*;
+import controllers.*;
 import spark.Spark;
 
 import javax.persistence.EntityManager;
@@ -52,6 +52,8 @@ public class Application {
     storeReviews1(entityManager);
     new BDExample(entityManager).store();
     entityManager.close();
+
+    controllers(factory);
 
     Spark.get("/users", "application/json", (req, resp) -> {
       
@@ -738,6 +740,11 @@ public class Application {
 
   private static EntityManager getEntityManager() {
     return factory.createEntityManager();
+  }
+
+  private static void controllers(EntityManagerFactory factory) {
+    ShelfController shelfController = ShelfController.getInstance(factory);
+    shelfController.routes();
   }
 }
 
