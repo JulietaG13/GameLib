@@ -15,6 +15,8 @@ import spark.Spark;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -24,6 +26,8 @@ public class Application {
   
   private static final Gson gson = new Gson();
   private static User admin;
+
+  private static EntityManagerFactory factory;
 
   static {
     admin = User.create("admin")
@@ -35,24 +39,26 @@ public class Application {
   
   public static void main(String[] args) {
     new Database().startDBServer();
-    final EntityManagerFactory factory = Persistence.createEntityManagerFactory("gamelib");
-    final EntityManager em = factory.createEntityManager(); // one for all
+    factory = Persistence.createEntityManagerFactory("gamelib");
     
     Spark.port(4567);
 
-    storeAdmin(admin, em);
-    
-    storeUsers1(em);
-    storeGames1(em);
-    storeTags1(em);
-    storeReviews1(em);
-    new BDExample(em).store();
-    
+    storeAdmin(admin, getEntityManager());
+
+    EntityManager entityManager = getEntityManager();
+    storeUsers1(entityManager);
+    storeGames1(entityManager);
+    storeTags1(entityManager);
+    storeReviews1(entityManager);
+    new BDExample(entityManager).store();
+    entityManager.close();
+
     Spark.get("/users", "application/json", (req, resp) -> {
       
       resp.type("application/json");
       resp.status(201);
-      
+
+      EntityManager em = getEntityManager();
       UserService userService = new UserService(em);
 
       JsonArray jsonArray = new JsonArray();
@@ -60,6 +66,7 @@ public class Application {
         jsonArray.add(user.asJson());
       }
 
+      em.close();
       return jsonArray.toString();
     });
 
@@ -68,6 +75,7 @@ public class Application {
       resp.type("application/json");
       resp.status(201);
 
+      EntityManager em = getEntityManager();
       GameService gameService = new GameService(em);
 
       JsonArray jsonArray = new JsonArray();
@@ -75,6 +83,7 @@ public class Application {
         jsonArray.add(game.asJson());
       }
 
+      em.close();
       return jsonArray.toString();
     });
     
@@ -83,22 +92,18 @@ public class Application {
       resp.type("application/json");
       resp.status(201);
 
+      EntityManager em = getEntityManager();
       TagService tagService = new TagService(em);
       JsonArray jsonArray = new JsonArray();
       for (Tag tag : tagService.listAll()) {
         jsonArray.add(tag.asJson());
       }
-      
+
+      em.close();
       return jsonArray;
     });
     
     Spark.post("/tokenvalidation", "application/json", (req, resp) -> {
-            /*
-            String token = JsonParser.parseString(req.body())
-                .getAsJsonObject()
-                .get(Token.PROPERTY_NAME)
-                .getAsString();
-            */
       String token = req.headers(Token.PROPERTY_NAME);
       if (token == null || !AccessControlService.isTokenValid(token)) {
         resp.status(401);
@@ -107,16 +112,18 @@ public class Application {
       
       resp.type("application/json");
       resp.status(201);
-      
+
+      EntityManager em = getEntityManager();
       UserService userService = new UserService(em);
       String username = AccessControlService.getUsernameFromToken(token);
       Optional<User> user = userService.findByUsername(username);
+      em.close();
       
       if (user.isEmpty()) {
         resp.status(404);
         return "User not found!";
       }
-      
+
       return user.get().asJson();
     });
 
@@ -136,7 +143,8 @@ public class Application {
       if (user.getRol() == null) {    // default
         user.setRol(Rol.USER);
       }
-      
+
+      EntityManager em = getEntityManager();
       response = AccessControlService.isUserAvailable(user, em);
       if (response.hasError()) {
         resp.status(response.getStatusCode());
@@ -148,7 +156,8 @@ public class Application {
       
       resp.type("application/json");
       resp.status(201);
-      
+
+      em.close();
       return user.asJson().toString();
     });
 
@@ -159,6 +168,7 @@ public class Application {
         return "Username not found!";
       }
 
+      EntityManager em = getEntityManager();
       UserService userService = new UserService(em);
       Optional<User> user = userService.findByUsername(username);
 
@@ -170,6 +180,7 @@ public class Application {
       resp.type("application/json");
       resp.status(200);
 
+      em.close();
       return user.get().asJson();
     });
 
@@ -180,6 +191,7 @@ public class Application {
         return "Username not found!";
       }
 
+      EntityManager em = getEntityManager();
       UserService userService = new UserService(em);
       Optional<User> user = userService.findByUsername(username);
 
@@ -191,6 +203,7 @@ public class Application {
       resp.type("application/json");
       resp.status(200);
 
+      em.close();
       return user.get().asJsonProfile();
     });
 
@@ -212,6 +225,7 @@ public class Application {
       */
       String username = req.params("username");
 
+      EntityManager em = getEntityManager();
       UserService userService = new UserService(em);
       Optional<User> user = userService.findByUsername(username);
       if (user.isEmpty()) {
@@ -224,6 +238,7 @@ public class Application {
       resp.type("application/json");
       resp.status(200);
 
+      em.close();
       return user.get().asJson().toString();
     });
     
@@ -244,7 +259,9 @@ public class Application {
         return UserResponse.genericMessage();
       }
 
+      EntityManager em = getEntityManager();
       Responses authResponse = AccessControlService.authenticateUser(username, password, em);
+      em.close();
       if (authResponse.hasError()) {
         resp.status(authResponse.getStatusCode());
         return UserResponse.genericMessage();
@@ -268,14 +285,17 @@ public class Application {
         return "Token is invalid or has expired!";
       }
       String username = AccessControlService.getUsernameFromToken(token); // already checked with token validation
-      Optional<User> dev = new UserService(em).findByUsername(username);
+      EntityManager em1 = getEntityManager();
+      Optional<User> dev = new UserService(em1).findByUsername(username);
+      em1.close();
 
       if (dev.isEmpty()) {
         resp.status(404);
         return "There is no user with username " + username + "!";
       }
 
-      final GameService games = new GameService(em);
+      EntityManager em2 = getEntityManager();
+      final GameService games = new GameService(em2);
       if (!games.isUserAllowed(dev.get())) {
         resp.status(403);
         return "User is not allowed!";
@@ -314,12 +334,14 @@ public class Application {
       games.persist(game);
       resp.type("application/json");
       resp.status(201);
-      
+
+      em2.close();
       return game.asJson();
     });
     
     Spark.get("/getgame/:id", "application/json", (req, resp) -> {
-      final GameService gameService = new GameService(factory.createEntityManager());
+      EntityManager em1 = getEntityManager();
+      final GameService gameService = new GameService(em1);
       
       long id;
       try {
@@ -338,8 +360,11 @@ public class Application {
       
       resp.type("application/json");
       resp.status(201);
-      
-      return game.get().asJson();
+
+      JsonObject jsonObject = game.get().asJson();
+      em1.close();
+
+      return jsonObject.toString();
     });
     
     Spark.put("/editgame/:id", "application/json", (req, resp) -> {
@@ -349,14 +374,17 @@ public class Application {
         return "Token is invalid or has expired!";
       }
       String username = AccessControlService.getUsernameFromToken(token); // already checked with token validation
-      Optional<User> owner = new UserService(em).findByUsername(username);
+      EntityManager em1 = getEntityManager();
+      Optional<User> owner = new UserService(em1).findByUsername(username);
+      em1.close();
 
       if (owner.isEmpty()) {
         resp.status(404);
         return "There is no user with username " + username + "!";
       }
-      
-      final GameService gameService = new GameService(factory.createEntityManager());
+
+      EntityManager em2 = getEntityManager();
+      final GameService gameService = new GameService(em2);
       long id;
       try {
         id = Long.parseLong(req.params(":id"));
@@ -377,6 +405,7 @@ public class Application {
       LocalDateTime lastUpdate = gameUpdate.getLastUpdate(); //TODO(have front send LocalDateTime)
       
       Responses gameResponse = gameService.update(owner.get(), id, gameUpdate, lastUpdate);
+      em2.close();
       if (gameResponse.hasError()) {
         resp.status(gameResponse.getStatusCode());
         return gameResponse.getMessage();
@@ -396,11 +425,9 @@ public class Application {
         return "Token is invalid or has expired!";
       }
 
-      System.out.println(2);
       //System.out.println("Esta línea es absolutamente necesaria para que la eliminacion funcione correctamente");
-      final GameService gameService = new GameService(factory.createEntityManager());
-      
-      System.out.println(3);
+      EntityManager em = getEntityManager();
+      final GameService gameService = new GameService(em);
       
       long id;
       try {
@@ -417,12 +444,8 @@ public class Application {
         return "There's no game with id " + req.params(":id") + "!";
       }
 
-      System.out.println("sape");
-      System.out.println(game.get());
-
-      System.out.println(4);
-      
       gameService.delete(id);
+      em.close();
 
       res.type("application/json");
       res.status(200);
@@ -430,6 +453,7 @@ public class Application {
     });
     
     Spark.get("/latestupdated/:max", "application/json", (req, resp) -> {
+      EntityManager em = getEntityManager();
       final GameService gameService = new GameService(em);
       
       int max;
@@ -441,6 +465,7 @@ public class Application {
       }
       
       List<Game> latestUpdated = gameService.listByLatest(max);
+      em.close();
       resp.type("application/json");
       resp.status(201);
       
@@ -466,12 +491,16 @@ public class Application {
       }
       
       Long gameId = Long.parseLong(req.params("game_id"));
-      
-      UserService userService = new UserService(em);
-      GameService gameService = new GameService(em);
+
+      EntityManager em1 = getEntityManager();
+      EntityManager em2 = getEntityManager();
+      UserService userService = new UserService(em1);
+      GameService gameService = new GameService(em2);
       String username = AccessControlService.getUsernameFromToken(token);
       Optional<User> user = userService.findByUsername(username);
       Optional<Game> game = gameService.findById(gameId);
+      em1.close();
+      em2.close();
       
       if (user.isEmpty()) {   // should not happen but who knows
         resp.status(404);
@@ -482,13 +511,15 @@ public class Application {
         resp.status(404);
         return "There is no game with id " + gameId + "!";
       }
-      
-      ReviewService reviewService = new ReviewService(em);
+
+      EntityManager em3 = getEntityManager();
+      ReviewService reviewService = new ReviewService(em3);
       Review review = Review.fromJson(req.body());
       review.setAuthor(user.get());
       review.setGame(game.get());
       
       reviewService.persist(review);
+      em3.close();
       
       resp.type("application/json");
       resp.status(201);
@@ -512,10 +543,13 @@ public class Application {
         resp.status(403);
         return "Max number of reviews must be a number!";
       }
-  
-      ReviewService reviewService = new ReviewService(em);
-      GameService gameService = new GameService(em);
+
+      EntityManager em1 = getEntityManager();
+      EntityManager em2 = getEntityManager();
+      ReviewService reviewService = new ReviewService(em1);
+      GameService gameService = new GameService(em2);
       Optional<Game> game = gameService.findById(gameId);
+      em2.close();
   
       if (game.isEmpty()) {
         resp.status(404);
@@ -523,6 +557,7 @@ public class Application {
       }
       
       List<Review> reviews = reviewService.listByGame(game.get());
+      em1.close();
       
       JsonObject jsonObj = new JsonObject();
       jsonObj.addProperty("actual", reviews.size());
@@ -561,6 +596,13 @@ public class Application {
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Access-Control-Allow-Headers", "*");
       res.type("application/json");
+    });
+
+    Spark.exception(Exception.class, (e, request, response) -> {
+      final StringWriter sw = new StringWriter();
+      final PrintWriter pw = new PrintWriter(sw, true);
+      e.printStackTrace(pw);
+      System.err.println(sw.getBuffer().toString());
     });
   }
 
@@ -699,6 +741,10 @@ public class Application {
       reviewService.likeReview(r3, u1);
       reviewService.likeReview(r4, u1);
     }
+  }
+
+  private static EntityManager getEntityManager() {
+    return factory.createEntityManager();
   }
 }
 
