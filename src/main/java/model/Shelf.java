@@ -1,5 +1,8 @@
 package model;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,7 +21,7 @@ public class Shelf {
     private String name;
 
     @ManyToOne
-    private User user;
+    private User owner;
     
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
@@ -30,19 +33,35 @@ public class Shelf {
 
     public Shelf() {}
 
-    public Shelf(User user, String name) {
-        this.user = user;
+    public Shelf(User owner, String name) {
+        this.owner = owner;
         this.name = name;
     }
+
+    // JSON //
+
+    public JsonObject asJson() {
+        JsonArray array = new JsonArray();
+        for (Game game : games) {
+            array.add(game.asJson());
+        }
+
+        JsonObject jsonObj = new JsonObject();
+        jsonObj.addProperty("id", id);
+        jsonObj.addProperty("name", name);
+        jsonObj.addProperty("owner", owner.toString());
+        jsonObj.add("games", array);
+        return jsonObj;
+    }
+
+    // ADDS? //
 
     public void addGame(Game game) {
         games.add(game);
         game.addInShelf(this);
     }
 
-    public String getName() {
-        return name;
-    }
+    // GETTERS SETTERS //
 
     public Long getId() {
         return id;
@@ -50,5 +69,21 @@ public class Shelf {
 
     public List<Game> getGames() {
         return new ArrayList<>(games);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 }
