@@ -76,6 +76,12 @@
     background-color: #5b3fbf;
 }
 
+.errorMessageDiv {
+    background-color: #ffa6a6;
+    color: #c30101;
+    border-radius: 0.5em;
+}
+
 #backImg {
     position: absolute;
     width: 100%;

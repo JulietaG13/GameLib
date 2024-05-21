@@ -35,14 +35,15 @@ function ManageVideogame({type}) {
             }
         })
             .catch(error => {
-                console.error('Error:', error);
+                console.error('Error en tokenValidation:', error);
+                localStorage.clear();
                 setNavigate(true);
             })
             .then(userResponseData => {
                 checkIfUser(userResponseData, setNavigate);
                 axios.get('http://localhost:4567/tags')
                     .catch(error => {
-                        console.error('Error:', error);
+                        console.error('Error en tags:', error);
                         setNavigate(true);
                     })
                     .then(response => {
@@ -59,7 +60,7 @@ function ManageVideogame({type}) {
                             console.log(gameResponseData.data);
                         })
                         .catch(error => {
-                            console.error('Error:', error);
+                            console.error('Error en getGame:', error);
                             setNavigate(true);
                         });
                 } else {
