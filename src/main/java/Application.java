@@ -544,12 +544,10 @@ public class Application {
         return "Max number of reviews must be a number!";
       }
 
-      EntityManager em1 = getEntityManager();
-      EntityManager em2 = getEntityManager();
-      ReviewService reviewService = new ReviewService(em1);
-      GameService gameService = new GameService(em2);
+      EntityManager em = getEntityManager();
+      ReviewService reviewService = new ReviewService(em);
+      GameService gameService = new GameService(em);
       Optional<Game> game = gameService.findById(gameId);
-      em2.close();
   
       if (game.isEmpty()) {
         resp.status(404);
@@ -557,24 +555,19 @@ public class Application {
       }
       
       List<Review> reviews = reviewService.listByGame(game.get());
-      em1.close();
       
       JsonObject jsonObj = new JsonObject();
       jsonObj.addProperty("actual", reviews.size());
     
       JsonArray jsonArray = new JsonArray();
-      for(Review review : reviews) {
-        JsonObject jsonGame = JsonParser
-            .parseString(review.asJson())
-            .getAsJsonObject();
-        jsonArray.add(jsonGame);
-      }
+      reviews.forEach(r -> jsonArray.add(r.asJson()));
     
       jsonObj.add("reviews", jsonArray);
       
       resp.type("application/json");
       resp.status(201);
-    
+
+      em.close();
       return jsonArray.toString();
     });
     
