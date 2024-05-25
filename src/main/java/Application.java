@@ -1,10 +1,12 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import entities.ErrorMessages;
 import entities.Rol;
 import entities.Token;
 import entities.responses.UserResponse;
 import example.BDExample;
+import interfaces.Controller;
 import interfaces.Responses;
 import model.*;
 import persistence.Database;
@@ -128,10 +130,6 @@ public class Application {
 
       return user.get().asJson();
     });
-
-//    Spark.post("isOwner", "application/json", (req, resp) -> {
-//
-//    });
     
     Spark.post("/newuser", "application/json", (req, resp) -> {
       final User user = User.fromJson(req.body());
@@ -743,8 +741,8 @@ public class Application {
   }
 
   private static void controllers(EntityManagerFactory factory) {
-    ShelfController shelfController = ShelfController.getInstance(factory);
-    shelfController.routes();
+    List<Controller> controllers = List.of(ShelfController.getInstance(factory));
+    controllers.forEach(Controller::run);
   }
 }
 
