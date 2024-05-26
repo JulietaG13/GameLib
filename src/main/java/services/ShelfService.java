@@ -77,6 +77,21 @@ public class ShelfService {
 
         t.commit();
     }
+    
+    public void takeOutGame(Shelf shelf, User user, Game game) {
+        EntityTransaction t = entityManager.getTransaction();
+        
+        t.begin();
+        Shelf managedShelf = find(shelf.getName(), user);
+        Optional<Game> managedGame = new GameService(entityManager).findByName(game.getName());
+        if(managedGame.isEmpty()) throw new NoSuchElementException("Game not in BD!");
+    
+        managedShelf.takeOutGame(game);
+        
+        persist(managedShelf);
+        
+        t.commit();
+    }
 
     public Shelf persist(Shelf shelf) {
         entityManager.persist(shelf);
