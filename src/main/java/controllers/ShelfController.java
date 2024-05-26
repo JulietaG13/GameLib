@@ -6,6 +6,7 @@ import interfaces.Controller;
 import model.Game;
 import model.Shelf;
 import model.User;
+import services.GameService;
 import services.ShelfService;
 import services.UserService;
 import spark.Spark;
@@ -19,6 +20,7 @@ public class ShelfController implements Controller {
     private static final String ROUTE_GET_ALL = "/shelf/all";
     private static final String ROUTE_GET_FROM_USER = "/shelf/get/user/:username/:max";
     private static final String ROUTE_GET_FROM_SHELF = "/shelf/get/:id/:max";
+    private static final String ROUTE_ADD_GAME = "/shelf/add/:shelf_id/:game_id";
 
     private EntityManagerFactory factory;
     private static ShelfController instance;
@@ -38,6 +40,7 @@ public class ShelfController implements Controller {
         routeGetAll();
         routeGetFromUser();
         routeGetFromShelf();
+        routeAddGame();
     }
 
     private void routeGetAll() {
@@ -70,7 +73,7 @@ public class ShelfController implements Controller {
                     max = Integer.parseInt(maxStr);
                 }
             } catch (NumberFormatException e) {
-                resp.status(403);
+                resp.status(400);
                 return ErrorMessages.informationNotNumber("Max number of games");
             }
 
@@ -113,7 +116,7 @@ public class ShelfController implements Controller {
                     max = Integer.parseInt(maxStr);
                 }
             } catch (NumberFormatException e) {
-                resp.status(403);
+                resp.status(400);
                 return ErrorMessages.informationNotNumber("Max number of games");
             }
     
@@ -126,7 +129,7 @@ public class ShelfController implements Controller {
                     id = Integer.parseInt(idStr);
                 }
             } catch (NumberFormatException e) {
-                resp.status(403);
+                resp.status(400);
                 return ErrorMessages.informationNotNumber("Shelf ID");
             }
             
@@ -146,6 +149,56 @@ public class ShelfController implements Controller {
             }
     
             JsonArray array = new JsonArray();
+            games.forEach(g -> array.add(g.asJson()));
+            
+            em.close();
+            return array.toString();
+        });
+    }
+    
+    private void routeAddGame() {
+        Spark.get(ROUTE_ADD_GAME, "application/json", (req, resp) -> { // :shelf_id, :game_id
+            EntityManager em = factory.createEntityManager();
+            
+            long shelfId;
+            try {
+                String idStr = req.params(":shelf_id");
+                shelfId = Long.parseLong(idStr);
+            } catch (NumberFormatException e) {
+                resp.status(400);
+                return ErrorMessages.informationNotNumber("Shelf ID");
+            }
+    
+            long gameId;
+            try {
+                String idStr = req.params(":game_id");
+                gameId = Long.parseLong(idStr);
+            } catch (NumberFormatException e) {
+                resp.status(400);
+                return ErrorMessages.informationNotNumber("Shelf ID");
+            }
+            
+            ShelfService shelfService = new ShelfService(em);
+            Optional<Shelf> shelf = shelfService.findById(shelfId);
+            if (shelf.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.informationNotFound("Shelf");
+            }
+    
+            GameService gameService = new GameService(em);
+            Optional<Game> game = gameService.findById(gameId);
+            if (game.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.informationNotFound("Game");
+            }
+            
+            shelf.get().addGame(game.get());
+            
+            resp.status(200);
+            resp.type("application/json");
+            
+            JsonArray array = new JsonArray();
+            List<Game> games = shelf.get().getGames();
             games.forEach(g -> array.add(g.asJson()));
             
             em.close();
