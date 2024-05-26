@@ -60,6 +60,11 @@ public class Shelf {
         games.add(game);
         game.addInShelf(this);
     }
+    
+    public void takeOutGame(Game game) {
+        games.remove(game);
+        game.removeFromShelf(this);
+    }
 
     // GETTERS SETTERS //
 

@@ -206,6 +206,10 @@ public class Game {
         inShelves.add(shelf);
     }
     
+    protected void removeFromShelf(Shelf shelf) {
+        inShelves.remove(shelf);
+    }
+    
     public void addTag(Tag tag) {
         tags.add(tag);
         tag.addGame(this);
