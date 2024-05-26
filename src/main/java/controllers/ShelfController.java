@@ -1,6 +1,8 @@
 package controllers;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import entities.ErrorMessages;
 import interfaces.Controller;
 import model.Game;
@@ -15,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ShelfController implements Controller {
     private static final String ROUTE_GET_ALL = "/shelf/all";
@@ -41,6 +44,7 @@ public class ShelfController implements Controller {
         routeGetAll();
         routeGetFromUser();
         routeGetFromShelf();
+        routeAddShelf();
         routeAddGame();
     }
 
@@ -154,6 +158,51 @@ public class ShelfController implements Controller {
             
             em.close();
             return array.toString();
+        });
+    }
+    
+    private void routeAddShelf() {
+        Spark.post(ROUTE_ADD_SHELF, "application/json", (req, resp) -> { // :username | gets name from body
+            EntityManager em = factory.createEntityManager();
+            
+            String username = req.params(":username");
+            UserService userService = new UserService(em);
+            Optional<User> user = userService.findByUsername(username);
+            if (user.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.usernameNotFound(username);
+            }
+            
+            JsonObject body = JsonParser
+                .parseString(req.body())
+                .getAsJsonObject();
+            String shelfName = body.get("name").getAsString();
+            
+            ShelfService shelfService = new ShelfService(em);
+            List<Shelf> shouldBeEmpty = shelfService
+                .listByUser(user.get())
+                .stream()
+                .filter(s -> s.getName().equals(shelfName))
+                .collect(Collectors.toList());
+            if (shouldBeEmpty.size() > 0) {
+                resp.status(400);
+                return "You already have a Shelf named: " + shelfName;
+            }
+            
+            Shelf shelf = new Shelf(user.get(), shelfName);
+            shelfService.persist(shelf);
+            
+            // fix
+            Game game = new GameService(em).listAll().get(0);
+            shelfService.addGame(shelf, user.get(), game);
+            shelfService.takeOutGame(shelf, user.get(), game);
+            // ---
+            
+            resp.status(200);
+            resp.type("application/json");
+    
+            em.close();
+            return shelf.asJson();
         });
     }
     
