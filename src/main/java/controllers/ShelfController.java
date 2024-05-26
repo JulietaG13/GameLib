@@ -20,6 +20,7 @@ public class ShelfController implements Controller {
     private static final String ROUTE_GET_ALL = "/shelf/all";
     private static final String ROUTE_GET_FROM_USER = "/shelf/get/user/:username/:max";
     private static final String ROUTE_GET_FROM_SHELF = "/shelf/get/:id/:max";
+    private static final String ROUTE_ADD_SHELF = "/shelf/add/:username";
     private static final String ROUTE_ADD_GAME = "/shelf/add/:shelf_id/:game_id";
 
     private EntityManagerFactory factory;
@@ -157,7 +158,7 @@ public class ShelfController implements Controller {
     }
     
     private void routeAddGame() {
-        Spark.get(ROUTE_ADD_GAME, "application/json", (req, resp) -> { // :shelf_id, :game_id
+        Spark.put(ROUTE_ADD_GAME, "application/json", (req, resp) -> { // :shelf_id, :game_id
             EntityManager em = factory.createEntityManager();
             
             long shelfId;
