@@ -3,6 +3,7 @@ package controllers;
 import com.google.gson.JsonArray;
 import entities.ErrorMessages;
 import interfaces.Controller;
+import model.Game;
 import model.Shelf;
 import model.User;
 import services.ShelfService;
@@ -16,7 +17,8 @@ import java.util.Optional;
 
 public class ShelfController implements Controller {
     private static final String ROUTE_GET_ALL = "/shelf/all";
-    private static final String ROUTE_GET_FROM_USER = "/shelf/get/:username/:max";
+    private static final String ROUTE_GET_FROM_USER = "/shelf/get/user/:username/:max";
+    private static final String ROUTE_GET_FROM_SHELF = "/shelf/get/:id/:max";
 
     private EntityManagerFactory factory;
     private static ShelfController instance;
@@ -35,6 +37,7 @@ public class ShelfController implements Controller {
     public void run() {
         routeGetAll();
         routeGetFromUser();
+        routeGetFromShelf();
     }
 
     private void routeGetAll() {
@@ -68,13 +71,13 @@ public class ShelfController implements Controller {
                 }
             } catch (NumberFormatException e) {
                 resp.status(403);
-                return "Max number of games must be a number!";
+                return ErrorMessages.informationNotNumber("Max number of games");
             }
 
             String username = req.params(":username");
             if (username == null || username.isEmpty()) {
                 resp.status(403);
-                return "You must provide a username!";
+                return ErrorMessages.informationNotProvided("username");
             }
             UserService userService = new UserService(em);
             Optional<User> owner = userService.findByUsername(username);
@@ -92,6 +95,59 @@ public class ShelfController implements Controller {
             JsonArray array = new JsonArray();
             shelves.forEach(s -> array.add(s.asJson()));
 
+            em.close();
+            return array.toString();
+        });
+    }
+    
+    private void routeGetFromShelf() {
+        Spark.get(ROUTE_GET_FROM_SHELF, "application/json", (req, resp) -> { // :shelf_id, :max
+            EntityManager em = factory.createEntityManager();
+            
+            int max;
+            try {
+                String maxStr = req.params(":max");
+                if (maxStr == null || maxStr.isEmpty()) {
+                    max = 10;
+                } else {
+                    max = Integer.parseInt(maxStr);
+                }
+            } catch (NumberFormatException e) {
+                resp.status(403);
+                return ErrorMessages.informationNotNumber("Max number of games");
+            }
+    
+            long id;
+            try {
+                String idStr = req.params(":id");
+                if (idStr == null || idStr.isEmpty()) {
+                    id = 10;
+                } else {
+                    id = Integer.parseInt(idStr);
+                }
+            } catch (NumberFormatException e) {
+                resp.status(403);
+                return ErrorMessages.informationNotNumber("Shelf ID");
+            }
+            
+            ShelfService shelfService = new ShelfService(em);
+            Optional<Shelf> shelf = shelfService.findById(id);
+            
+            if (shelf.isEmpty()) {
+                return ErrorMessages.informationNotFound("Shelf");
+            }
+            
+            resp.status(200);
+            resp.type("application/json");
+            
+            List<Game> games = shelf.get().getGames();
+            if (max < games.size()) {
+                games = games.subList(0, max);
+            }
+    
+            JsonArray array = new JsonArray();
+            games.forEach(g -> array.add(g.asJson()));
+            
             em.close();
             return array.toString();
         });
