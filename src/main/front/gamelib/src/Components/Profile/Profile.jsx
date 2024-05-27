@@ -4,6 +4,7 @@ import userProfile from "../Assets/user-icon.png";
 import {Navigate, useParams} from "react-router-dom";
 import axios from "axios";
 import HeaderV2 from "../Header/HeaderV2";
+import Shelves from "././Shelves";
 
 function Profile(){
     const username = useParams();
@@ -37,16 +38,21 @@ function Profile(){
             <HeaderV2></HeaderV2>
             <div className=''>
                 {/* Banner */}
-                <div className='bg-black'>
+                <div className='bg-white'>
                 <img src={gamelib_logo} className={"md:w-full h-[250px] object-cover"} alt={""}/>
                 {/* Profile Information */}
-                    <div className={"bg-blue-500 w-1/4 flex flex-col justify-between ml-16 z-40 "}>
+                    <div className={"bg-blue-500 w-1/5 flex flex-col justify-between ml-16 z-40 "}>
                         <img src={userProfile} className={"h-96 -mt-52 bg-amber-200 "} alt={""}/>
                         <div className={"pl-4"}>
                             <h1 className={"flex font-bold items-center text-2xl"}>{usernameResponse}</h1>
                             <h2 className={"font-semibold text-xl pt-4 pb-1"}>About me</h2>
                             <p className={"font-normal pl-5 pr-1"}>{description}</p>
                         </div>
+                    </div>
+                    {/* Shelves */}
+                    <div>
+                        <h1 className={"pl-16 font-bold text-[35px] pt-5"}>All Shelves</h1>
+                        <Shelves username={username.username}/>
                     </div>
                 </div>
             </div>

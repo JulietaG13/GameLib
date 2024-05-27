@@ -17,11 +17,10 @@ function HeaderV2() {
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('username');
         setIsLoggedIn(false);
-        window.location.href = '/library';
+        window.location.href = '/';
     }
 
     function handleDeleteUser() {
-        console.log("ola delete user")
         axios.post(`http://localhost:4567/deleteuser/${localStorage.getItem('username')}` , {}, {
             headers: {
                 'Content-Type': 'application/json',
