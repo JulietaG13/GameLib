@@ -93,8 +93,8 @@ public class GameRepository {
             return new ErrorResponse(403, "You are not allowed to change the game!");
         }
 
-        if (gameUpdate.getGamePicture() != null && !game.getGamePicture().equals(gameUpdate.getGamePicture())) {
-            game.setGamePicture(gameUpdate.getGamePicture(), lastUpdate);
+        if (gameUpdate.getCover() != null && !game.getCover().equals(gameUpdate.getCover())) {
+            game.setCover(gameUpdate.getCover(), lastUpdate);
         }
         
         if (gameUpdate.getName() != null && !game.getName().equals(gameUpdate.getName())) {
