@@ -24,7 +24,7 @@ public class ShelfRepository {
 
     public Optional<Shelf> findByName(String name) {
         return entityManager
-                .createQuery("SELECT s FROM Shelf s WHERE s.name LIKE :name", Shelf.class)
+                .createQuery("SELECT s FROM Shelf s WHERE LOWER(s.name) LIKE LOWER(:name)", Shelf.class)
                 .setParameter("name", name).getResultList()
                 .stream()
                 .findFirst();
@@ -32,7 +32,7 @@ public class ShelfRepository {
 
     public List<Shelf> listByUser(User user) {
         return entityManager
-                .createQuery("SELECT s FROM Shelf s JOIN User u ON s.owner = u WHERE u.username LIKE :username", Shelf.class)
+                .createQuery("SELECT s FROM Shelf s JOIN User u ON s.owner = u WHERE LOWER(u.username) LIKE LOWER(:username)", Shelf.class)
                 .setParameter("username", user.getUsername()).getResultList();
     }
 
