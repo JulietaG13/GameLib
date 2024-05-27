@@ -741,7 +741,10 @@ public class Application {
   }
 
   private static void controllers(EntityManagerFactory factory) {
-    List<Controller> controllers = List.of(ShelfController.getInstance(factory));
+    List<Controller> controllers = List.of(
+        ShelfController.getInstance(factory),
+        UserController.getInstance(factory)
+    );
     controllers.forEach(Controller::run);
   }
 }
