@@ -3,12 +3,11 @@ package example;
 import entities.Rol;
 import entities.TagType;
 import model.*;
-import services.*;
+import repositories.*;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class BDExample {
     private static Set<User> allUsers = new HashSet<>();
@@ -56,16 +55,16 @@ public class BDExample {
         }
         //
 
-        UserService userService = new UserService(entityManager);
-        allUsers.forEach(userService::persist);
+        UserRepository userRepository = new UserRepository(entityManager);
+        allUsers.forEach(userRepository::persist);
 
-        TagService tagService = new TagService(entityManager);
-        tags.forEach(tagService::persist);
+        TagRepository tagRepository = new TagRepository(entityManager);
+        tags.forEach(tagRepository::persist);
 
-        GameService gameService = new GameService(entityManager);
-        games.forEach(gameService::persist);
+        GameRepository gameRepository = new GameRepository(entityManager);
+        games.forEach(gameRepository::persist);
 
-        ReviewService reviewService = new ReviewService(entityManager);
+        ReviewRepository reviewRepository = new ReviewRepository(entityManager);
         for (int i = 0; i < games.size(); i++) {
             Game game = games.get(i);
 
@@ -76,17 +75,17 @@ public class BDExample {
             game.addReview(reviews.get(reviews.size() - 1 - i));
 
             reviews.forEach(r -> {
-                if (r.getGame() != null) reviewService.addReview(r, r.getAuthor(), r.getGame());
+                if (r.getGame() != null) reviewRepository.addReview(r, r.getAuthor(), r.getGame());
             });
         }
 
         // shelves
         List<Shelf> shelves = getExampleShelf(new ArrayList<>(allUsers));
-        ShelfService shelfService = new ShelfService(entityManager);
+        ShelfRepository shelfRepository = new ShelfRepository(entityManager);
         for (Shelf shelf : shelves) {
-            shelfService.persist(shelf);
+            shelfRepository.persist(shelf);
             for (int i = (int) (Math.random() * 5); i < games.size(); i += 3) {
-                shelfService.addGame(shelf, shelf.getOwner(), games.get(i));
+                shelfRepository.addGame(shelf, shelf.getOwner(), games.get(i));
             }
         }
     }

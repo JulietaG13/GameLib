@@ -1,4 +1,4 @@
-package services;
+package repositories;
 
 import model.Game;
 import model.Shelf;
@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-public class ShelfService {
+public class ShelfRepository {
 
     private final EntityManager entityManager;
 
-    public ShelfService(EntityManager entityManager) {
+    public ShelfRepository(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
@@ -24,7 +24,7 @@ public class ShelfService {
 
     public Optional<Shelf> findByName(String name) {
         return entityManager
-                .createQuery("SELECT s FROM Shelf s WHERE s.name LIKE :name", Shelf.class)
+                .createQuery("SELECT s FROM Shelf s WHERE LOWER(s.name) LIKE LOWER(:name)", Shelf.class)
                 .setParameter("name", name).getResultList()
                 .stream()
                 .findFirst();
@@ -32,7 +32,7 @@ public class ShelfService {
 
     public List<Shelf> listByUser(User user) {
         return entityManager
-                .createQuery("SELECT s FROM Shelf s JOIN User u ON s.owner = u WHERE u.username LIKE :username", Shelf.class)
+                .createQuery("SELECT s FROM Shelf s JOIN User u ON s.owner = u WHERE LOWER(u.username) LIKE LOWER(:username)", Shelf.class)
                 .setParameter("username", user.getUsername()).getResultList();
     }
 
@@ -68,7 +68,7 @@ public class ShelfService {
         */
 
         Shelf managedShelf = find(shelf.getName(), user);
-        Optional<Game> managedGame = new GameService(entityManager).findByName(game.getName());
+        Optional<Game> managedGame = new GameRepository(entityManager).findByName(game.getName());
         if(managedGame.isEmpty()) throw new NoSuchElementException("Game not in BD!");
 
         managedShelf.addGame(managedGame.get());
@@ -83,7 +83,7 @@ public class ShelfService {
         
         t.begin();
         Shelf managedShelf = find(shelf.getName(), user);
-        Optional<Game> managedGame = new GameService(entityManager).findByName(game.getName());
+        Optional<Game> managedGame = new GameRepository(entityManager).findByName(game.getName());
         if(managedGame.isEmpty()) throw new NoSuchElementException("Game not in BD!");
     
         managedShelf.takeOutGame(game);

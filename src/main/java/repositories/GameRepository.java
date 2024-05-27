@@ -1,4 +1,4 @@
-package services;
+package repositories;
 
 import entities.Rol;
 import entities.responses.ErrorResponse;
@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public class GameService {
+public class GameRepository {
 
     private final EntityManager entityManager;
 
-    public GameService(EntityManager entityManager) {
+    public GameRepository(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
@@ -121,7 +121,7 @@ public class GameService {
         
         tx.begin();
         Optional<Game> managedGame = findById(game.getId());
-        Optional<Tag> managedTag = new TagService(entityManager).findById(tag.getId());
+        Optional<Tag> managedTag = new TagRepository(entityManager).findById(tag.getId());
         if (managedGame.isEmpty()) {
             return new ErrorResponse(404, "Theres no game with id " + game.getId() + "!");
         }

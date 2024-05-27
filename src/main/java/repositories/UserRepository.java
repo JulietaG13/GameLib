@@ -1,4 +1,4 @@
-package services;
+package repositories;
 
 import model.User;
 
@@ -7,11 +7,11 @@ import javax.persistence.EntityTransaction;
 import java.util.List;
 import java.util.Optional;
 
-public class UserService {
+public class UserRepository {
 
     private final EntityManager entityManager;
 
-    public UserService(EntityManager entityManager) {
+    public UserRepository(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
@@ -40,7 +40,7 @@ public class UserService {
     }
 
     public void deleteAll() {
-        new ShelfService(entityManager).deleteAll(); // delete child
+        new ShelfRepository(entityManager).deleteAll(); // delete child
         entityManager.createQuery("DELETE FROM User").executeUpdate();
     }
 

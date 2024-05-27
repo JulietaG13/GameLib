@@ -8,9 +8,9 @@ import interfaces.Controller;
 import model.Game;
 import model.Shelf;
 import model.User;
-import services.GameService;
-import services.ShelfService;
-import services.UserService;
+import repositories.GameRepository;
+import repositories.ShelfRepository;
+import repositories.UserRepository;
 import spark.Spark;
 
 import javax.persistence.EntityManager;
@@ -51,7 +51,7 @@ public class ShelfController implements Controller {
     private void routeGetAll() {
         Spark.get(ROUTE_GET_ALL, "application/json", (req, resp) -> {
             EntityManager em = factory.createEntityManager();
-            ShelfService service = new ShelfService(em);
+            ShelfRepository service = new ShelfRepository(em);
             List<Shelf> allShelves = service.listAll();
 
             resp.status(200);
@@ -87,15 +87,15 @@ public class ShelfController implements Controller {
                 resp.status(403);
                 return ErrorMessages.informationNotProvided("username");
             }
-            UserService userService = new UserService(em);
-            Optional<User> owner = userService.findByUsername(username);
+            UserRepository userRepository = new UserRepository(em);
+            Optional<User> owner = userRepository.findByUsername(username);
             if (owner.isEmpty()) {
                 resp.status(404);
                 return ErrorMessages.usernameNotFound(username);
             }
 
-            ShelfService shelfService = new ShelfService(em);
-            List<Shelf> shelves = shelfService.listByUser(owner.get());
+            ShelfRepository shelfRepository = new ShelfRepository(em);
+            List<Shelf> shelves = shelfRepository.listByUser(owner.get());
 
             resp.status(200);
             resp.type("application/json");
@@ -138,8 +138,8 @@ public class ShelfController implements Controller {
                 return ErrorMessages.informationNotNumber("Shelf ID");
             }
             
-            ShelfService shelfService = new ShelfService(em);
-            Optional<Shelf> shelf = shelfService.findById(id);
+            ShelfRepository shelfRepository = new ShelfRepository(em);
+            Optional<Shelf> shelf = shelfRepository.findById(id);
             
             if (shelf.isEmpty()) {
                 return ErrorMessages.informationNotFound("Shelf");
@@ -166,8 +166,8 @@ public class ShelfController implements Controller {
             EntityManager em = factory.createEntityManager();
             
             String username = req.params(":username");
-            UserService userService = new UserService(em);
-            Optional<User> user = userService.findByUsername(username);
+            UserRepository userRepository = new UserRepository(em);
+            Optional<User> user = userRepository.findByUsername(username);
             if (user.isEmpty()) {
                 resp.status(404);
                 return ErrorMessages.usernameNotFound(username);
@@ -178,8 +178,8 @@ public class ShelfController implements Controller {
                 .getAsJsonObject();
             String shelfName = body.get("name").getAsString();
             
-            ShelfService shelfService = new ShelfService(em);
-            List<Shelf> shouldBeEmpty = shelfService
+            ShelfRepository shelfRepository = new ShelfRepository(em);
+            List<Shelf> shouldBeEmpty = shelfRepository
                 .listByUser(user.get())
                 .stream()
                 .filter(s -> s.getName().equals(shelfName))
@@ -190,12 +190,12 @@ public class ShelfController implements Controller {
             }
             
             Shelf shelf = new Shelf(user.get(), shelfName);
-            shelfService.persist(shelf);
+            shelfRepository.persist(shelf);
             
             // fix
-            Game game = new GameService(em).listAll().get(0);
-            shelfService.addGame(shelf, user.get(), game);
-            shelfService.takeOutGame(shelf, user.get(), game);
+            Game game = new GameRepository(em).listAll().get(0);
+            shelfRepository.addGame(shelf, user.get(), game);
+            shelfRepository.takeOutGame(shelf, user.get(), game);
             // ---
             
             resp.status(200);
@@ -228,15 +228,15 @@ public class ShelfController implements Controller {
                 return ErrorMessages.informationNotNumber("Shelf ID");
             }
             
-            ShelfService shelfService = new ShelfService(em);
-            Optional<Shelf> shelf = shelfService.findById(shelfId);
+            ShelfRepository shelfRepository = new ShelfRepository(em);
+            Optional<Shelf> shelf = shelfRepository.findById(shelfId);
             if (shelf.isEmpty()) {
                 resp.status(404);
                 return ErrorMessages.informationNotFound("Shelf");
             }
     
-            GameService gameService = new GameService(em);
-            Optional<Game> game = gameService.findById(gameId);
+            GameRepository gameRepository = new GameRepository(em);
+            Optional<Game> game = gameRepository.findById(gameId);
             if (game.isEmpty()) {
                 resp.status(404);
                 return ErrorMessages.informationNotFound("Game");

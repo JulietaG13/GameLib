@@ -1,4 +1,4 @@
-package services;
+package repositories;
 
 import entities.responses.ErrorResponse;
 import entities.responses.ReviewResponse;
@@ -12,11 +12,11 @@ import javax.persistence.EntityTransaction;
 import java.util.List;
 import java.util.Optional;
 
-public class ReviewService {
+public class ReviewRepository {
   
   private final EntityManager entityManager;
   
-  public ReviewService(EntityManager entityManager) {
+  public ReviewRepository(EntityManager entityManager) {
     this.entityManager = entityManager;
   }
   
@@ -41,13 +41,13 @@ public class ReviewService {
   }
   
   public Responses addReview(Review review, User author, Game game) {
-    UserService userService = new UserService(entityManager);
-    GameService gameService = new GameService(entityManager);
+    UserRepository userRepository = new UserRepository(entityManager);
+    GameRepository gameRepository = new GameRepository(entityManager);
     EntityTransaction tx = entityManager.getTransaction();
     
     tx.begin();
-    Optional<User> managedUser = userService.findById(author.getId());
-    Optional<Game> managedGame = gameService.findById(game.getId());
+    Optional<User> managedUser = userRepository.findById(author.getId());
+    Optional<Game> managedGame = gameRepository.findById(game.getId());
     if (managedGame.isEmpty()) {
       return new ErrorResponse(404, "Theres no game with id " + game.getId() + "!");
     }
@@ -59,18 +59,18 @@ public class ReviewService {
     managedUser.get().addReview(review);
     managedGame.get().addReview(review);
   
-    userService.persist(managedUser.get());
-    gameService.persist(managedGame.get());
+    userRepository.persist(managedUser.get());
+    gameRepository.persist(managedGame.get());
     return new ReviewResponse(review);
   }
   
   public Responses likeReview(Review review, User user) {
-    UserService userService = new UserService(entityManager);
+    UserRepository userRepository = new UserRepository(entityManager);
     EntityTransaction tx = entityManager.getTransaction();
     
     tx.begin();
     Optional<Review> managedReview = findById(review.getId());
-    Optional<User> managedUser = userService.findById(user.getId());
+    Optional<User> managedUser = userRepository.findById(user.getId());
     if (managedUser.isEmpty()) {
       return new ErrorResponse(404, "Theres no user with id " + user.getId() + "!");
     }
@@ -80,18 +80,18 @@ public class ReviewService {
     tx.commit();
     
     managedUser.get().likeReview(review);
-    userService.persist(managedUser.get());
+    userRepository.persist(managedUser.get());
     
     return new ReviewResponse(review);
   }
   
   public Responses dislikeReview(Review review, User user) {
-    UserService userService = new UserService(entityManager);
+    UserRepository userRepository = new UserRepository(entityManager);
     EntityTransaction tx = entityManager.getTransaction();
     
     tx.begin();
     Optional<Review> managedReview = findById(review.getId());
-    Optional<User> managedUser = userService.findById(user.getId());
+    Optional<User> managedUser = userRepository.findById(user.getId());
     if (managedUser.isEmpty()) {
       return new ErrorResponse(404, "Theres no user with id " + user.getId() + "!");
     }
@@ -101,7 +101,7 @@ public class ReviewService {
     tx.commit();
     
     managedUser.get().dislikeReview(review);
-    userService.persist(managedUser.get());
+    userRepository.persist(managedUser.get());
     
     return new ReviewResponse(review);
   }

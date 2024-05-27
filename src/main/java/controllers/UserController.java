@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import entities.ErrorMessages;
 import interfaces.Controller;
 import model.User;
-import services.UserService;
+import repositories.UserRepository;
 import spark.Spark;
 
 import javax.persistence.EntityManager;
@@ -50,10 +50,10 @@ public class UserController implements Controller {
             resp.status(200);
 
             EntityManager em = factory.createEntityManager();
-            UserService userService = new UserService(em);
+            UserRepository userRepository = new UserRepository(em);
 
             JsonArray jsonArray = new JsonArray();
-            for (User user : userService.listAll()) {
+            for (User user : userRepository.listAll()) {
                 jsonArray.add(user.asJson());
             }
 
@@ -67,8 +67,8 @@ public class UserController implements Controller {
             EntityManager em = factory.createEntityManager();
         
             String username = req.params(":username");
-            UserService userService = new UserService(em);
-            Optional<User> user = userService.findByUsername(username);
+            UserRepository userRepository = new UserRepository(em);
+            Optional<User> user = userRepository.findByUsername(username);
             if (user.isEmpty()) {
                 resp.status(404);
                 return ErrorMessages.usernameNotFound(username);
@@ -80,7 +80,7 @@ public class UserController implements Controller {
             
             String pfp = body.get("pfp").getAsString();
             user.get().setPfp(pfp);
-            userService.persist(user.get());
+            userRepository.persist(user.get());
         
             em.close();
             return user.get().asJsonProfile();
@@ -92,8 +92,8 @@ public class UserController implements Controller {
             EntityManager em = factory.createEntityManager();
             
             String username = req.params(":username");
-            UserService userService = new UserService(em);
-            Optional<User> user = userService.findByUsername(username);
+            UserRepository userRepository = new UserRepository(em);
+            Optional<User> user = userRepository.findByUsername(username);
             if (user.isEmpty()) {
                 resp.status(404);
                 return ErrorMessages.usernameNotFound(username);
@@ -105,7 +105,7 @@ public class UserController implements Controller {
             
             String banner = body.get("banner").getAsString();
             user.get().setBanner(banner);
-            userService.persist(user.get());
+            userRepository.persist(user.get());
             
             em.close();
             return user.get().asJsonProfile();
