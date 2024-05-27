@@ -17,4 +17,8 @@ public class ErrorMessages {
     public static String informationNotNumber(String info) {
         return info + " must be a number!";
     }
+    
+    public static String informationNotBoolean(String info) {
+        return info + " must be true or false!";
+    }
 }
