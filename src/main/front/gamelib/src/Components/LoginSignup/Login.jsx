@@ -51,7 +51,7 @@ const Login = () => {
 
     //if navigate is true, redirects to home page, this happens only when logged successfully
     if (navigate) {
-        return <Navigate to={"/library"}/>
+        return <Navigate to={"/"}/>
     }
 
 

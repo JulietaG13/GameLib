@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react'
 import axios from 'axios'
-import GlobalApiForTesting from './GlobalApiForTesting'
 
 
 function GenreList({genreId}) {
@@ -10,18 +9,11 @@ function GenreList({genreId}) {
 
     // Get the list of genres when the component is mounted
     useEffect(() => {
-        getGenreList()
+        //getGenreList()
     }, []);
 
 
     // Get the list of genres
-    const getGenreList= () => {
-        GlobalApiForTesting.getGenreList.then((response) => {
-            //console.log(response.data);
-            setGenreList(response.data.results);
-        })
-    }
-
     //our own api
     /*
     axios.get('http://localhost:4567/genre').then((response) =>{

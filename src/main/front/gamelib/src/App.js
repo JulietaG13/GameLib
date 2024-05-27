@@ -10,7 +10,7 @@ function App() {
     return <BrowserRouter>
         <div className={'min-h-[100vh]'}>
             <Routes>
-                <Route path="/library" element={<Library/>}/>
+                <Route path="/" element={<Library/>}/>
                 <Route path="/Login" element={<Login/>}/>
                 <Route path="/register" element={<RegisterRework/>}/>
                 <Route path="/addVideogame" element={<ABM type={"Add"}/>}/>

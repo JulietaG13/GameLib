@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react'
 import GenreList from './GenreList'
-import GlobalApiForTesting from './GlobalApiForTesting'
 import Banner from './Banner'
 import TrendingGames from './TrendingGames'
 import GamesByGenresId from './GamesByGenresId'
@@ -9,7 +8,6 @@ import axios from "axios";
 import HeaderV2 from "../Header/HeaderV2";
 
 
-//first tailwind attempt
 function Library() {
     const [gamesFromDB, setGamesFromDB] = useState([]);
 
