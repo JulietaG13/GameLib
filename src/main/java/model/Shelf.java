@@ -19,7 +19,9 @@ public class Shelf {
 
     @Column(name = "name", nullable = false)
     private String name;
-
+    
+    private boolean isPrivate = false;
+    
     @ManyToOne
     private User owner;
     
@@ -33,9 +35,14 @@ public class Shelf {
 
     public Shelf() {}
 
-    public Shelf(User owner, String name) {
+    public Shelf(User owner, String name, boolean isPrivate) {
         this.owner = owner;
         this.name = name;
+        this.isPrivate = isPrivate;
+    }
+    
+    public Shelf(User owner, String name) {
+        this(owner, name, false);
     }
 
     // JSON //
@@ -50,6 +57,7 @@ public class Shelf {
         jsonObj.addProperty("id", id);
         jsonObj.addProperty("name", name);
         jsonObj.addProperty("owner_id", owner.getId());
+        jsonObj.addProperty("is_private", isPrivate);
         jsonObj.add("games", array);
         return jsonObj;
     }
@@ -90,5 +98,21 @@ public class Shelf {
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+    
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+    
+    public void setIsPrivate(boolean isPrivate) {
+        this.isPrivate = isPrivate;
+    }
+    
+    public void setPrivate() {
+        this.isPrivate = true;
+    }
+    
+    public void setPublic() {
+        this.isPrivate = false;
     }
 }
