@@ -7,9 +7,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import entities.responses.ErrorResponse;
 import entities.responses.StatusResponse;
+import example.ImageExample;
 import interfaces.Responses;
 
 import javax.persistence.*;
+import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -43,9 +45,11 @@ public class Game {
     @Lob
     @Column(nullable = false, columnDefinition = "CLOB")
     private String cover = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAkACQAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAKAAoDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9BbX/AILufBvVz8d9WtPjx+zzH4Z8D2cUHhIXep39vqc+orBMLkXlu8Qe5t/tAgET6cs5dDJ/FtByvhb/AMHN/wCx/dfDLw5J4w+OnhWHxdJpds2tpo/hzX205L4xKbgWxmsllMIl37DIqvt27gDkV/OF/wAF2PCel+B/+CvXx90vRdM0/R9MtvFMphtLG3S3gi3Rxu21EAUZZmY4HJYnqa/qH/ZI/wCCXH7MviT9lL4Y6jqP7OnwJ1DUNQ8J6Vc3V1c+AdKlmuZXs4meR3aAlmZiSWJJJJJoA//Z";
-
-    @Column(name = "background_image", nullable = false)
-    private String backgroundImage = "https://i.pinimg.com/originals/05/ac/17/05ac17fb09440e9071908ef00efef134.png";
+    
+    @Lob
+    @Column(name = "background_image", nullable = false, columnDefinition = "CLOB")
+    private String backgroundImage;
+    //"https://i.pinimg.com/originals/05/ac/17/05ac17fb09440e9071908ef00efef134.png";
     
     @ManyToMany()
     @JoinTable(
@@ -76,6 +80,7 @@ public class Game {
         this.releaseDate = builder.releaseDate;
         this.lastUpdate = builder.lastUpdate;
         this.cover = builder.cover;
+        this.backgroundImage = builder.backgroundImage;
     }
 
     public static GameBuilder create(String name) {
@@ -89,6 +94,7 @@ public class Game {
         private LocalDateTime releaseDate;
         private LocalDateTime lastUpdate;
         private String cover;
+        private String backgroundImage;
 
         public GameBuilder(String name) {
             this.name = name;
@@ -118,13 +124,21 @@ public class Game {
             this.cover = cover;
             return this;
         }
+    
+        public GameBuilder backgroundImage(String backgroundImage) {
+            this.backgroundImage = backgroundImage;
+            return this;
+        }
 
         public Game build() {
             if (description == null) {
                 description = "";
             }
             if (cover == null) {
-                cover = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAkACQAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAKAAoDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9BbX/AILufBvVz8d9WtPjx+zzH4Z8D2cUHhIXep39vqc+orBMLkXlu8Qe5t/tAgET6cs5dDJ/FtByvhb/AMHN/wCx/dfDLw5J4w+OnhWHxdJpds2tpo/hzX205L4xKbgWxmsllMIl37DIqvt27gDkV/OF/wAF2PCel+B/+CvXx90vRdM0/R9MtvFMphtLG3S3gi3Rxu21EAUZZmY4HJYnqa/qH/ZI/wCCXH7MviT9lL4Y6jqP7OnwJ1DUNQ8J6Vc3V1c+AdKlmuZXs4meR3aAlmZiSWJJJJJoA//Z";
+                cover = ImageExample.LAZY_COOL_CAT.image;
+            }
+            if (backgroundImage == null) {
+                backgroundImage = ImageExample.COMPUTER_CAT_BANNER_MAYBE.image;
             }
             if (releaseDate == null) {
                 releaseDate = LocalDateTime.now();
@@ -237,11 +251,11 @@ public class Game {
         return id;
     }
 
-    public String getGamePicture() {
+    public String getCover() {
         return cover;
     }
 
-    public void setGamePicture(String cover, LocalDateTime lastUpdate) {
+    public void setCover(String cover, LocalDateTime lastUpdate) {
         this.cover = cover;
         this.setLastUpdate(lastUpdate);
     }
