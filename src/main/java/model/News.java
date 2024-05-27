@@ -1,5 +1,8 @@
 package model;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -31,6 +34,15 @@ public class News {
   }
   
   // JSON //
+  
+  public JsonObject asJson() {
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("title", title);
+    jsonObject.addProperty("description", description);
+    jsonObject.addProperty("date", date.toString());
+    jsonObject.addProperty("game_id", game.getId());
+    return jsonObject;
+  }
   
   // GETTERS SETTERS //
   
