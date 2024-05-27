@@ -1,7 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import entities.ErrorMessages;
 import entities.Rol;
 import entities.Token;
 import entities.responses.UserResponse;
@@ -10,6 +9,7 @@ import interfaces.Controller;
 import interfaces.Responses;
 import model.*;
 import persistence.Database;
+import repositories.*;
 import services.*;
 import controllers.*;
 import spark.Spark;
@@ -63,10 +63,10 @@ public class Application {
       resp.status(201);
 
       EntityManager em = getEntityManager();
-      UserService userService = new UserService(em);
+      UserRepository userRepository = new UserRepository(em);
 
       JsonArray jsonArray = new JsonArray();
-      for (User user : userService.listAll()) {
+      for (User user : userRepository.listAll()) {
         jsonArray.add(user.asJson());
       }
 
@@ -80,10 +80,10 @@ public class Application {
       resp.status(201);
 
       EntityManager em = getEntityManager();
-      GameService gameService = new GameService(em);
+      GameRepository gameRepository = new GameRepository(em);
 
       JsonArray jsonArray = new JsonArray();
-      for (Game game : gameService.listAll()) {
+      for (Game game : gameRepository.listAll()) {
         jsonArray.add(game.asJson());
       }
 
@@ -97,9 +97,9 @@ public class Application {
       resp.status(201);
 
       EntityManager em = getEntityManager();
-      TagService tagService = new TagService(em);
+      TagRepository tagRepository = new TagRepository(em);
       JsonArray jsonArray = new JsonArray();
-      for (Tag tag : tagService.listAll()) {
+      for (Tag tag : tagRepository.listAll()) {
         jsonArray.add(tag.asJson());
       }
 
@@ -118,9 +118,9 @@ public class Application {
       resp.status(201);
 
       EntityManager em = getEntityManager();
-      UserService userService = new UserService(em);
+      UserRepository userRepository = new UserRepository(em);
       String username = AccessControlService.getUsernameFromToken(token);
-      Optional<User> user = userService.findByUsername(username);
+      Optional<User> user = userRepository.findByUsername(username);
       em.close();
       
       if (user.isEmpty()) {
@@ -151,8 +151,8 @@ public class Application {
         return response.getMessage();
       }
       
-      final UserService userService = new UserService(em);
-      userService.persist(user);
+      final UserRepository userRepository = new UserRepository(em);
+      userRepository.persist(user);
       
       resp.type("application/json");
       resp.status(201);
@@ -169,8 +169,8 @@ public class Application {
       }
 
       EntityManager em = getEntityManager();
-      UserService userService = new UserService(em);
-      Optional<User> user = userService.findByUsername(username);
+      UserRepository userRepository = new UserRepository(em);
+      Optional<User> user = userRepository.findByUsername(username);
 
       if (user.isEmpty()) {
         resp.status(404);
@@ -192,8 +192,8 @@ public class Application {
       }
 
       EntityManager em = getEntityManager();
-      UserService userService = new UserService(em);
-      Optional<User> user = userService.findByUsername(username);
+      UserRepository userRepository = new UserRepository(em);
+      Optional<User> user = userRepository.findByUsername(username);
 
       if (user.isEmpty()) {
         resp.status(404);
@@ -226,14 +226,14 @@ public class Application {
       String username = req.params("username");
 
       EntityManager em = getEntityManager();
-      UserService userService = new UserService(em);
-      Optional<User> user = userService.findByUsername(username);
+      UserRepository userRepository = new UserRepository(em);
+      Optional<User> user = userRepository.findByUsername(username);
       if (user.isEmpty()) {
         resp.status(404);
         return "Theres no user with username " + username + "!";
       }
 
-      userService.deleteUserByID(user.get().getId());
+      userRepository.deleteUserByID(user.get().getId());
 
       resp.type("application/json");
       resp.status(200);
@@ -286,7 +286,7 @@ public class Application {
       }
       String username = AccessControlService.getUsernameFromToken(token); // already checked with token validation
       EntityManager em1 = getEntityManager();
-      Optional<User> dev = new UserService(em1).findByUsername(username);
+      Optional<User> dev = new UserRepository(em1).findByUsername(username);
       em1.close();
 
       if (dev.isEmpty()) {
@@ -295,7 +295,7 @@ public class Application {
       }
 
       EntityManager em2 = getEntityManager();
-      final GameService games = new GameService(em2);
+      final GameRepository games = new GameRepository(em2);
       if (!games.isUserAllowed(dev.get())) {
         resp.status(403);
         return "User is not allowed!";
@@ -341,7 +341,7 @@ public class Application {
     
     Spark.get("/getgame/:id", "application/json", (req, resp) -> {
       EntityManager em1 = getEntityManager();
-      final GameService gameService = new GameService(em1);
+      final GameRepository gameRepository = new GameRepository(em1);
       
       long id;
       try {
@@ -351,7 +351,7 @@ public class Application {
         return "Game ID must be a number!";
       }
       
-      Optional<Game> game = gameService.findById(id);
+      Optional<Game> game = gameRepository.findById(id);
       
       if (game.isEmpty()) {
         resp.status(404);
@@ -375,7 +375,7 @@ public class Application {
       }
       String username = AccessControlService.getUsernameFromToken(token); // already checked with token validation
       EntityManager em1 = getEntityManager();
-      Optional<User> owner = new UserService(em1).findByUsername(username);
+      Optional<User> owner = new UserRepository(em1).findByUsername(username);
       em1.close();
 
       if (owner.isEmpty()) {
@@ -384,7 +384,7 @@ public class Application {
       }
 
       EntityManager em2 = getEntityManager();
-      final GameService gameService = new GameService(em2);
+      final GameRepository gameRepository = new GameRepository(em2);
       long id;
       try {
         id = Long.parseLong(req.params(":id"));
@@ -393,7 +393,7 @@ public class Application {
         return "Game ID must be a number!";
       }
       
-      Optional<Game> gameToEdit = gameService.findById(id);
+      Optional<Game> gameToEdit = gameRepository.findById(id);
       
       if (gameToEdit.isEmpty()) {
         resp.status(404);
@@ -404,7 +404,7 @@ public class Application {
       //LocalDateTime lastUpdate = LocalDateTime.now();
       LocalDateTime lastUpdate = gameUpdate.getLastUpdate(); //TODO(have front send LocalDateTime)
       
-      Responses gameResponse = gameService.update(owner.get(), id, gameUpdate, lastUpdate);
+      Responses gameResponse = gameRepository.update(owner.get(), id, gameUpdate, lastUpdate);
       em2.close();
       if (gameResponse.hasError()) {
         resp.status(gameResponse.getStatusCode());
@@ -427,7 +427,7 @@ public class Application {
 
       //System.out.println("Esta línea es absolutamente necesaria para que la eliminacion funcione correctamente");
       EntityManager em = getEntityManager();
-      final GameService gameService = new GameService(em);
+      final GameRepository gameRepository = new GameRepository(em);
       
       long id;
       try {
@@ -437,14 +437,14 @@ public class Application {
         return "Game ID must be a number!";
       }
       
-      Optional<Game> game = gameService.findById(id);
+      Optional<Game> game = gameRepository.findById(id);
 
       if (game.isEmpty()) {
         res.status(404);
         return "There's no game with id " + req.params(":id") + "!";
       }
 
-      gameService.delete(id);
+      gameRepository.delete(id);
       em.close();
 
       res.type("application/json");
@@ -454,7 +454,7 @@ public class Application {
     
     Spark.get("/latestupdated/:max", "application/json", (req, resp) -> {
       EntityManager em = getEntityManager();
-      final GameService gameService = new GameService(em);
+      final GameRepository gameRepository = new GameRepository(em);
       
       int max;
       try {
@@ -464,7 +464,7 @@ public class Application {
         return "Max number of games must be a number!";
       }
       
-      List<Game> latestUpdated = gameService.listByLatest(max);
+      List<Game> latestUpdated = gameRepository.listByLatest(max);
       em.close();
       resp.type("application/json");
       resp.status(201);
@@ -494,11 +494,11 @@ public class Application {
 
       EntityManager em1 = getEntityManager();
       EntityManager em2 = getEntityManager();
-      UserService userService = new UserService(em1);
-      GameService gameService = new GameService(em2);
+      UserRepository userRepository = new UserRepository(em1);
+      GameRepository gameRepository = new GameRepository(em2);
       String username = AccessControlService.getUsernameFromToken(token);
-      Optional<User> user = userService.findByUsername(username);
-      Optional<Game> game = gameService.findById(gameId);
+      Optional<User> user = userRepository.findByUsername(username);
+      Optional<Game> game = gameRepository.findById(gameId);
       em1.close();
       em2.close();
       
@@ -513,12 +513,12 @@ public class Application {
       }
 
       EntityManager em3 = getEntityManager();
-      ReviewService reviewService = new ReviewService(em3);
+      ReviewRepository reviewRepository = new ReviewRepository(em3);
       Review review = Review.fromJson(req.body());
       review.setAuthor(user.get());
       review.setGame(game.get());
       
-      reviewService.persist(review);
+      reviewRepository.persist(review);
       em3.close();
       
       resp.type("application/json");
@@ -545,16 +545,16 @@ public class Application {
       }
 
       EntityManager em = getEntityManager();
-      ReviewService reviewService = new ReviewService(em);
-      GameService gameService = new GameService(em);
-      Optional<Game> game = gameService.findById(gameId);
+      ReviewRepository reviewRepository = new ReviewRepository(em);
+      GameRepository gameRepository = new GameRepository(em);
+      Optional<Game> game = gameRepository.findById(gameId);
   
       if (game.isEmpty()) {
         resp.status(404);
         return "There is no game with id " + gameId + "!";
       }
       
-      List<Review> reviews = reviewService.listByGame(game.get());
+      List<Review> reviews = reviewRepository.listByGame(game.get());
       
       JsonObject jsonObj = new JsonObject();
       jsonObj.addProperty("actual", reviews.size());
@@ -600,27 +600,27 @@ public class Application {
   }
 
   private static void storeAdmin(User admin, EntityManager entityManager) {
-    UserService userService = new UserService(entityManager);
-    userService.persist(admin);
+    UserRepository userRepository = new UserRepository(entityManager);
+    userRepository.persist(admin);
   }
   
   // tests for BD //
   
   private static void storeUsers1(EntityManager entityManager) {
-    UserService userService = new UserService(entityManager);
+    UserRepository userRepository = new UserRepository(entityManager);
     
-    if(userService.listAll().size() < 4) {
+    if(userRepository.listAll().size() < 4) {
       for(int i = 1; i < 5; i++) {
         User u = User.create("username" + i).email("user" + i + "@mail.com").password("qwerty123").build();
-        userService.persist(u);
+        userRepository.persist(u);
       }
     }
   }
   
   private static void storeGames1(EntityManager entityManager) {
-    GameService gameService = new GameService(entityManager);
-    ShelfService shelfService = new ShelfService(entityManager);
-    UserService userService = new UserService(entityManager);
+    GameRepository gameRepository = new GameRepository(entityManager);
+    ShelfRepository shelfRepository = new ShelfRepository(entityManager);
+    UserRepository userRepository = new UserRepository(entityManager);
 
     User user = User.create("IOwnAShelf").email("shelves@mail.com").password("1234").build();
     User developer = User.create("IOwnGames").email("games@mail.com").password("1234").rol(Rol.DEVELOPER).build();
@@ -644,36 +644,36 @@ public class Application {
         .lastUpdate(LocalDateTime.now().plusMonths(2))
         .build();
     
-    if (gameService.listAll().isEmpty() && shelfService.listAll().isEmpty()) {
-      userService.persist(user);
-      userService.persist(developer);
-      gameService.persist(game1);
-      gameService.persist(game2);
-      gameService.persist(game3);
-      shelfService.persist(shelf);
+    if (gameRepository.listAll().isEmpty() && shelfRepository.listAll().isEmpty()) {
+      userRepository.persist(user);
+      userRepository.persist(developer);
+      gameRepository.persist(game1);
+      gameRepository.persist(game2);
+      gameRepository.persist(game3);
+      shelfRepository.persist(shelf);
     }
 
     developer.addDeveloped(game1);
     developer.addDeveloped(game2);
     
-    shelfService.addGame(shelf, user, game1);
-    shelfService.addGame(shelf, user, game3);
+    shelfRepository.addGame(shelf, user, game1);
+    shelfRepository.addGame(shelf, user, game3);
   }
   
   private static void storeTags1(EntityManager entityManager) {
-    TagService tagService = new TagService(entityManager);
-    GameService gameService = new GameService(entityManager);
+    TagRepository tagRepository = new TagRepository(entityManager);
+    GameRepository gameRepository = new GameRepository(entityManager);
 
     String cover = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAkACQAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAKAAoDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9BbX/AILufBvVz8d9WtPjx+zzH4Z8D2cUHhIXep39vqc+orBMLkXlu8Qe5t/tAgET6cs5dDJ/FtByvhb/AMHN/wCx/dfDLw5J4w+OnhWHxdJpds2tpo/hzX205L4xKbgWxmsllMIl37DIqvt27gDkV/OF/wAF2PCel+B/+CvXx90vRdM0/R9MtvFMphtLG3S3gi3Rxu21EAUZZmY4HJYnqa/qH/ZI/wCCXH7MviT9lL4Y6jqP7OnwJ1DUNQ8J6Vc3V1c+AdKlmuZXs4meR3aAlmZiSWJJJJJoA//Z";
     
-    if(tagService.listAll().isEmpty()) {
+    if(tagRepository.listAll().isEmpty()) {
       for(int i = 1; i < 5; i++) {
         Tag t = new Tag("tag" + i);
-        tagService.persist(t);
+        tagRepository.persist(t);
       }
     }
     
-    List<Tag> tags = tagService.listAll();
+    List<Tag> tags = tagRepository.listAll();
     
     Game game1 = Game
         .create("tagged game 1")
@@ -689,50 +689,50 @@ public class Application {
         .releaseDate(LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.SECONDS))
         .lastUpdate(LocalDateTime.now().plusDays(3))
         .build();
-    gameService.persist(game1);
-    gameService.persist(game2);
+    gameRepository.persist(game1);
+    gameRepository.persist(game2);
     
-    gameService.addTag(admin, game1, tags.get(0));
+    gameRepository.addTag(admin, game1, tags.get(0));
     
-    gameService.addTag(admin, game2, tags.get(2));
-    gameService.addTag(admin, game2, tags.get(3));
+    gameRepository.addTag(admin, game2, tags.get(2));
+    gameRepository.addTag(admin, game2, tags.get(3));
   }
   
   private static void storeReviews1(EntityManager entityManager) {
-    ReviewService reviewService = new ReviewService(entityManager);
-    UserService userService = new UserService(entityManager);
-    GameService gameService = new GameService(entityManager);
+    ReviewRepository reviewRepository = new ReviewRepository(entityManager);
+    UserRepository userRepository = new UserRepository(entityManager);
+    GameRepository gameRepository = new GameRepository(entityManager);
 
     String cover = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAkACQAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAKAAoDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9BbX/AILufBvVz8d9WtPjx+zzH4Z8D2cUHhIXep39vqc+orBMLkXlu8Qe5t/tAgET6cs5dDJ/FtByvhb/AMHN/wCx/dfDLw5J4w+OnhWHxdJpds2tpo/hzX205L4xKbgWxmsllMIl37DIqvt27gDkV/OF/wAF2PCel+B/+CvXx90vRdM0/R9MtvFMphtLG3S3gi3Rxu21EAUZZmY4HJYnqa/qH/ZI/wCCXH7MviT9lL4Y6jqP7OnwJ1DUNQ8J6Vc3V1c+AdKlmuZXs4meR3aAlmZiSWJJJJJoA//Z";
     
-    if (reviewService.listAll().isEmpty()) {
+    if (reviewRepository.listAll().isEmpty()) {
       User u1 = User.create("i made 1 review").email("review1@mail.com").password("qwerty123").build();
       User u2 = User.create("i made 3 reviews").email("review3@mail.com").password("qwerty123").build();
-      userService.persist(u1);
-      userService.persist(u2);
+      userRepository.persist(u1);
+      userRepository.persist(u2);
       
       Game g1 = Game.create("game with 2 user reviews").cover(cover).description("the game has 2 reviews each by different users").releaseDate(LocalDateTime.now().plusDays(11).truncatedTo(ChronoUnit.SECONDS)).build();
       Game g2 = Game.create("game reviewd by same user").cover(cover).description("the game has 2 reviews by the same user").releaseDate(LocalDateTime.now().plusDays(13).truncatedTo(ChronoUnit.SECONDS)).build();
-      gameService.persist(g1);
-      gameService.persist(g2);
+      gameRepository.persist(g1);
+      gameRepository.persist(g2);
       
       Review r1 = new Review("this game is subpar if i say so myself");
       Review r2 = new Review("awesome game 10/10 would recommend i love it");
-      reviewService.addReview(r1, u1, g1);
-      reviewService.addReview(r2, u2, g1);
+      reviewRepository.addReview(r1, u1, g1);
+      reviewRepository.addReview(r2, u2, g1);
       
       Review r3 = new Review("a review");
       Review r4 = new Review("a second review");
-      reviewService.addReview(r3, u2, g2);
-      reviewService.addReview(r4, u2, g2);
+      reviewRepository.addReview(r3, u2, g2);
+      reviewRepository.addReview(r4, u2, g2);
       
-      reviewService.likeReview(r1, u1);   // se auto-likeo
-      reviewService.dislikeReview(r1, u2);
+      reviewRepository.likeReview(r1, u1);   // se auto-likeo
+      reviewRepository.dislikeReview(r1, u2);
       
-      reviewService.dislikeReview(r2, u1);
+      reviewRepository.dislikeReview(r2, u1);
       
-      reviewService.likeReview(r3, u1);
-      reviewService.likeReview(r4, u1);
+      reviewRepository.likeReview(r3, u1);
+      reviewRepository.likeReview(r4, u1);
     }
   }
 

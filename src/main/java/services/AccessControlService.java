@@ -1,6 +1,5 @@
 package services;
 
-import entities.Rol;
 import entities.responses.ErrorResponse;
 import entities.responses.StatusResponse;
 import entities.responses.UserResponse;
@@ -9,8 +8,8 @@ import interfaces.Responses;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import model.Game;
 import model.User;
+import repositories.UserRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -65,23 +64,23 @@ public class AccessControlService {
     }
 
     public static Responses isUserAvailable(User user, EntityManager em) {
-        final UserService userService = new UserService(em);
+        final UserRepository userRepository = new UserRepository(em);
 
-        if (userService.usernameInUse(user)) {
+        if (userRepository.usernameInUse(user)) {
             return new ErrorResponse(403, "Username already exists!");
         }
-        if (userService.emailInUse(user)) {
+        if (userRepository.emailInUse(user)) {
             return new ErrorResponse(403, "Email already in use!");
         }
         return new StatusResponse(200);
     }
 
     public static Responses authenticateUser(String username, String password, EntityManager entityManager) {
-        UserService userService = new UserService(entityManager);
+        UserRepository userRepository = new UserRepository(entityManager);
         EntityTransaction tx = entityManager.getTransaction();
 
         tx.begin();
-        Optional<User> possibleUser = userService.findByUsername(username);
+        Optional<User> possibleUser = userRepository.findByUsername(username);
         tx.commit();
 
         if (possibleUser.isEmpty()) {

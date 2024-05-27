@@ -1,4 +1,4 @@
-package services;
+package repositories;
 
 import model.Game;
 import model.Shelf;
@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-public class ShelfService {
+public class ShelfRepository {
 
     private final EntityManager entityManager;
 
-    public ShelfService(EntityManager entityManager) {
+    public ShelfRepository(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
@@ -68,7 +68,7 @@ public class ShelfService {
         */
 
         Shelf managedShelf = find(shelf.getName(), user);
-        Optional<Game> managedGame = new GameService(entityManager).findByName(game.getName());
+        Optional<Game> managedGame = new GameRepository(entityManager).findByName(game.getName());
         if(managedGame.isEmpty()) throw new NoSuchElementException("Game not in BD!");
 
         managedShelf.addGame(managedGame.get());
@@ -83,7 +83,7 @@ public class ShelfService {
         
         t.begin();
         Shelf managedShelf = find(shelf.getName(), user);
-        Optional<Game> managedGame = new GameService(entityManager).findByName(game.getName());
+        Optional<Game> managedGame = new GameRepository(entityManager).findByName(game.getName());
         if(managedGame.isEmpty()) throw new NoSuchElementException("Game not in BD!");
     
         managedShelf.takeOutGame(game);

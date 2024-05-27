@@ -1,4 +1,4 @@
-package services;
+package repositories;
 
 import model.Tag;
 
@@ -7,11 +7,11 @@ import javax.persistence.EntityTransaction;
 import java.util.List;
 import java.util.Optional;
 
-public class TagService {
+public class TagRepository {
   
   private final EntityManager entityManager;
   
-  public TagService(EntityManager entityManager) {
+  public TagRepository(EntityManager entityManager) {
     this.entityManager = entityManager;
   }
   
