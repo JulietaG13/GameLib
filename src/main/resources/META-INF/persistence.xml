@@ -8,6 +8,7 @@
         <class>model.Game</class>
         <class>model.Tag</class>
         <class>model.Review</class>
+        <class>model.News</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbc.JDBCDriver"/>
