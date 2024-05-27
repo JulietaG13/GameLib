@@ -742,8 +742,10 @@ public class Application {
 
   private static void controllers(EntityManagerFactory factory) {
     List<Controller> controllers = List.of(
+        UserController.getInstance(factory),
+        GameController.getInstance(factory),
         ShelfController.getInstance(factory),
-        UserController.getInstance(factory)
+        TagController.getInstance(factory)
     );
     controllers.forEach(Controller::run);
   }
