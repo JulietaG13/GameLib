@@ -1,6 +1,9 @@
 package controllers;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import entities.ErrorMessages;
 import interfaces.Controller;
 import model.User;
 import services.UserService;
@@ -8,6 +11,7 @@ import spark.Spark;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import java.util.Optional;
 
 public class UserController implements Controller {
     private static final String ROUTE_GET_ALL = "/user/all";
@@ -16,6 +20,8 @@ public class UserController implements Controller {
     private static final String ROUTE_DELETE = "/user/delete/:username";
     private static final String ROUTE_CREATE = "/user/create";
     private static final String ROUTE_LOGIN = "/user/login";
+    private static final String ROUTE_PROFILE_EDIT_PFP = "/user/profile/:username/edit/pfp";
+    private static final String ROUTE_PROFILE_EDIT_BANNER = "/user/profile/:username/edit/banner";
 
     private final EntityManagerFactory factory;
     private static UserController userController;
@@ -33,6 +39,8 @@ public class UserController implements Controller {
 
     public void run() {
         routeGetAll();
+        routeEditPfp();
+        routeEditBanner();
     }
 
     private void routeGetAll() {
@@ -51,6 +59,56 @@ public class UserController implements Controller {
 
             em.close();
             return jsonArray.toString();
+        });
+    }
+    
+    private void routeEditPfp() {
+        Spark.post(ROUTE_PROFILE_EDIT_PFP, "application/json", (req, resp) -> { // :username | body: pfp
+            EntityManager em = factory.createEntityManager();
+        
+            String username = req.params(":username");
+            UserService userService = new UserService(em);
+            Optional<User> user = userService.findByUsername(username);
+            if (user.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.usernameNotFound(username);
+            }
+        
+            JsonObject body = JsonParser
+                .parseString(req.body())
+                .getAsJsonObject();
+            
+            String pfp = body.get("pfp").getAsString();
+            user.get().setPfp(pfp);
+            userService.persist(user.get());
+        
+            em.close();
+            return user.get().asJsonProfile();
+        });
+    }
+    
+    private void routeEditBanner() {
+        Spark.post(ROUTE_PROFILE_EDIT_BANNER, "application/json", (req, resp) -> { // :username | body: banner
+            EntityManager em = factory.createEntityManager();
+            
+            String username = req.params(":username");
+            UserService userService = new UserService(em);
+            Optional<User> user = userService.findByUsername(username);
+            if (user.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.usernameNotFound(username);
+            }
+            
+            JsonObject body = JsonParser
+                .parseString(req.body())
+                .getAsJsonObject();
+            
+            String banner = body.get("banner").getAsString();
+            user.get().setBanner(banner);
+            userService.persist(user.get());
+            
+            em.close();
+            return user.get().asJsonProfile();
         });
     }
 }
