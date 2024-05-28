@@ -2,10 +2,10 @@ import React, {useEffect, useState} from "react";
 import {Navigate, useParams} from "react-router-dom";
 import axios from "axios";
 import user_icon from "../Assets/user-icon.png";
-import './VideogameView2.css';
+import './VideogameView.css';
 import NewsComp from "./NewsComp";
 
-function VideogameView2() {
+function VideogameView() {
     const videogameID = useParams();
 
     const [videogame, setVideogame] = useState({});
@@ -133,7 +133,6 @@ function VideogameView2() {
                 </div>
 
                 <div className={"newsDiv"}>
-                    <h2>News:</h2>
                     <NewsComp videogameID={videogameID.videogameID}/>
                 </div>
             </div>
@@ -154,4 +153,4 @@ function FormatDate(date) {
     return d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
 }
 
-export default VideogameView2;
+export default VideogameView;
