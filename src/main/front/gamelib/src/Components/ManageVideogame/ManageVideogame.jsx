@@ -7,12 +7,12 @@ function ManageVideogame({type}) {
     const videogameID = useParams();
     const [tags, setTags] = useState([]);
 
-    const [cover, setCover] = useState('');
-    const [backgroundImage, setBackgroundImage] = useState('');
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [releaseDate, setReleaseDate] = useState('');
-    const [selectedTags, setSelectedTags] = useState([]);
+    const [release_date, setRelease_date] = useState('');
+    const [selected_tags, setSelected_tags] = useState([]);
+    const [cover, setCover] = useState('');
+    const [background_image, setBackground_image] = useState('');
     const [videogame, setVideogame] = useState({});
 
     const [errorMessage, setErrorMessage] = useState('');
@@ -20,6 +20,7 @@ function ManageVideogame({type}) {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [navigate, setNavigate] = useState(false);
+    const [toView, setToView] = useState(false);
 
     let config = {
         headers: {
@@ -41,7 +42,7 @@ function ManageVideogame({type}) {
                 setNavigate(true);
             })
             .then(userResponseData => {
-                checkIfUser(userResponseData, setNavigate);
+                checkIfUser(userResponseData, setToView);
                 axios.get('http://localhost:4567/tag/get')
                     .catch(error => {
                         console.error('Error en tags:', error);
@@ -50,11 +51,14 @@ function ManageVideogame({type}) {
                     .then(response => {
                         setTags(formatAllTagsJSON(response.data));
                         console.log(formatAllTagsJSON(response.data));
+                        if (type === "Add") {
+                            setIsLoading(false);
+                        }
                     })
                 if (type === "Edit") {
                     axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
                         .then(gameResponseData => {
-                            checkOwnership(gameResponseData, userResponseData, setNavigate);
+                            checkOwnership(gameResponseData, userResponseData, setToView);
 
                             setVideogame(gameResponseData.data);
                             setIsLoading(false);
@@ -64,8 +68,6 @@ function ManageVideogame({type}) {
                             console.error('Error en getGame:', error);
                             setNavigate(true);
                         });
-                } else {
-                    setIsLoading(false);
                 }
             });
     }, []);
@@ -85,16 +87,16 @@ function ManageVideogame({type}) {
         let dataToSend = {
             name: name,
             description: description,
-            release_date: releaseDate,
+            release_date: release_date,
             last_update: formatDate(new Date()),
+            tags: selected_tags,
             cover: cover,
-            background_image: backgroundImage,
-            tags: selectedTags
+            background_image: background_image
         };
-        console.log(dataToSend)
+        console.log(dataToSend);
 
         await axios.post("http://localhost:4567/game/create", dataToSend, config)
-            .then(r =>
+            .then(() =>
                 manageSuccess()
             )
             .catch(error => {
@@ -108,25 +110,23 @@ function ManageVideogame({type}) {
         let dataToSend = {
             name: name ? name : videogame.name,
             description: description ? description : videogame.description,
-            // selectedTags: selectedTags,
-            releaseDate: releaseDate ? releaseDate : videogame.releaseDate,
-            lastUpdate: formatDate(new Date()),
-            cover: cover ? cover : videogame.cover
+            release_date: release_date ? release_date : videogame.release_date,
+            last_update: formatDate(new Date()),
+            tags: selected_tags ? selected_tags : videogame.tags,
+            cover: cover ? cover : videogame.cover,
+            background_image: background_image ? background_image : videogame.background_image
         };
+        console.log(dataToSend);
+
         await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, dataToSend, config)
-            .then(r => manageSuccess())
+            .then(() =>
+                manageSuccess()
+            )
             .catch(error => {
-                console.log(error.response)
-                if (error.response.status) {
-                    setErrorMessage(error.response.data)
-                }
-                else {
-                    setErrorMessage("Something went wrong")
-                }
-                console.error('Error:', error);
+                manageFailure(error);
             });
 
-        setNavigate(true);
+        // setToView(true);
     }
 
     const deleteGame = async () => {
@@ -137,7 +137,7 @@ function ManageVideogame({type}) {
                 'token': localStorage.getItem('token')
             }
         })
-            .then(response => {
+            .then(() => {
                 console.log("prev del game: ");
                 console.log(videogame);
                 manageSuccess();
@@ -146,13 +146,13 @@ function ManageVideogame({type}) {
             })
         console.log("one more time: ");
         console.log(videogame);
-        setNavigate(true);
+        setToView(true);
     }
 
     function manageSuccess() {
         setVideogame({});
         setIsSaving(true);
-        setNavigate(true);
+        setToView(true);
     }
 
     function manageFailure(error) {
@@ -170,28 +170,15 @@ function ManageVideogame({type}) {
     }
 
     const cancel = () => {
-        setNavigate(true);
+        setToView(true);
     }
-
-    // useEffect(() => {
-    //     console.log("videogame has been updated: ");
-    //     console.log(videogame);
-    // }, [videogame]);
-
-    // useEffect(() => {
-    //     console.log("cover has been updated!")
-    //     console.log(cover)
-    //     let sizeInBytes = (cover.length * 3/4);
-    //     let sizeInKilobytes = sizeInBytes / 1024;
-    //     console.log("Size of cover in Kilobytes: ", sizeInKilobytes);
-    // }, [cover]);
 
     useEffect(() => {
         console.log("tags have been updated: ");
-        console.log(selectedTags);
-    }, [selectedTags]);
+        console.log(selected_tags);
+    }, [selected_tags]);
 
-    if(navigate) {
+    if (navigate) {
         return <Navigate to={"/"}/>;
     }
     if (isLoading) {
@@ -200,6 +187,9 @@ function ManageVideogame({type}) {
     }
     if (isSaving) {
         return standByScreen("Saving videogame...");
+    }
+    if (toView) {
+        return <Navigate to={`/videogame/${videogameID.videogameID}`}/>;
     }
 
     return (
@@ -229,21 +219,21 @@ function ManageVideogame({type}) {
                        accept={'image/*'}
                        onChange={e => {
                            formatBase64Image(e.target.files[0])
-                               .then(result => setBackgroundImage(result))
+                               .then(result => setBackground_image(result))
                                .catch(error => console.error(error));
                        }}
                 />
                 {Object.keys(videogame).length === 0 ?
-                    (backgroundImage === '' ? null : <img src={backgroundImage} alt={"cover1"}/>) :
-                    (videogame.backgroundImage === null ? (backgroundImage === '' ? null : <img src={backgroundImage} alt={"cover2"}/>) :
-                        <img src={videogame.backgroundImage} alt={"cover3"}/>)
+                    (background_image === '' ? null : <img src={background_image} alt={"cover1"}/>) :
+                    (videogame.background_image === null ? (background_image === '' ? null : <img src={background_image} alt={"cover2"}/>) :
+                        <img src={videogame.background_image} alt={"cover3"}/>)
                 }
             </div>
 
             <div className={"titleDesc flex justify-center items-center"}>
                 <input className={'p-1 rounded mb-2'}
                        type={"text"}
-                       placeholder={"Add title"}
+                       placeholder={"Add videogame name"}
                        defaultValue={videogame.name}
                        onChange={e => setName(e.target.value)}
                 />
@@ -264,12 +254,12 @@ function ManageVideogame({type}) {
                         <div key={index} className={"tagDiv"}>
                             <input
                                 type="checkbox"
-                                checked={selectedTags.includes(tag.id)}
+                                checked={selected_tags.includes(tag.id)}
                                 onChange={() => {
-                                    if (selectedTags.includes(tag.id)) {
-                                        setSelectedTags(selectedTags.filter(t => t !== tag.id));
+                                    if (selected_tags.includes(tag.id)) {
+                                        setSelected_tags(selected_tags.filter(t => t !== tag.id));
                                     } else {
-                                        setSelectedTags([...selectedTags, tag.id]);
+                                        setSelected_tags([...selected_tags, tag.id]);
                                     }
                                 }}
                             />
@@ -283,9 +273,9 @@ function ManageVideogame({type}) {
                 <div className={'flex justify-center'}>
                     <input type={"date"}
                            className={'rounded-b'}
-                           name={"releaseDate"}
-                           defaultValue={videogame.releaseDate}
-                           onChange={e => setReleaseDate(e.target.value)}
+                           name={"release_date"}
+                           defaultValue={videogame.release_date}
+                           onChange={e => setRelease_date(e.target.value[0])}
                     />
                 </div>
             </div>
@@ -323,7 +313,10 @@ function checkIfUser(userResponseData, setNavigate) {
 }
 
 function checkOwnership(gameResponseData, userResponseData, setNavigate) {
-    if (!gameResponseData || !gameResponseData.data || !userResponseData || !userResponseData.data) {
+    if (!gameResponseData || !userResponseData) {
+        setNavigate(true);
+    }
+    if (!gameResponseData.data || !userResponseData.data) {
         setNavigate(true);
     }
     if (userResponseData.data.rol === "ADMIN") {
