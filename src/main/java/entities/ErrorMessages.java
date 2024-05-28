@@ -21,4 +21,8 @@ public class ErrorMessages {
     public static String informationNotBoolean(String info) {
         return info + " must be true or false!";
     }
+
+    public static String userMustBeLoggedIn() {
+        return "You must be logged in to perform this action!";
+    }
 }
