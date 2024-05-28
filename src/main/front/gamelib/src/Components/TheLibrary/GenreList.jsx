@@ -3,33 +3,36 @@ import axios from 'axios'
 
 
 function GenreList({genreId}) {
-
     const [genreList, setGenreList] = useState([]);
     const [activeIndex, setActivateIndex] = useState(0);
 
     // Get the list of genres when the component is mounted
     useEffect(() => {
-        //getGenreList()
+        axios.get('http://localhost:4567/tag/get/genres').then((response) =>{
+            console.log("All Genres: ", response.data);
+            setGenreList(response.data);
+        })
     }, []);
 
 
-    // Get the list of genres
-    //our own api
-    /*
-    axios.get('http://localhost:4567/genre').then((response) =>{
-        console.log(response.data);
-        setGenreList(response.data.results);
-    })
-   /
- }
-*/
+    const getGamesByGenreId = async (genreId) => {
+        try {
+            const response = await axios.get(`http://localhost:4567/game/get/tag/${genreId}`);
+            console.log("Games by genre ID:", response.data)
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching games by genre ID:", error);
+            return [];
+        }
+    };
+
     return(
         <div className={'pr-40'}>
             <h2 className='text-[30px] font-bold text-black'>Genres</h2>
             {genreList.map((genre, index) => (
                 <div
                     // Set the active index and genre id when a genre is clicked
-                    onClick={()=> {setActivateIndex(index); genreId(genre.id)}}
+                    onClick={()=> {setActivateIndex(index); getGamesByGenreId(genre.id)}}
                     className={`text-black flex gap-2 items-center mb-2 cursor-pointer hover:bg-gray-800 hover:text-white hover:rounded-xl p-2 ' +
                     'rounded-lg group' ${activeIndex===index?"bg-gray-950 rounded-xl":null}`} >
                     <img src={genre.image_background}
