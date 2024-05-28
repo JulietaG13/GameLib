@@ -3,6 +3,7 @@ import {Navigate, useParams} from "react-router-dom";
 import axios from "axios";
 import user_icon from "../Assets/user-icon.png";
 import './VideogameView2.css';
+import NewsComp from "./NewsComp";
 
 function VideogameView2() {
     const videogameID = useParams();
@@ -132,7 +133,8 @@ function VideogameView2() {
                 </div>
 
                 <div className={"newsDiv"}>
-                <h2>News:</h2>
+                    <h2>News:</h2>
+                    <NewsComp videogameID={videogameID.videogameID}/>
                 </div>
             </div>
         </main>
