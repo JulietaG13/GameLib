@@ -11,6 +11,8 @@ import model.User;
 import repositories.GameRepository;
 import repositories.ShelfRepository;
 import repositories.UserRepository;
+import services.AccessControlService;
+import services.ShelfService;
 import spark.Spark;
 
 import javax.persistence.EntityManager;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class ShelfController implements Controller {
     private static final String ROUTE_GET_ALL = "/shelf/all";
-    private static final String ROUTE_GET_FROM_USER = "/shelf/get/user/:username/:max";
+    private static final String ROUTE_GET_FROM_USER = "/shelf/get/user/:username/:max"; // header: token
     private static final String ROUTE_GET_FROM_SHELF = "/shelf/get/:id/:max";
     private static final String ROUTE_ADD_SHELF = "/shelf/add/:username";
     private static final String ROUTE_ADD_GAME = "/shelf/add/:shelf_id/:game_id";
@@ -66,7 +68,7 @@ public class ShelfController implements Controller {
     }
 
     private void routeGetFromUser() {
-        Spark.get(ROUTE_GET_FROM_USER, "application/json", (req, resp) -> { // :username, :max
+        Spark.get(ROUTE_GET_FROM_USER, "application/json", (req, resp) -> { // :username, :max  | header: "token"
             EntityManager em = factory.createEntityManager();
 
             int max;
@@ -82,6 +84,7 @@ public class ShelfController implements Controller {
                 return ErrorMessages.informationNotNumber("Max number of games");
             }
 
+            // the one with the profile
             String username = req.params(":username");
             if (username == null || username.isEmpty()) {
                 resp.status(403);
@@ -93,10 +96,35 @@ public class ShelfController implements Controller {
                 resp.status(404);
                 return ErrorMessages.usernameNotFound(username);
             }
-
+            
+            // all user's shelves
             ShelfRepository shelfRepository = new ShelfRepository(em);
             List<Shelf> shelves = shelfRepository.listByUser(owner.get());
-
+            
+            // the one asking
+            String token = req.headers("token");
+            if (token != null && AccessControlService.isTokenValid(token)) {
+                String clientUsername = AccessControlService.getUsernameFromToken(token);
+                Optional<User> client = userRepository.findByUsername(clientUsername);
+                if (client.isEmpty()) {
+                    resp.status(404);
+                    return ErrorMessages.usernameNotFound(clientUsername);
+                }
+                
+                // get filtered shelves
+                boolean canView = ShelfService.canViewPrivateShelves(owner.get(), client.get());
+                if (!canView) {
+                    shelves = shelves.stream()
+                        .filter(s -> !s.isPrivate())
+                        .collect(Collectors.toList());
+                }
+            }
+            
+            // check max
+            if (max < shelves.size()) {
+                shelves = shelves.subList(0, max);
+            }
+            
             resp.status(200);
             resp.type("application/json");
 
@@ -162,7 +190,7 @@ public class ShelfController implements Controller {
     }
     
     private void routeAddShelf() {
-        Spark.post(ROUTE_ADD_SHELF, "application/json", (req, resp) -> { // :username | gets name from body
+        Spark.post(ROUTE_ADD_SHELF, "application/json", (req, resp) -> { // :username | body: name, is_private
             EntityManager em = factory.createEntityManager();
             
             String username = req.params(":username");
@@ -177,6 +205,14 @@ public class ShelfController implements Controller {
                 .parseString(req.body())
                 .getAsJsonObject();
             String shelfName = body.get("name").getAsString();
+    
+            boolean isPrivate;
+            try {
+                isPrivate = body.get("is_private").getAsBoolean();
+            } catch (Exception e) {
+                resp.status(400);
+                return ErrorMessages.informationNotBoolean("is_private");
+            }
             
             ShelfRepository shelfRepository = new ShelfRepository(em);
             List<Shelf> shouldBeEmpty = shelfRepository
@@ -189,7 +225,7 @@ public class ShelfController implements Controller {
                 return "You already have a Shelf named: " + shelfName;
             }
             
-            Shelf shelf = new Shelf(user.get(), shelfName);
+            Shelf shelf = new Shelf(user.get(), shelfName, isPrivate);
             shelfRepository.persist(shelf);
             
             // fix

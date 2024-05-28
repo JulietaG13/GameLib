@@ -1,10 +1,10 @@
 package model;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 public class News {
@@ -24,13 +24,17 @@ public class News {
   @ManyToOne
   private Game game;
   
+  @ManyToOne
+  private User author;
+  
   public News() {}
   
-  public News(String title, String description, Game game) {
+  public News(String title, String description, Game game, User author) {
     this.title = title;
     this.description = description;
     this.game = game;
-    date = LocalDateTime.now();
+    this.author = author;
+    date = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
   }
   
   // JSON //
@@ -41,6 +45,7 @@ public class News {
     jsonObject.addProperty("description", description);
     jsonObject.addProperty("date", date.toString());
     jsonObject.addProperty("game_id", game.getId());
+    jsonObject.addProperty("author_id", author.getId());
     return jsonObject;
   }
   
@@ -80,5 +85,13 @@ public class News {
   
   public void setGame(Game game) {
     this.game = game;
+  }
+  
+  public User getAuthor() {
+    return author;
+  }
+  
+  public void setAuthor(User author) {
+    this.author = author;
   }
 }

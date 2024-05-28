@@ -658,6 +658,12 @@ public class Application {
     
     shelfRepository.addGame(shelf, user, game1);
     shelfRepository.addGame(shelf, user, game3);
+    
+    News news1 = new News("first news", "this is this game's first news!!!", game1, developer);
+    News news2 = new News("second news", "another news", game1, developer);
+    NewsRepository newsRepository = new NewsRepository(entityManager);
+    newsRepository.persist(news1);
+    newsRepository.persist(news2);
   }
   
   private static void storeTags1(EntityManager entityManager) {
@@ -745,7 +751,8 @@ public class Application {
         UserController.getInstance(factory),
         GameController.getInstance(factory),
         ShelfController.getInstance(factory),
-        TagController.getInstance(factory)
+        TagController.getInstance(factory),
+        NewsController.getInstance(factory)
     );
     controllers.forEach(Controller::run);
   }
