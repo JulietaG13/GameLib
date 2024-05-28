@@ -19,7 +19,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -401,8 +401,8 @@ public class Application {
       }
       
       Game gameUpdate = Game.fromJson(req.body());
-      //LocalDateTime lastUpdate = LocalDateTime.now();
-      LocalDateTime lastUpdate = gameUpdate.getLastUpdate(); //TODO(have front send LocalDateTime)
+      //LocalDate lastUpdate = LocalDate.now();
+      LocalDate lastUpdate = gameUpdate.getLastUpdate(); //TODO(have front send LocalDate)
       
       Responses gameResponse = gameRepository.update(owner.get(), id, gameUpdate, lastUpdate);
       em2.close();
@@ -628,20 +628,20 @@ public class Application {
     Game game1 = Game
         .create("awesome game")
         .description("just an awesome game")
-        .releaseDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
-        .lastUpdate(LocalDateTime.now())
+        .releaseDate(LocalDate.now())
+        .lastUpdate(LocalDate.now())
         .build();
     Game game2 = Game
         .create("another awesome game")
         .description("just another awesome game")
-        .releaseDate(LocalDateTime.now().plusMonths(4).truncatedTo(ChronoUnit.SECONDS))
-        .lastUpdate(LocalDateTime.now().plusMonths(4))
+        .releaseDate(LocalDate.now().plusMonths(4))
+        .lastUpdate(LocalDate.now().plusMonths(4))
         .build();
     Game game3 = Game
         .create("even another awesome game")
         .description("also an awesome game")
-        .releaseDate(LocalDateTime.now().plusMonths(2).truncatedTo(ChronoUnit.SECONDS))
-        .lastUpdate(LocalDateTime.now().plusMonths(2))
+        .releaseDate(LocalDate.now().plusMonths(2))
+        .lastUpdate(LocalDate.now().plusMonths(2))
         .build();
     
     if (gameRepository.listAll().isEmpty() && shelfRepository.listAll().isEmpty()) {
@@ -685,15 +685,15 @@ public class Application {
         .create("tagged game 1")
         .cover(cover)
         .description("a game with 1 tag")
-        .releaseDate(LocalDateTime.now().plusDays(2).truncatedTo(ChronoUnit.SECONDS))
-        .lastUpdate(LocalDateTime.now().plusDays(2))
+        .releaseDate(LocalDate.now().plusDays(2))
+        .lastUpdate(LocalDate.now().plusDays(2))
         .build();
     Game game2 = Game
         .create("tagged game 2")
         .cover(cover)
         .description("a game with 3 tags")
-        .releaseDate(LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.SECONDS))
-        .lastUpdate(LocalDateTime.now().plusDays(3))
+        .releaseDate(LocalDate.now().plusDays(3))
+        .lastUpdate(LocalDate.now().plusDays(3))
         .build();
     gameRepository.persist(game1);
     gameRepository.persist(game2);
@@ -717,8 +717,8 @@ public class Application {
       userRepository.persist(u1);
       userRepository.persist(u2);
       
-      Game g1 = Game.create("game with 2 user reviews").cover(cover).description("the game has 2 reviews each by different users").releaseDate(LocalDateTime.now().plusDays(11).truncatedTo(ChronoUnit.SECONDS)).build();
-      Game g2 = Game.create("game reviewd by same user").cover(cover).description("the game has 2 reviews by the same user").releaseDate(LocalDateTime.now().plusDays(13).truncatedTo(ChronoUnit.SECONDS)).build();
+      Game g1 = Game.create("game with 2 user reviews").cover(cover).description("the game has 2 reviews each by different users").releaseDate(LocalDate.now().plusDays(11)).build();
+      Game g2 = Game.create("game reviewd by same user").cover(cover).description("the game has 2 reviews by the same user").releaseDate(LocalDate.now().plusDays(13)).build();
       gameRepository.persist(g1);
       gameRepository.persist(g2);
       

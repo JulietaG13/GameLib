@@ -5,14 +5,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import entities.Rol;
 import entities.responses.ErrorResponse;
 import entities.responses.StatusResponse;
 import example.ImageExample;
 import interfaces.Responses;
 
 import javax.persistence.*;
-import java.awt.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.*;
 
 @Entity
@@ -32,10 +32,10 @@ public class Game {
     private String description;
     
     @Column(nullable = false)
-    private LocalDateTime releaseDate;
+    private LocalDate releaseDate;
     
     @Column(nullable = false)
-    private LocalDateTime lastUpdate;
+    private LocalDate lastUpdate;
 
     //TODO(gameLogo, gameBanner)
 
@@ -73,6 +73,18 @@ public class Game {
 
     public Game() {}
 
+    public Game(String name, User owner, String description, LocalDate releaseDate, String cover, String backgroundImage) {
+        this.name = name;
+        if (owner.getRol() == Rol.DEVELOPER) {
+            this.owner = owner;
+        }
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.lastUpdate = LocalDate.now();
+        this.cover = cover;
+        this.backgroundImage = backgroundImage;
+    }
+
     private Game(GameBuilder builder) {
         this.name = builder.name;
         this.owner = builder.owner;
@@ -91,8 +103,8 @@ public class Game {
         private String description;
         private User owner;
         private final String name;
-        private LocalDateTime releaseDate;
-        private LocalDateTime lastUpdate;
+        private LocalDate releaseDate;
+        private LocalDate lastUpdate;
         private String cover;
         private String backgroundImage;
 
@@ -110,12 +122,12 @@ public class Game {
             return this;
         }
 
-        public GameBuilder releaseDate(LocalDateTime releaseDate) {
+        public GameBuilder releaseDate(LocalDate releaseDate) {
             this.releaseDate = releaseDate;
             return this;
         }
 
-        public GameBuilder lastUpdate(LocalDateTime lastUpdate) {
+        public GameBuilder lastUpdate(LocalDate lastUpdate) {
             this.lastUpdate = lastUpdate;
             return this;
         }
@@ -141,10 +153,10 @@ public class Game {
                 backgroundImage = ImageExample.COMPUTER_CAT_BANNER_MAYBE.image;
             }
             if (releaseDate == null) {
-                releaseDate = LocalDateTime.now();
+                releaseDate = LocalDate.now();
             }
             if (lastUpdate == null) {
-                lastUpdate = LocalDateTime.now();
+                lastUpdate = LocalDate.now();
             }
             return new Game(this);
         }
@@ -153,7 +165,7 @@ public class Game {
     // JSON //
     
     public static Game fromJson(String json) {
-        final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, GsonAdapter.getLocalDateTimeAdapter()).create();
+        final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, GsonAdapter.getLocalDateAdapter()).create();
         return gson.fromJson(json, Game.class);
     }
     
@@ -207,7 +219,7 @@ public class Game {
         return new StatusResponse(200);
     }
 
-    public static Responses isReleaseDateValid(LocalDateTime releaseDate) {
+    public static Responses isReleaseDateValid(LocalDate releaseDate) {
         if (releaseDate == null) {
             return new ErrorResponse(404, "Release date cannot be null!");
         }
@@ -255,7 +267,7 @@ public class Game {
         return cover;
     }
 
-    public void setCover(String cover, LocalDateTime lastUpdate) {
+    public void setCover(String cover, LocalDate lastUpdate) {
         this.cover = cover;
         this.setLastUpdate(lastUpdate);
     }
@@ -264,7 +276,7 @@ public class Game {
         return name;
     }
     
-    public void setName(String name, LocalDateTime lastUpdate) {
+    public void setName(String name, LocalDate lastUpdate) {
         this.name = name;
         this.setLastUpdate(lastUpdate);
     }
@@ -281,25 +293,25 @@ public class Game {
         return description;
     }
     
-    public void setDescription(String description, LocalDateTime lastUpdate) {
+    public void setDescription(String description, LocalDate lastUpdate) {
         this.description = description;
         this.setLastUpdate(lastUpdate);
     }
     
-    public LocalDateTime getReleaseDate() {
+    public LocalDate getReleaseDate() {
         return releaseDate;
     }
     
-    public void setReleaseDate(LocalDateTime releaseDate, LocalDateTime lastUpdate) {
+    public void setReleaseDate(LocalDate releaseDate, LocalDate lastUpdate) {
         this.releaseDate = releaseDate;
         this.setLastUpdate(lastUpdate);
     }
     
-    public LocalDateTime getLastUpdate() {
+    public LocalDate getLastUpdate() {
         return lastUpdate;
     }
     
-    public void setLastUpdate(LocalDateTime lastUpdate) {
+    public void setLastUpdate(LocalDate lastUpdate) {
         this.lastUpdate = lastUpdate;
     }
 

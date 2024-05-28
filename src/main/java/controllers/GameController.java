@@ -1,21 +1,33 @@
 package controllers;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import entities.ErrorMessages;
+import entities.Token;
+import example.ImageExample;
 import interfaces.Controller;
+import interfaces.Responses;
 import model.Game;
 import model.Tag;
+import model.User;
+import repositories.GameRepository;
 import repositories.TagRepository;
+import repositories.UserRepository;
+import services.AccessControlService;
+import services.UserService;
 import spark.Spark;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class GameController implements Controller {
-  
+  private static final String ROUTE_CREATE_GAME = "/game/create";
   private static final String ROUTE_GET_BY_TAG = "/game/get/tag/:tag_id";
   
   private EntityManagerFactory factory;
@@ -34,10 +46,123 @@ public class GameController implements Controller {
   
   @Override
   public void run() {
+    routeCreateGame();
     routeGetByTag();
   }
+
+  private void routeCreateGame() {
+
+    Spark.post(ROUTE_CREATE_GAME, "application/json", (req, resp) -> {
+      // body: name,description,release_date,cover,background_image,tags(list of IDs) | header: token
+      EntityManager em = factory.createEntityManager();
+
+      String token = req.headers(Token.PROPERTY_NAME);
+      if (token == null || !AccessControlService.isTokenValid(token)) {
+        resp.status(401);
+        return ErrorMessages.userMustBeLoggedIn();
+      }
+      String username = AccessControlService.getUsernameFromToken(token); // already checked with token validation
+      Optional<User> dev = new UserRepository(em).findByUsername(username);
+
+      if (dev.isEmpty()) {
+        resp.status(404);
+        return ErrorMessages.usernameNotFound(username);
+      }
+      if (!UserService.isAbleToCreateGame(dev.get())) {
+        resp.status(401);
+        return ErrorMessages.userMustBeDeveloper();
+      }
+
+      JsonObject body = JsonParser
+              .parseString(req.body())
+              .getAsJsonObject();
+
+      // check name
+      String name = body.get("name").getAsString();
+      Responses titleResponse = Game.isNameValid(name);
+      if (titleResponse.hasError()) {
+        resp.status(404);
+        return titleResponse.getMessage();
+      }
+
+      // check description
+      String description = body.get("description").getAsString();
+      Responses descriptionResponse = Game.isDescriptionValid(description);
+      if (descriptionResponse.hasError()) {
+        resp.status(404);
+        return descriptionResponse.getMessage();
+      }
+
+      // check release date
+      String releaseDateStr = body.get("release_date").getAsString();
+      LocalDate releaseDate;
+      try {
+        releaseDate = LocalDate.parse(releaseDateStr);
+      } catch (Exception e) {
+        resp.status(400);
+        return ErrorMessages.informationIncorrectFormat("release_date");
+      }
+      Responses releaseDateResponse = Game.isReleaseDateValid(releaseDate);
+      if (releaseDateResponse.hasError()) {
+        resp.status(404);
+        return releaseDateResponse.getMessage();
+      }
+
+      // check cover
+      JsonElement coverElem = body.get("cover");
+      String cover;
+      if (coverElem == null || coverElem.isJsonNull() || coverElem.getAsString().isEmpty()) {
+        cover = ImageExample.LAZY_COOL_CAT.image;
+      } else {
+        cover = coverElem.getAsString();
+      }
+
+      // check background image
+      JsonElement backgroundImageElem = body.get("background_image");
+      String backgroundImage;
+      if (backgroundImageElem == null || backgroundImageElem.isJsonNull() || backgroundImageElem.getAsString().isEmpty()) {
+        backgroundImage = ImageExample.CAT_WITH_A_PROBLEM.image;
+      } else {
+        backgroundImage = backgroundImageElem.getAsString();
+      }
+
+      // check tags
+      JsonElement tagsElem = body.get("tags");
+      List<Tag> tags = new ArrayList<>();
+      try {
+        JsonArray array = tagsElem.getAsJsonArray();
+        TagRepository tagRepository = new TagRepository(em);
+        array.forEach(t ->
+                tags.add(
+                        tagRepository.findById(t.getAsLong()).get()
+                )
+        );
+      } catch (Exception ignored) {
+      }
+
+      resp.type("application/json");
+      resp.status(201);
+
+      GameRepository gameRepository = new GameRepository(em);
+      Game game = new Game(
+              name,
+              dev.get(),
+              description,
+              releaseDate,
+              cover,
+              backgroundImage
+      );
+      gameRepository.persist(game);
+
+      tags.forEach(t -> gameRepository.addTag(dev.get(), game, t));
+
+      em.close();
+      return game.asJson();
+    });
+
+  }
   
-  public void routeGetByTag() {
+  private void routeGetByTag() {
     Spark.get(ROUTE_GET_BY_TAG, "application/json", (req, resp) -> {
       EntityManager em = factory.createEntityManager();
       final TagRepository tagRepository = new TagRepository(em);

@@ -34,7 +34,7 @@ public class User {
   @Column(nullable = false)
   private Rol rol;
 
-  @OneToMany(mappedBy = "owner")
+  @OneToMany(mappedBy = "owner")  // TODO(delete)
   private final Set<Game> developed = new HashSet<>();
   
   @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)

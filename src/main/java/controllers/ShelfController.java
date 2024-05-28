@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import entities.ErrorMessages;
+import entities.Token;
 import interfaces.Controller;
 import model.Game;
 import model.Shelf;
@@ -102,7 +103,7 @@ public class ShelfController implements Controller {
             List<Shelf> shelves = shelfRepository.listByUser(owner.get());
             
             // the one asking
-            String token = req.headers("token");
+            String token = req.headers(Token.PROPERTY_NAME);
             if (token != null && AccessControlService.isTokenValid(token)) {
                 String clientUsername = AccessControlService.getUsernameFromToken(token);
                 Optional<User> client = userRepository.findByUsername(clientUsername);
