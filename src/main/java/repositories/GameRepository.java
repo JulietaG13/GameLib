@@ -1,5 +1,6 @@
 package repositories;
 
+import entities.ErrorMessages;
 import entities.Rol;
 import entities.responses.ErrorResponse;
 import entities.responses.GameResponse;
@@ -10,7 +11,7 @@ import model.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,7 +79,7 @@ public class GameRepository {
         entityManager.createQuery("DELETE FROM Game").executeUpdate();
     }
     
-    public Responses update(User user, Long id, Game gameUpdate, LocalDateTime lastUpdate) {
+    public Responses update(User user, Long id, Game gameUpdate, LocalDate lastUpdate) {
         EntityTransaction tx = entityManager.getTransaction();
         
         tx.begin();
@@ -123,15 +124,15 @@ public class GameRepository {
         Optional<Game> managedGame = findById(game.getId());
         Optional<Tag> managedTag = new TagRepository(entityManager).findById(tag.getId());
         if (managedGame.isEmpty()) {
-            return new ErrorResponse(404, "Theres no game with id " + game.getId() + "!");
+            return new ErrorResponse(404, ErrorMessages.informationNotFound("Game"));
         }
         if (managedTag.isEmpty()) {
-            return new ErrorResponse(404, "Theres no tag with id " + tag.getId() + "!");
+            return new ErrorResponse(404, ErrorMessages.informationNotFound("Tag"));
         }
         tx.commit();
 
         if (!isUserAllowedToManageGame(user, managedGame.get())) {
-            return new ErrorResponse(403, "You are not allowed to change the game!");
+            return new ErrorResponse(403, ErrorMessages.userNotAllowedToPerformAction());
         }
         
         managedGame.get().addTag(managedTag.get());

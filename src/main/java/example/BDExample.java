@@ -6,7 +6,7 @@ import model.*;
 import repositories.*;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.*;
 
 public class BDExample {
@@ -50,7 +50,7 @@ public class BDExample {
             desc.append(". ");
             desc.append("And it has ").append(reviews.size()).append(" reviews.");
 
-            game.setDescription(desc.toString(), LocalDateTime.now());
+            game.setDescription(desc.toString(), LocalDate.now());
             games.add(game);
         }
         //

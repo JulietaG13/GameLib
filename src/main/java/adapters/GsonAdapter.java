@@ -1,20 +1,21 @@
 package adapters;
 
 import com.google.gson.JsonDeserializer;
-import java.time.LocalDateTime;
+
+import java.time.LocalDate;
 
 public class GsonAdapter {
   
-  public static JsonDeserializer<LocalDateTime> getLocalDateTimeAdapter() {
+  public static JsonDeserializer<LocalDate> getLocalDateAdapter() {
     return (json, type, jsonDeserializationContext) -> {
       String str = json.getAsString();
-      LocalDateTime localDateTime;
+      LocalDate localDate;
       try {
-        localDateTime = LocalDateTime.parse(str);
+        localDate = LocalDate.parse(str);
       } catch (Exception e) {
-        localDateTime = LocalDateTime.now();
+        localDate = LocalDate.now();
       }
-      return localDateTime;
+      return localDate;
     };
   }
 }
