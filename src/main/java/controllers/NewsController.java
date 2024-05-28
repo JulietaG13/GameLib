@@ -13,17 +13,20 @@ import repositories.GameRepository;
 import repositories.NewsRepository;
 import repositories.UserRepository;
 import services.AccessControlService;
+import services.NewsService;
 import spark.Spark;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
 public class NewsController implements Controller {
   
-  private static final String ROUTE_GET_FROM_GAME = "/news/get/game/:game_id";
-  private static final String ROUTE_ADD_TO_GAME = "/news/add/game/:game_id";
+  private static final String ROUTE_GET_FROM_GAME = "/news/get/game/:game_id";  // nothing
+  private static final String ROUTE_ADD_TO_GAME = "/news/add/game/:game_id";    // body: title,description | header: token
+  private static final String ROUTE_DELETE_BY_ID = "/news/delete/id/:news_id";  // header: token
   
   private EntityManagerFactory factory;
   private static Controller instance;
@@ -43,6 +46,7 @@ public class NewsController implements Controller {
   public void run() {
     routeGetFromGame();
     routeAddToGame();
+    routeDeleteById();
   }
   
   private void routeGetFromGame() {
@@ -66,7 +70,7 @@ public class NewsController implements Controller {
       }
     
       resp.type("application/json");
-      resp.status(201);
+      resp.status(200);
   
       NewsRepository newsRepository = new NewsRepository(em);
       List<News> news = newsRepository.findByGame(game.get());
@@ -123,6 +127,9 @@ public class NewsController implements Controller {
         return ErrorMessages.informationNotProvided("Description");
       }
 
+      resp.status(201);
+      resp.type("application/json");
+
       NewsRepository newsRepository = new NewsRepository(em);
       News news = new News(title, description, game.get(), user.get());
       newsRepository.persist(news);
@@ -131,6 +138,54 @@ public class NewsController implements Controller {
 
       em.close();
       return news.asJson();
+    });
+  }
+
+  private void routeDeleteById() {
+    Spark.put(ROUTE_DELETE_BY_ID, "application/json", (req, resp) -> {  // :news_id | header: token
+      EntityManager em = factory.createEntityManager();
+
+      String token = req.headers(Token.PROPERTY_NAME);
+      if (token == null || !AccessControlService.isTokenValid(token)) {
+        resp.status(401);
+        return ErrorMessages.userMustBeLoggedIn();
+      }
+
+      String username = AccessControlService.getUsernameFromToken(token);
+      UserRepository userRepository = new UserRepository(em);
+      Optional<User> user = userRepository.findByUsername(username);
+      if (user.isEmpty()) {
+        resp.status(404);
+        return ErrorMessages.usernameNotFound(username);
+      }
+
+      long newsId;
+      try {
+        newsId = Long.parseLong(req.params(":news_id"));
+      } catch (NumberFormatException e) {
+        resp.status(400);
+        return ErrorMessages.informationNotNumber("Game ID");
+      }
+
+      NewsRepository newsRepository = new NewsRepository(em);
+
+      Optional<News> news = newsRepository.findById(newsId);
+      if (news.isEmpty()) {
+        resp.status(404);
+        return ErrorMessages.informationNotFound("News");
+      }
+
+      if (!NewsService.isAbleToDeleteNews(user.get(), news.get())) {
+        resp.status(401);
+        return ErrorMessages.userNotAllowedToPerformAction();
+      }
+
+      newsRepository.deleteById(newsId);
+
+      em.close();
+
+      resp.status(204);
+      return "";
     });
   }
 }
