@@ -42,7 +42,7 @@ function ManageVideogame({type}) {
             })
             .then(userResponseData => {
                 checkIfUser(userResponseData, setNavigate);
-                axios.get('http://localhost:4567/tags')
+                axios.get('http://localhost:4567/tag/get')
                     .catch(error => {
                         console.error('Error en tags:', error);
                         setNavigate(true);
@@ -79,42 +79,27 @@ function ManageVideogame({type}) {
 
     }
 
-    // function checkProperties() {
-    //     if (cover.isEmpty()) {
-    //         return "Cover is required";
-    //     }
-    //     if (backgroundImage.isEmpty()) {
-    //         return "Background Image is required";
-    //     }
-    // }
-
     const addVideogame = async e => {
         e.preventDefault()
 
         let dataToSend = {
             name: name,
             description: description,
-            releaseDate: releaseDate,
-            lastUpdate: formatDate(new Date()),
+            release_date: releaseDate,
+            last_update: formatDate(new Date()),
             cover: cover,
-            backgroundImage: backgroundImage,
+            background_image: backgroundImage,
             tags: selectedTags
         };
-
-        // const error = checkProperties(dataToSend);
-
-
-
         console.log(dataToSend)
 
-        await axios.post("http://localhost:4567/newgame", dataToSend, config)
+        await axios.post("http://localhost:4567/game/create", dataToSend, config)
             .then(r =>
                 manageSuccess()
             )
             .catch(error => {
                 manageFailure(error);
             });
-        // setNavigate(true);
     }
 
     const editVideogame = async e => {
@@ -279,12 +264,12 @@ function ManageVideogame({type}) {
                         <div key={index} className={"tagDiv"}>
                             <input
                                 type="checkbox"
-                                checked={selectedTags.includes(tag)}
+                                checked={selectedTags.includes(tag.id)}
                                 onChange={() => {
-                                    if (selectedTags.includes(tag)) {
-                                        setSelectedTags(selectedTags.filter(t => t !== tag));
+                                    if (selectedTags.includes(tag.id)) {
+                                        setSelectedTags(selectedTags.filter(t => t !== tag.id));
                                     } else {
-                                        setSelectedTags([...selectedTags, tag]);
+                                        setSelectedTags([...selectedTags, tag.id]);
                                     }
                                 }}
                             />
@@ -384,8 +369,6 @@ function formatTagJSON(tag) {
     return {
         id: tag.id,
         name: tag.name,
-        tag_type: tag.tag_type,
-        tagged_games: []
     }
 }
 
