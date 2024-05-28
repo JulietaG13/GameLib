@@ -22,7 +22,19 @@ public class ErrorMessages {
         return info + " must be true or false!";
     }
 
+    public static String informationIncorrectFormat(String info) {
+        return info + " is not formatted correctly!";
+    }
+
+    public static String userNotAllowedToPerformAction() {
+        return "You are not allowed to perform this action!";
+    }
+
     public static String userMustBeLoggedIn() {
         return "You must be logged in to perform this action!";
+    }
+
+    public static String userMustBeDeveloper() {
+        return "You must be a Developer to perform this action!";
     }
 }
