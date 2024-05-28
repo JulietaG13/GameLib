@@ -5,6 +5,10 @@ public class ErrorMessages {
     public static String usernameNotFound(String username) {
         return "There is no user " + username + "!";
     }
+
+    public static String usernameAlreadyInUse(String username) {
+        return "Username "+ username + " is already in use!";
+    }
     
     public static String informationNotProvided(String info) {
         return "You must provide a " + info + "!";
