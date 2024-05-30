@@ -25,6 +25,7 @@ import java.util.Optional;
 public class NewsController implements Controller {
   
   private static final String ROUTE_GET_FROM_GAME = "/news/get/game/:game_id";  // nothing
+  private static final String ROUTE_GET_FROM_DEV = "/news/get/dev/:user_id/:max";  // nothing
   private static final String ROUTE_ADD_TO_GAME = "/news/add/game/:game_id";    // body: title,description | header: token
   private static final String ROUTE_DELETE_BY_ID = "/news/delete/id/:news_id";  // header: token
   
@@ -45,6 +46,7 @@ public class NewsController implements Controller {
   @Override
   public void run() {
     routeGetFromGame();
+    routeGetFromDev();
     routeAddToGame();
     routeDeleteById();
   }
@@ -78,6 +80,48 @@ public class NewsController implements Controller {
       JsonArray jsonArray = new JsonArray();
       news.forEach(n -> jsonArray.add(n.asJson()));
       
+      em.close();
+      return jsonArray;
+    });
+  }
+
+  private void routeGetFromDev() {
+    Spark.get(ROUTE_GET_FROM_DEV, "application/json", (req, resp) -> { // :user_id
+      EntityManager em = factory.createEntityManager();
+      UserRepository userRepository = new UserRepository(em);
+
+      int max;
+      try {
+        max = Integer.parseInt(req.params(":max"));
+      } catch (NumberFormatException e) {
+        resp.status(403);
+        return ErrorMessages.informationNotNumber("Max");
+      }
+
+      long userId;
+      try {
+        userId = Long.parseLong(req.params(":user_id"));
+      } catch (NumberFormatException e) {
+        resp.status(403);
+        return ErrorMessages.informationNotNumber("User ID");
+      }
+
+      Optional<User> user = userRepository.findById(userId);
+
+      if (user.isEmpty()) {
+        resp.status(404);
+        return ErrorMessages.informationNotFound("User");
+      }
+
+      resp.type("application/json");
+      resp.status(200);
+
+      NewsRepository newsRepository = new NewsRepository(em);
+      List<News> news = newsRepository.findByAuthor(user.get(), max);
+
+      JsonArray jsonArray = new JsonArray();
+      news.forEach(n -> jsonArray.add(n.asJson()));
+
       em.close();
       return jsonArray;
     });
