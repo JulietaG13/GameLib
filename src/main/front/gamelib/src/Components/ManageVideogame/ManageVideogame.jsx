@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
+import {Navigate, useParams} from "react-router-dom";
 import './ManageVideogame.css';
 import axios from "axios";
-import {Navigate, useParams} from "react-router-dom";
 
 function ManageVideogame({type}) {
     const videogameID = useParams();
@@ -42,7 +42,7 @@ function ManageVideogame({type}) {
                 setNavigate(true);
             })
             .then(userResponseData => {
-                checkIfUser(userResponseData, setToView);
+                checkIfUser(userResponseData, setNavigate);
                 axios.get('http://localhost:4567/tag/get')
                     .catch(error => {
                         console.error('Error en tags:', error);
@@ -54,21 +54,22 @@ function ManageVideogame({type}) {
                         if (type === "Add") {
                             setIsLoading(false);
                         }
-                    })
-                if (type === "Edit") {
-                    axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
-                        .then(gameResponseData => {
-                            checkOwnership(gameResponseData, userResponseData, setToView);
+                        if (type === "Edit") {
+                            axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
+                                .then(gameResponseData => {
+                                    checkOwnership(gameResponseData, userResponseData, setNavigate);
 
-                            setVideogame(gameResponseData.data);
-                            setIsLoading(false);
-                            console.log(gameResponseData.data);
-                        })
-                        .catch(error => {
-                            console.error('Error en getGame:', error);
-                            setNavigate(true);
-                        });
-                }
+                                    setVideogame(gameResponseData.data);
+                                    setIsLoading(false);
+                                    console.log(gameResponseData.data);
+                                })
+                                .catch(error => {
+                                    console.error('Error en getGame:', error);
+                                    setNavigate(true);
+                                });
+                        }
+                    })
+
             });
     }, []);
 
@@ -110,11 +111,12 @@ function ManageVideogame({type}) {
         let dataToSend = {
             name: name ? name : videogame.name,
             description: description ? description : videogame.description,
-            release_date: release_date ? release_date : videogame.release_date,
-            last_update: formatDate(new Date()),
+            releaseDate: release_date ? release_date : videogame.release_date,
+            lastUpdate: formatDate(new Date()),
             tags: selected_tags ? selected_tags : videogame.tags,
             cover: cover ? cover : videogame.cover,
-            background_image: background_image ? background_image : videogame.background_image
+            backgroundImage: background_image ? background_image : videogame.background_image,
+            ownerId: videogame.owner_id
         };
         console.log(dataToSend);
 
@@ -146,12 +148,12 @@ function ManageVideogame({type}) {
             })
         console.log("one more time: ");
         console.log(videogame);
-        setToView(true);
+        setNavigate(true);
     }
 
     function manageSuccess() {
         setVideogame({});
-        setIsSaving(true);
+        // setIsSaving(true);
         setToView(true);
     }
 
@@ -170,7 +172,11 @@ function ManageVideogame({type}) {
     }
 
     const cancel = () => {
-        setToView(true);
+        if (type === "Edit") {
+            setToView(true);
+        } else if (type === "Add") {
+            setNavigate(true);
+        }
     }
 
     useEffect(() => {
@@ -254,7 +260,7 @@ function ManageVideogame({type}) {
                         <div key={index} className={"tagDiv"}>
                             <input
                                 type="checkbox"
-                                checked={selected_tags.includes(tag.id)}
+                                checked={selected_tags.includes(tag.id) || videogame.tags.map(t => t.id).includes(tag.id)}
                                 onChange={() => {
                                     if (selected_tags.includes(tag.id)) {
                                         setSelected_tags(selected_tags.filter(t => t !== tag.id));
@@ -275,7 +281,7 @@ function ManageVideogame({type}) {
                            className={'rounded-b'}
                            name={"release_date"}
                            defaultValue={videogame.release_date}
-                           onChange={e => setRelease_date(e.target.value[0])}
+                           onChange={e => setRelease_date(e.target.value)}
                     />
                 </div>
             </div>

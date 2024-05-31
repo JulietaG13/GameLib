@@ -96,7 +96,7 @@ function VideogameView() {
                     <div className={"attributesDiv"}>
                         <h2>About the game:</h2>
                         <p>{videogame.description}</p>
-                        <p>Date of release: {FormatDate(videogame.release_date)}</p>
+                        <p>Date of release: {formatDate(videogame.release_date)}</p>
                         {videogame.tags.length === 0 ?
                             <p>No tags available</p>
                             :
@@ -154,9 +154,9 @@ function loadingScreen() {
     )
 }
 
-function FormatDate(date) {
+function formatDate(date) {
     let d = new Date(date);
-    return d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
+    return (d.getDate() + 1) + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
 }
 
 export default VideogameView;
