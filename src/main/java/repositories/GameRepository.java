@@ -40,7 +40,7 @@ public class GameRepository {
     }
     
     public List<Game> listByLatest(int max) {
-        return entityManager.createQuery("SELECT g FROM Game g ORDER BY g.lastUpdate DESC", Game.class)
+        return entityManager.createQuery("SELECT g FROM Game g ORDER BY g.last_update DESC", Game.class)
             .setMaxResults(max)
             .getResultList();
     }

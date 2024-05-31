@@ -12,6 +12,7 @@ function ManageVideogame({type}) {
         name: '',
         description: '',
         release_date: '',
+        last_update: '',
         tags: [],
         cover: '',
         background_image: ''
@@ -134,12 +135,9 @@ function ManageVideogame({type}) {
             .catch(error => {
                 manageFailure(error);
             });
-
-        // setToView(true);
     }
 
     const deleteGame = async () => {
-        //console.log(1);
         await axios.delete(`http://localhost:4567/deletegame/${videogameID.videogameID}`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -157,6 +155,7 @@ function ManageVideogame({type}) {
             name: '',
             description: '',
             release_date: '',
+            last_update: '',
             tags: [],
             cover: '',
             background_image: ''
@@ -223,14 +222,6 @@ function ManageVideogame({type}) {
                         :
                         <img src={theVideogame.cover} alt={"cover1"}/>
                 }
-
-                {/*{theVideogame.cover === '' ? null : <img src={theVideogame.cover} alt={"cover1"}/>}*/}
-
-                {/*{Object.keys(videogame).length === 0 ?*/}
-                {/*    (cover === '' ? null : <img src={cover} alt={"cover1"}/>) :*/}
-                {/*    (videogame.cover === null ? (cover === '' ? null : <img src={cover} alt={"cover2"}/>) :*/}
-                {/*        <img src={videogame.cover} alt={"cover3"}/>)*/}
-                {/*}*/}
             </div>
 
             <div className={'cover'}>
@@ -249,12 +240,6 @@ function ManageVideogame({type}) {
                         :
                         <img src={theVideogame.background_image} alt={"cover1"}/>
                 }
-
-                {/*{Object.keys(videogame).length === 0 ?*/}
-                {/*    (background_image === '' ? null : <img src={background_image} alt={"cover1"}/>) :*/}
-                {/*    (videogame.background_image === null ? (background_image === '' ? null : <img src={background_image} alt={"cover2"}/>) :*/}
-                {/*        <img src={videogame.background_image} alt={"cover3"}/>)*/}
-                {/*}*/}
             </div>
 
             <div className={"titleDesc flex justify-center items-center"}>
@@ -383,12 +368,12 @@ function formatDate(date) {
 
 function formatJSON(videogame) {
     return {
-        name: videogame.name,
-        description: videogame.description,
-        release_date: videogame.release_date,
+        name: videogame.name.toString(),
+        description: videogame.description.toString(),
+        release_date: videogame.release_date.toString(),
         tags: formatTagsToID(videogame.tags),
-        cover: videogame.cover,
-        background_image: videogame.background_image
+        cover: videogame.cover.toString(),
+        background_image: videogame.background_image.toString()
     }
 }
 

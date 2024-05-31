@@ -32,10 +32,10 @@ public class Game {
     private String description;
     
     @Column(nullable = false)
-    private LocalDate releaseDate;
+    private LocalDate release_date;
     
     @Column(nullable = false)
-    private LocalDate lastUpdate;
+    private LocalDate last_update;
 
     //TODO(gameLogo, gameBanner)
 
@@ -48,7 +48,7 @@ public class Game {
     
     @Lob
     @Column(name = "background_image", nullable = false, columnDefinition = "CLOB")
-    private String backgroundImage;
+    private String background_image;
     //"https://i.pinimg.com/originals/05/ac/17/05ac17fb09440e9071908ef00efef134.png";
     
     @ManyToMany()
@@ -73,26 +73,26 @@ public class Game {
 
     public Game() {}
 
-    public Game(String name, User owner, String description, LocalDate releaseDate, String cover, String backgroundImage) {
+    public Game(String name, User owner, String description, LocalDate release_date, String cover, String background_image) {
         this.name = name;
         if (owner.getRol() == Rol.DEVELOPER) {
             this.owner = owner;
         }
         this.description = description;
-        this.releaseDate = releaseDate;
-        this.lastUpdate = LocalDate.now();
+        this.release_date = release_date;
+        this.last_update = LocalDate.now();
         this.cover = cover;
-        this.backgroundImage = backgroundImage;
+        this.background_image = background_image;
     }
 
     private Game(GameBuilder builder) {
         this.name = builder.name;
         this.owner = builder.owner;
         this.description = builder.description;
-        this.releaseDate = builder.releaseDate;
-        this.lastUpdate = builder.lastUpdate;
+        this.release_date = builder.release_date;
+        this.last_update = builder.last_update;
         this.cover = builder.cover;
-        this.backgroundImage = builder.backgroundImage;
+        this.background_image = builder.background_image;
     }
 
     public static GameBuilder create(String name) {
@@ -103,10 +103,10 @@ public class Game {
         private String description;
         private User owner;
         private final String name;
-        private LocalDate releaseDate;
-        private LocalDate lastUpdate;
+        private LocalDate release_date;
+        private LocalDate last_update;
         private String cover;
-        private String backgroundImage;
+        private String background_image;
 
         public GameBuilder(String name) {
             this.name = name;
@@ -123,12 +123,12 @@ public class Game {
         }
 
         public GameBuilder releaseDate(LocalDate releaseDate) {
-            this.releaseDate = releaseDate;
+            this.release_date = releaseDate;
             return this;
         }
 
         public GameBuilder lastUpdate(LocalDate lastUpdate) {
-            this.lastUpdate = lastUpdate;
+            this.last_update = lastUpdate;
             return this;
         }
 
@@ -138,7 +138,7 @@ public class Game {
         }
     
         public GameBuilder backgroundImage(String backgroundImage) {
-            this.backgroundImage = backgroundImage;
+            this.background_image = backgroundImage;
             return this;
         }
 
@@ -149,14 +149,14 @@ public class Game {
             if (cover == null) {
                 cover = ImageExample.LAZY_COOL_CAT.image;
             }
-            if (backgroundImage == null) {
-                backgroundImage = ImageExample.COMPUTER_CAT_BANNER_MAYBE.image;
+            if (background_image == null) {
+                background_image = ImageExample.COMPUTER_CAT_BANNER_MAYBE.image;
             }
-            if (releaseDate == null) {
-                releaseDate = LocalDate.now();
+            if (release_date == null) {
+                release_date = LocalDate.now();
             }
-            if (lastUpdate == null) {
-                lastUpdate = LocalDate.now();
+            if (last_update == null) {
+                last_update = LocalDate.now();
             }
             return new Game(this);
         }
@@ -181,9 +181,9 @@ public class Game {
         jsonObj.addProperty("description", description);
         jsonObj.addProperty("owner_id", (owner == null ? null : owner.getId()));
         jsonObj.addProperty("cover", cover);
-        jsonObj.addProperty("background_image", backgroundImage);
-        jsonObj.addProperty("release_date", releaseDate.toString());
-        jsonObj.addProperty("last_update", lastUpdate.toString());
+        jsonObj.addProperty("background_image", background_image);
+        jsonObj.addProperty("release_date", release_date.toString());
+        jsonObj.addProperty("last_update", last_update.toString());
         jsonObj.add("tags", jsonArray);
         return jsonObj;
     }
@@ -299,20 +299,20 @@ public class Game {
     }
     
     public LocalDate getReleaseDate() {
-        return releaseDate;
+        return release_date;
     }
     
     public void setReleaseDate(LocalDate releaseDate, LocalDate lastUpdate) {
-        this.releaseDate = releaseDate;
+        this.release_date = releaseDate;
         this.setLastUpdate(lastUpdate);
     }
     
     public LocalDate getLastUpdate() {
-        return lastUpdate;
+        return last_update;
     }
     
     public void setLastUpdate(LocalDate lastUpdate) {
-        this.lastUpdate = lastUpdate;
+        this.last_update = lastUpdate;
     }
 
     public Set<Shelf> getInShelves() {
