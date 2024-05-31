@@ -260,7 +260,7 @@ function ManageVideogame({type}) {
                         <div key={index} className={"tagDiv"}>
                             <input
                                 type="checkbox"
-                                checked={selected_tags.includes(tag.id) || videogame.tags.map(t => t.id).includes(tag.id)}
+                                checked={selected_tags.includes(tag.id)}
                                 onChange={() => {
                                     if (selected_tags.includes(tag.id)) {
                                         setSelected_tags(selected_tags.filter(t => t !== tag.id));
