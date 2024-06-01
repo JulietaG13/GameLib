@@ -2,11 +2,13 @@ import React, {useEffect, useState} from "react";
 import {Navigate, useParams} from "react-router-dom";
 import axios from "axios";
 import user_icon from "../Assets/user-icon.png";
+import pencil_icon from "../Assets/pencil-icon.png";
 import './VideogameView.css';
 import NewsComp from "./NewsComp";
 
 function VideogameView() {
     const videogameID = useParams();
+    const [user, setUser] = useState({});
 
     const [videogame, setVideogame] = useState({});
     const [reviews, setReviews] = useState([]);
@@ -14,8 +16,24 @@ function VideogameView() {
 
     const [errorMessage, setErrorMessage] = useState('');
 
-    const [navigate, setNavigate] = useState(false);
+    const [navigateHome, setNavigateHome] = useState(false);
+    const [navigateEdit, setNavigateEdit] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        let actualUsername = localStorage.getItem('username');
+        if (actualUsername === null) return setUser(-1);
+        else {
+            axios.get(`http://localhost:4567/getuser/${actualUsername}`)
+                .then(response => {
+                    console.log(response.data);
+                    setUser(getIDAndRol(response.data));
+                })
+                .catch(() => {
+                    setUser(-1);
+                })
+        }
+    }, []);
 
     useEffect(() => {
         axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
@@ -26,7 +44,7 @@ function VideogameView() {
             })
             .catch(error => {
                 console.error('Error:', error);
-                setNavigate(true);
+                setNavigateHome(true);
             });
     }, [videogameID]);
 
@@ -76,8 +94,12 @@ function VideogameView() {
             );
     }
 
-    if(navigate) {return <Navigate to={`/`}/>;}
+    const redirectEdit = () => {
+        setNavigateEdit(true);
+    }
 
+    if(navigateHome) {return <Navigate to={`/`}/>;}
+    if(navigateEdit) {return <Navigate to={`/editVideogame/${videogameID.videogameID}`}/>;}
     if (isLoading) {return loadingScreen();}
 
     return (
@@ -93,10 +115,18 @@ function VideogameView() {
                 </div>
 
                 <div className={"moreDataDiv"}>
+                    {checkPrivilege(user, videogame.owner_id) ?
+                        <div className={'goToEdit'}>
+                            <button onClick={redirectEdit}><img alt={"Edit videogame"} src={pencil_icon} /></button>
+                        </div>
+                        :
+                        null
+                    }
+
                     <div className={"attributesDiv"}>
                         <h2>About the game:</h2>
                         <p>{videogame.description}</p>
-                        <p>Date of release: {FormatDate(videogame.release_date)}</p>
+                        <p>Date of release: {formatDate(videogame.release_date)}</p>
                         {videogame.tags.length === 0 ?
                             <p>No tags available</p>
                             :
@@ -139,11 +169,31 @@ function VideogameView() {
                 </div>
 
                 <div className={"newsDiv"}>
-                    <NewsComp videogameID={videogameID.videogameID}/>
+                    <NewsComp videogameID={videogameID.videogameID} owner={checkPrivilege(user, videogame.owner_id)} />
                 </div>
             </div>
         </main>
     );
+}
+
+function getIDAndRol(user) {
+    return {
+        id: user.id,
+        rol: user.rol
+    };
+
+}
+
+function checkPrivilege(user, ownerID) {
+    if (user.rol === "ADMIN") {
+        return true;
+    }
+    return user.id === ownerID;
+}
+
+function formatDate(date) {
+    let d = new Date(date);
+    return (d.getDate() + 1) + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
 }
 
 function loadingScreen() {
@@ -152,11 +202,6 @@ function loadingScreen() {
             <h1>Loading...</h1>
         </div>
     )
-}
-
-function FormatDate(date) {
-    let d = new Date(date);
-    return d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
 }
 
 export default VideogameView;
