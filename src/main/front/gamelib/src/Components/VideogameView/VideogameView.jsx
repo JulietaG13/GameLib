@@ -2,10 +2,10 @@ import React, {useEffect, useState} from "react";
 import {Navigate, useParams} from "react-router-dom";
 import axios from "axios";
 import user_icon from "../Assets/user-icon.png";
-import './VideogameView2.css';
+import './VideogameView.css';
 import NewsComp from "./NewsComp";
 
-function VideogameView2() {
+function VideogameView() {
     const videogameID = useParams();
 
     const [videogame, setVideogame] = useState({});
@@ -96,7 +96,12 @@ function VideogameView2() {
                     <div className={"attributesDiv"}>
                         <h2>About the game:</h2>
                         <p>{videogame.description}</p>
-                        <p>Date of release: {FormatDate(videogame.releaseDate)}</p>
+                        <p>Date of release: {FormatDate(videogame.release_date)}</p>
+                        {videogame.tags.length === 0 ?
+                            <p>No tags available</p>
+                            :
+                            <p>Tags: {videogame.tags.map((tag) => tag.name + ', ')}</p>
+                        }
                     </div>
 
                     <div className={"reviewsDiv"}>
@@ -121,7 +126,8 @@ function VideogameView2() {
                             <div className={"reviewDiv"}>
                                 <img id={"special"} src={user_icon} alt={"user_icon"}/>
                                 <p>Be the first one to review!</p>
-                            </div> :
+                            </div>
+                            :
                             reviews.reverse().map((review) => (
                                 <div key={review.id} className={"reviewDiv"}>
                                     <img src={user_icon} alt={"user_icon"}/>
@@ -133,7 +139,6 @@ function VideogameView2() {
                 </div>
 
                 <div className={"newsDiv"}>
-                    <h2>News:</h2>
                     <NewsComp videogameID={videogameID.videogameID}/>
                 </div>
             </div>
@@ -154,4 +159,4 @@ function FormatDate(date) {
     return d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
 }
 
-export default VideogameView2;
+export default VideogameView;

@@ -182,8 +182,8 @@ public class Game {
         jsonObj.addProperty("owner_id", (owner == null ? null : owner.getId()));
         jsonObj.addProperty("cover", cover);
         jsonObj.addProperty("background_image", backgroundImage);
-        jsonObj.addProperty("releaseDate", releaseDate.toString());
-        jsonObj.addProperty("lastUpdate", lastUpdate.toString());
+        jsonObj.addProperty("release_date", releaseDate.toString());
+        jsonObj.addProperty("last_update", lastUpdate.toString());
         jsonObj.add("tags", jsonArray);
         return jsonObj;
     }

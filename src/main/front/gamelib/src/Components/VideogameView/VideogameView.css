@@ -93,3 +93,15 @@
 #special {
     opacity: 0;
 }
+
+.newsDiv li {
+    background-color: #5b3fbf;
+    padding: 1em;
+    margin-bottom: 0.5em;
+}
+
+h3 {
+    font-style: italic;
+    font-size: 1.5em;
+    color: white;
+}
