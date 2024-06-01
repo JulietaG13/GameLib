@@ -23,7 +23,7 @@ function NewsComp(props) {
             });
     }, [props.videogameID]);
 
-    const handleNewDeletion = (newsId, e) => {
+    const handleNewDeletion = (newsId) => {
 
         axios.put(`http://localhost:4567/news/delete/id/${newsId}`, {}, {
             headers: {

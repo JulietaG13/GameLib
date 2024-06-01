@@ -79,7 +79,7 @@ function VideogameView() {
                 'token': localStorage.getItem('token')
             }
         })
-            .then(r => setReview(''))
+            .then(() => setReview(''))
             .catch(r => {
                     if (!r.response.status) {
                         setErrorMessage("Something went wrong")

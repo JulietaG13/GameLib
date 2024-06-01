@@ -53,10 +53,10 @@
 
 .goToEdit img {
     background-color: #745bc1;
-    padding: 1%;
-    width: 7%;
-    height: 7%;
-    border-radius: 1em;
+    padding: 10%;
+    width: 3em;
+    height: 3em;
+    border-radius: 0.5em;
     transition: background-color 0.2s ease;
 }
 .goToEdit img:hover {
