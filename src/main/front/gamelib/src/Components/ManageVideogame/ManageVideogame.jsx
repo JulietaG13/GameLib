@@ -128,7 +128,7 @@ function ManageVideogame({type}) {
 
         setTheVideogame({...theVideogame, last_update: formatDate(new Date())});
 
-        await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, theVideogame, config)
+        await axios.put(`http://localhost:4567/game/edit/${videogameID.videogameID}`, theVideogame, config)
             .then(() =>
                 manageSuccess()
             )
