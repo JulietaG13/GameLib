@@ -23,14 +23,17 @@ function NewsComp(props) {
             });
     }, [props.videogameID]);
 
-    const handleNewDeletion = (e) => {
-        axios.put(`http://localhost:4567/news/delete/id/${e.target.id}`, {
+    const handleNewDeletion = (newsId, e) => {
+
+        axios.put(`http://localhost:4567/news/delete/id/${newsId}`, {}, {
             headers: {
+                'Content-Type': 'application/json',
                 'token': localStorage.getItem('token')
             }
         })
             .then(response => {
                 console.log(response.data);
+                setNews(news.filter(news => news.id !== newsId));
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -45,7 +48,9 @@ function NewsComp(props) {
                 null
             }
 
-            {isLoading ? <div>Loading...</div> :
+            {isLoading ?
+                <div>Loading...</div>
+                :
                 <div>
                     <h2>News</h2>
                     {news.length === 0 ?
@@ -58,7 +63,7 @@ function NewsComp(props) {
                                         <h3>{news.title}</h3>
                                         <p>{news.description}</p>
                                         {props.owner ?
-                                            <button>Delete</button>
+                                            <button onClick={() => handleNewDeletion(news.id)}>Delete</button>
                                             :
                                             null
                                         }
