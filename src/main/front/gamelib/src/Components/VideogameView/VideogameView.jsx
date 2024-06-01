@@ -117,7 +117,7 @@ function VideogameView() {
                 <div className={"moreDataDiv"}>
                     {checkPrivilege(user, videogame.owner_id) ?
                         <div className={'goToEdit'}>
-                            <button onClick={redirectEdit}><img alt={"Edit videogame"} src={pencil_icon} /></button>
+                            <img alt={"Edit videogame"} src={pencil_icon} onClick={redirectEdit}/>
                         </div>
                         :
                         null

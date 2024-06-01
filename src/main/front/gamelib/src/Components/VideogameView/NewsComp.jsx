@@ -63,7 +63,9 @@ function NewsComp(props) {
                                         <h3>{news.title}</h3>
                                         <p>{news.description}</p>
                                         {props.owner ?
-                                            <button onClick={() => handleNewDeletion(news.id)}>Delete</button>
+                                            <button className={'deletionButton'}
+                                                    onClick={() => handleNewDeletion(news.id)}
+                                            >Delete</button>
                                             :
                                             null
                                         }
