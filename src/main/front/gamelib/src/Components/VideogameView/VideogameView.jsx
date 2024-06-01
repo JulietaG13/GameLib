@@ -21,14 +21,18 @@ function VideogameView() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        axios.get(`http://localhost:4567/getuser/${localStorage.getItem('username')}`)
-            .then(response => {
-                console.log(response.data);
-                setUser(getIDAndRol(response.data));
-            })
-            .catch(() => {
-                setUser(-1);
-            })
+        let actualUsername = localStorage.getItem('username');
+        if (actualUsername === null) return setUser(-1);
+        else {
+            axios.get(`http://localhost:4567/getuser/${actualUsername}`)
+                .then(response => {
+                    console.log(response.data);
+                    setUser(getIDAndRol(response.data));
+                })
+                .catch(() => {
+                    setUser(-1);
+                })
+        }
     }, []);
 
     useEffect(() => {
@@ -165,7 +169,7 @@ function VideogameView() {
                 </div>
 
                 <div className={"newsDiv"}>
-                    <NewsComp videogameID={videogameID.videogameID}/>
+                    <NewsComp videogameID={videogameID.videogameID} owner={checkPrivilege(user, videogame.owner_id)} />
                 </div>
             </div>
         </main>
