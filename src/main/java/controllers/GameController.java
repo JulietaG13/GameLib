@@ -16,18 +16,21 @@ import repositories.GameRepository;
 import repositories.TagRepository;
 import repositories.UserRepository;
 import services.AccessControlService;
+import services.GameService;
 import services.UserService;
 import spark.Spark;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class GameController implements Controller {
   private static final String ROUTE_CREATE_GAME = "/game/create";
+  private static final String ROUTE_EDIT_GAME = "/game/edit/:game_id";
   private static final String ROUTE_GET_BY_TAG = "/game/get/tag/:tag_id";
   
   private EntityManagerFactory factory;
@@ -46,12 +49,12 @@ public class GameController implements Controller {
   
   @Override
   public void run() {
-    routeCreateGame();
-    routeGetByTag();
+    setRouteCreateGame();
+    setRouteEditGame();
+    setRouteGetByTag();
   }
 
-  private void routeCreateGame() {
-
+  private void setRouteCreateGame() {
     Spark.post(ROUTE_CREATE_GAME, "application/json", (req, resp) -> {
       // body: name,description,release_date,cover,background_image,tags(list of IDs) | header: token
       EntityManager em = factory.createEntityManager();
@@ -161,8 +164,132 @@ public class GameController implements Controller {
     });
 
   }
-  
-  private void routeGetByTag() {
+
+
+  private void setRouteEditGame() {
+    Spark.put(ROUTE_EDIT_GAME, "application/json", (req, resp) -> {
+      // :game_id | body: name,description,release_date,cover,background_image,tags(list of IDs) | header: token
+      // elements of body are all optional
+      EntityManager em = factory.createEntityManager();
+
+      String token = req.headers(Token.PROPERTY_NAME);
+      if (token == null || !AccessControlService.isTokenValid(token)) {
+        resp.status(401);
+        return ErrorMessages.userMustBeLoggedIn();
+      }
+      String username = AccessControlService.getUsernameFromToken(token);
+      Optional<User> dev = new UserRepository(em).findByUsername(username);
+
+      if (dev.isEmpty()) {
+        resp.status(404);
+        return ErrorMessages.usernameNotFound(username);
+      }
+
+      long gameId;
+      try {
+        gameId = Long.parseLong(req.params(":game_id"));
+      } catch (NumberFormatException e) {
+        resp.status(403);
+        return ErrorMessages.informationNotNumber("Game ID");
+      }
+      GameRepository gameRepository = new GameRepository(em);
+      Optional<Game> game = gameRepository.findById(gameId);
+
+      if (game.isEmpty()) {
+        resp.status(404);
+        return ErrorMessages.informationNotFound("Game");
+      }
+
+      if (!GameService.isAbleToEditGame(dev.get(), game.get())) {
+        resp.status(401);
+        return ErrorMessages.userMustBeDeveloper();
+      }
+
+      JsonObject body = JsonParser
+              .parseString(req.body())
+              .getAsJsonObject();
+
+      // check name
+      try {
+        String name = body.get("name").getAsString();
+        Responses titleResponse = Game.isNameValid(name);
+        if (titleResponse.hasError()) {
+          resp.status(404);
+          return titleResponse.getMessage();
+        }
+        game.get().setName(name);
+      } catch (Exception ignored) {}
+
+      // check description
+      try {
+        String description = body.get("description").getAsString();
+        Responses descriptionResponse = Game.isDescriptionValid(description);
+        if (descriptionResponse.hasError()) {
+          resp.status(404);
+          return descriptionResponse.getMessage();
+        }
+        game.get().setDescription(description);
+      } catch (Exception ignored) {}
+
+      // check release date
+      try {
+        String releaseDateStr = body.get("release_date").getAsString();
+        LocalDate releaseDate;
+        try {
+          releaseDate = LocalDate.parse(releaseDateStr);
+        } catch (DateTimeParseException e) {
+          resp.status(400);
+          return ErrorMessages.informationIncorrectFormat("release_date");
+        }
+        Responses releaseDateResponse = Game.isReleaseDateValid(releaseDate);
+        if (releaseDateResponse.hasError()) {
+          resp.status(404);
+          return releaseDateResponse.getMessage();
+        }
+        game.get().setReleaseDate(releaseDate);
+      } catch (Exception ignored) {}
+
+      // check cover
+      try {
+        String cover = body.get("cover").getAsString();
+        game.get().setCover(cover);
+      } catch (Exception ignored) {}
+
+      // check background image
+      String backgroundImage;
+      try {
+        backgroundImage = body.get("background_image").getAsString();
+        game.get().setBackgroundImage(backgroundImage);
+      } catch (Exception ignored) {}
+
+      // check tags
+      try {
+        JsonElement tagsElem = body.get("tags");
+        List<Tag> tags = new ArrayList<>();
+        JsonArray array = tagsElem.getAsJsonArray();
+        TagRepository tagRepository = new TagRepository(em);
+        array.forEach(t ->
+                tags.add(
+                        tagRepository.findById(t.getAsLong()).get()
+                )
+        );
+        game.get().setTag(tags);
+      } catch (Exception ignored) {}
+
+      resp.type("application/json");
+      resp.status(201);
+
+      gameRepository.persist(game.get());
+
+      JsonObject jsonObject = game.get().asJson();
+      em.close();
+      return jsonObject;
+    });
+
+  }
+
+
+  private void setRouteGetByTag() {
     Spark.get(ROUTE_GET_BY_TAG, "application/json", (req, resp) -> {
       EntityManager em = factory.createEntityManager();
       final TagRepository tagRepository = new TagRepository(em);
