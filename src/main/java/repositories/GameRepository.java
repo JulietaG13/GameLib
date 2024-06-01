@@ -40,7 +40,7 @@ public class GameRepository {
     }
     
     public List<Game> listByLatest(int max) {
-        return entityManager.createQuery("SELECT g FROM Game g ORDER BY g.lastUpdate DESC", Game.class)
+        return entityManager.createQuery("SELECT g FROM Game g ORDER BY g.last_update DESC", Game.class)
             .setMaxResults(max)
             .getResultList();
     }
@@ -94,20 +94,28 @@ public class GameRepository {
             return new ErrorResponse(403, "You are not allowed to change the game!");
         }
 
-        if (gameUpdate.getCover() != null && !game.getCover().equals(gameUpdate.getCover())) {
-            game.setCover(gameUpdate.getCover(), lastUpdate);
-        }
-        
-        if (gameUpdate.getName() != null && !game.getName().equals(gameUpdate.getName())) {
-            game.setName(gameUpdate.getName(), lastUpdate);
-        }
-        
-        if (gameUpdate.getDescription() != null && !game.getDescription().equals(gameUpdate.getDescription())) {
-            game.setDescription(gameUpdate.getDescription(), lastUpdate);
+        String newCover = gameUpdate.getCover();
+        String actualCover = game.getCover();
+        if (newCover != null && !actualCover.equals(newCover)) {
+            game.setCover(newCover, lastUpdate);
         }
 
-        if (gameUpdate.getReleaseDate() != null && !game.getReleaseDate().equals(gameUpdate.getReleaseDate())) {
-            game.setReleaseDate(gameUpdate.getReleaseDate(), lastUpdate);
+        String newName = gameUpdate.getName();
+        String actualName = game.getName();
+        if (newName != null && !actualName.equals(newName)) {
+            game.setName(newName, lastUpdate);
+        }
+
+        String newDesc = gameUpdate.getDescription();
+        String actualDesc = game.getDescription();
+        if (newDesc != null && !actualDesc.equals(newDesc)) {
+            game.setDescription(newDesc, lastUpdate);
+        }
+
+        LocalDate newRelease = gameUpdate.getReleaseDate();
+        LocalDate actualRelease = game.getReleaseDate();
+        if (newRelease != null && !actualRelease.equals(newRelease)) {
+            game.setReleaseDate(newRelease, lastUpdate);
         }
         
         //TODO(rest of the updates)

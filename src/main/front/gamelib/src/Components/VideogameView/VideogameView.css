@@ -51,6 +51,18 @@
     height: 100%;
 }
 
+.goToEdit img {
+    background-color: #745bc1;
+    padding: 10%;
+    width: 3em;
+    height: 3em;
+    border-radius: 0.5em;
+    transition: background-color 0.2s ease;
+}
+.goToEdit img:hover {
+    background-color: #3fbf45;
+}
+
 .moreDataDiv {
     display: flex;
     align-items: flex-start;
@@ -94,10 +106,63 @@
     opacity: 0;
 }
 
+.newsDiv div {
+    width: 100%;
+}
 .newsDiv li {
     background-color: #5b3fbf;
     padding: 1em;
     margin-bottom: 0.5em;
+}
+.newsDiv h3 {
+    text-wrap: wrap;
+    overflow-wrap: break-word;
+}
+
+.deletionButton {
+    background-color: #ff3b3b;
+    color: white;
+    padding: 0.25em;
+    margin-top: 0.5em;
+    transition: background-color 0.2s ease;
+}
+.deletionButton:hover {
+    background-color: #c30101;
+}
+
+#plus {
+    width: 2.7em;
+    height: 2.7em;
+    padding: 2%;
+    background-color: #745bc1;
+    border-radius: 1em;
+    transition: background-color 0.2s ease;
+}
+#plus:hover {
+    background-color: #3fbf45;
+}
+.addNewDiv {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin: 0.7em;
+    background-color: #5b3fbf;
+}
+.addNewDiv div {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin: 0 0.7em;
+}
+.addNewDiv label {
+    color: white;
+}
+.addNewDiv button {
+    background-color: #11a605;
+    color: white;
+    border-radius: 1em;
+    padding: 0.5em;
+    margin: 0.5em;
 }
 
 h3 {
