@@ -263,15 +263,6 @@ public class Game {
         return id;
     }
 
-    public String getCover() {
-        return cover;
-    }
-
-    public void setCover(String cover, LocalDate lastUpdate) {
-        this.cover = cover;
-        this.setLastUpdate(lastUpdate);
-    }
-
     public String getName() {
         return name;
     }
@@ -279,6 +270,10 @@ public class Game {
     public void setName(String name, LocalDate lastUpdate) {
         this.name = name;
         this.setLastUpdate(lastUpdate);
+    }
+
+    public void setName(String name) {
+        setName(name, LocalDate.now());
     }
 
     public User getOwner() {
@@ -297,6 +292,10 @@ public class Game {
         this.description = description;
         this.setLastUpdate(lastUpdate);
     }
+
+    public void setDescription(String description) {
+        setDescription(description, LocalDate.now());
+    }
     
     public LocalDate getReleaseDate() {
         return releaseDate;
@@ -306,7 +305,11 @@ public class Game {
         this.releaseDate = releaseDate;
         this.setLastUpdate(lastUpdate);
     }
-    
+
+    public void setReleaseDate(LocalDate releaseDate) {
+        setReleaseDate(releaseDate, LocalDate.now());
+    }
+
     public LocalDate getLastUpdate() {
         return lastUpdate;
     }
@@ -323,8 +326,39 @@ public class Game {
         return tags;
     }
 
+    public void setTag(Collection<Tag> tags) {
+        this.tags.clear();
+        this.tags.addAll(tags);
+    }
+
     public Set<User> getUpvotes() {
         return upvotes;
+    }
+
+    public String getCover() {
+        return cover;
+    }
+
+    public void setCover(String cover, LocalDate lastUpdate) {
+        this.cover = cover;
+        this.setLastUpdate(lastUpdate);
+    }
+
+    public void setCover(String cover) {
+        setCover(cover, LocalDate.now());
+    }
+
+    public String getBackgroundImage() {
+        return backgroundImage;
+    }
+
+    public void setBackgroundImage(String backgroundImage, LocalDate lastUpdate) {
+        this.backgroundImage = backgroundImage;
+        this.setLastUpdate(lastUpdate);
+    }
+
+    public void setBackgroundImage(String backgroundImage) {
+        setBackgroundImage(backgroundImage, LocalDate.now());
     }
 
     // OTHERS //
