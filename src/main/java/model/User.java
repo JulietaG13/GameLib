@@ -1,6 +1,7 @@
 package model;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import entities.Rol;
 import entities.responses.ErrorResponse;
@@ -8,6 +9,7 @@ import entities.responses.StatusResponse;
 import interfaces.Responses;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -34,7 +36,7 @@ public class User {
   @Column(nullable = false)
   private Rol rol;
 
-  @OneToMany(mappedBy = "owner")  // TODO(delete)
+  @OneToMany(mappedBy = "owner")  // TODO(deleteuser)
   private final Set<Game> developed = new HashSet<>();
   
   @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
@@ -48,6 +50,30 @@ public class User {
   
   @ManyToMany(mappedBy = "upvotes")
   private final Set<Game> upvotedGames = new HashSet<>();
+
+  @ManyToMany
+  @JoinTable(
+          name = "user_friends",
+          joinColumns = @JoinColumn(name = "user_id"),
+          inverseJoinColumns = @JoinColumn(name = "friend_id")
+  )
+  private final Set<User> friends = new HashSet<>();
+
+  @ManyToMany
+  @JoinTable(
+          name = "friend_requests_sent",
+          joinColumns = @JoinColumn(name = "user_id"),
+          inverseJoinColumns = @JoinColumn(name = "request_sent_to_id")
+  )
+  private final Set<User> friendRequestsSent = new HashSet<>();
+
+  @ManyToMany
+  @JoinTable(
+          name = "friend_requests_pending",
+          joinColumns = @JoinColumn(name = "user_id"),
+          inverseJoinColumns = @JoinColumn(name = "request_pending_from_id")
+  )
+  private final Set<User> friendRequestsPending = new HashSet<>();
 
   @Lob
   @Column(columnDefinition = "CLOB")
@@ -162,7 +188,7 @@ public class User {
     return new StatusResponse(200);
   }
   
-  // ADDS? //
+  // UTILITY METHODS //
 
   public void addDeveloped(Game game) {
     if (this.rol != Rol.DEVELOPER) return; //throw new NoPermissionException("User not allowed to have developed games");
@@ -193,6 +219,36 @@ public class User {
     upvotedGames.add(game);
     if (!game.getUpvotes().contains(this)) {
       game.addUpvote(this);
+    }
+  }
+
+  public void addFriend(User friend) {
+    this.friends.add(friend);
+    friend.getFriendsInternal().add(this);
+  }
+
+  public void removeFriend(User friend) {
+    this.friends.remove(friend);
+    friend.getFriendsInternal().remove(this);
+  }
+
+  public void sendFriendRequest(User user) {
+    this.friendRequestsSent.add(user);
+    user.getFriendRequestsPendingInternal().add(this);
+  }
+
+  public void acceptFriendRequest(User user) {
+    if (this.friendRequestsPending.contains(user)) {
+      this.friendRequestsPending.remove(user);
+      user.getFriendRequestsSentInternal().remove(this);
+      this.addFriend(user);
+    }
+  }
+
+  public void rejectFriendRequest(User user) {
+    if (this.friendRequestsPending.contains(user)) {
+      this.friendRequestsPending.remove(user);
+      user.getFriendRequestsSentInternal().remove(this);
     }
   }
   
@@ -276,6 +332,32 @@ public class User {
 
   public void setBanner(String banner) {
     this.banner = banner;
+  }
+
+  public Set<User> getFriends() {
+    return Collections.unmodifiableSet(friends);
+  }
+
+  public Set<User> getFriendRequestsSent() {
+    return Collections.unmodifiableSet(friendRequestsSent);
+  }
+
+  public Set<User> getFriendRequestsPending() {
+    return Collections.unmodifiableSet(friendRequestsPending);
+  }
+
+  // INTERNAL HELPERS //
+
+  protected Set<User> getFriendsInternal() {
+    return friends;
+  }
+
+  protected Set<User> getFriendRequestsSentInternal() {
+    return friendRequestsSent;
+  }
+
+  protected Set<User> getFriendRequestsPendingInternal() {
+    return friendRequestsPending;
   }
 
   // OTHERS //
