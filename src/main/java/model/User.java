@@ -74,6 +74,9 @@ public class User {
           inverseJoinColumns = @JoinColumn(name = "request_pending_from_id")
   )
   private final Set<User> friendRequestsPending = new HashSet<>();
+  
+  @ManyToMany(mappedBy = "subscribers")
+  private Set<Game> subscribedGames = new HashSet<>();
 
   @Lob
   @Column(columnDefinition = "CLOB")
@@ -252,6 +255,13 @@ public class User {
     }
   }
   
+  public void subscribe(Game game) {
+    subscribedGames.add(game);
+    if (!game.getSubscribers().contains(this)) {
+      game.addSubscriber(this);
+    }
+  }
+  
   // GETTERS - SETTER //
   
   public Long getId() {
@@ -345,7 +355,11 @@ public class User {
   public Set<User> getFriendRequestsPending() {
     return Collections.unmodifiableSet(friendRequestsPending);
   }
-
+  
+  public Set<Game> getSubscribedGames() {
+    return Collections.unmodifiableSet(subscribedGames);
+  }
+  
   // INTERNAL HELPERS //
 
   protected Set<User> getFriendsInternal() {

@@ -70,6 +70,14 @@ public class Game {
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private final Set<Review> reviews = new HashSet<>();
+    
+    @ManyToMany
+    @JoinTable(
+        name = "game_subscriptions",
+        joinColumns = @JoinColumn(name = "game_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> subscribers = new HashSet<>();
 
     public Game() {}
 
@@ -226,7 +234,7 @@ public class Game {
         return new StatusResponse(200);
     }
     
-    // ADDS? //
+    // UTILITY METHODS //
     
     protected void addInShelf(Shelf shelf) {
         inShelves.add(shelf);
@@ -251,7 +259,14 @@ public class Game {
         if (!user.getUpvotedGames().contains(this)) {
             user.addGameUpvote(this);
         }
-     }
+    }
+    
+    public void addSubscriber(User user) {
+        subscribers.add(user);
+        if (!user.getSubscribedGames().contains(this)) {
+            user.subscribe(this);
+        }
+    }
     
     // GETTERS - SETTERS //
     
@@ -360,7 +375,11 @@ public class Game {
     public void setBackgroundImage(String backgroundImage) {
         setBackgroundImage(backgroundImage, LocalDate.now());
     }
-
+    
+    public Set<User> getSubscribers() {
+        return Collections.unmodifiableSet(subscribers);
+    }
+    
     // OTHERS //
 
     @Override
