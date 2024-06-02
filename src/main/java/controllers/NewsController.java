@@ -154,6 +154,11 @@ public class NewsController implements Controller {
         resp.status(404);
         return ErrorMessages.informationNotFound("Game");
       }
+      
+      if (!NewsService.isAbleToAddNews(user.get(), game.get())) {
+        resp.status(403);
+        return ErrorMessages.userNotAllowedToPerformAction();
+      }
 
       JsonObject body = JsonParser
               .parseString(req.body())
@@ -178,7 +183,7 @@ public class NewsController implements Controller {
       News news = new News(title, description, game.get(), user.get());
       newsRepository.persist(news);
 
-      // TODO(notify users of new news :) !)
+      NewsService.notifyUsers(news);
 
       em.close();
       return news.asJson();
