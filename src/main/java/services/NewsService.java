@@ -13,6 +13,10 @@ public class NewsService {
         return user.getRol() == Rol.ADMIN || user.getId().equals(news.getAuthor().getId());
     }
     
+    public static boolean isAbleToAddNews(User user, Game game) {
+        return user.getRol() == Rol.ADMIN || game.getOwner().getId().equals(user.getId());
+    }
+    
     public static void notifyUsers(News news) {
         //User dev = news.getAuthor();  TODO()
         Game game = news.getGame();
