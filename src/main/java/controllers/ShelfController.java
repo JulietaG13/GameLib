@@ -24,10 +24,12 @@ import java.util.stream.Collectors;
 
 public class ShelfController implements Controller {
     private static final String ROUTE_GET_ALL = "/shelf/all";
-    private static final String ROUTE_GET_FROM_USER = "/shelf/get/user/:username/:max"; // header: token
+    private static final String ROUTE_GET_FROM_USER = "/shelf/get/user/:username/:max";     // header: token
     private static final String ROUTE_GET_FROM_SHELF = "/shelf/get/:id/:max";
-    private static final String ROUTE_ADD_SHELF = "/shelf/add/:username";
-    private static final String ROUTE_ADD_GAME = "/shelf/add/:shelf_id/:game_id";
+    private static final String ROUTE_ADD_SHELF = "/shelf/add";                             // header: token
+    private static final String ROUTE_DELETE_SHELF = "/shelf/delete/:shelf_id";             // header: token
+    private static final String ROUTE_ADD_GAME = "/shelf/add/:shelf_id/:game_id";           // header: token
+    private static final String ROUTE_REMOVE_GAME = "/shelf/remove/:shelf_id/:game_id";     // header: token
 
     private EntityManagerFactory factory;
     private static ShelfController instance;
@@ -69,7 +71,7 @@ public class ShelfController implements Controller {
     }
 
     private void routeGetFromUser() {
-        Spark.get(ROUTE_GET_FROM_USER, "application/json", (req, resp) -> { // :username, :max  | header: "token"
+        Spark.get(ROUTE_GET_FROM_USER, "application/json", (req, resp) -> { // :username, :max  | header: token
             EntityManager em = factory.createEntityManager();
 
             int max;
@@ -104,7 +106,11 @@ public class ShelfController implements Controller {
             
             // the one asking
             String token = req.headers(Token.PROPERTY_NAME);
-            if (token != null && AccessControlService.isTokenValid(token)) {
+            if (token == null || !AccessControlService.isTokenValid(token)) {
+                shelves = shelves.stream()
+                    .filter(s -> !s.isPrivate())
+                    .collect(Collectors.toList());
+            } else {
                 String clientUsername = AccessControlService.getUsernameFromToken(token);
                 Optional<User> client = userRepository.findByUsername(clientUsername);
                 if (client.isEmpty()) {
@@ -191,15 +197,21 @@ public class ShelfController implements Controller {
     }
     
     private void routeAddShelf() {
-        Spark.post(ROUTE_ADD_SHELF, "application/json", (req, resp) -> { // :username | body: name, is_private
+        Spark.post(ROUTE_ADD_SHELF, "application/json", (req, resp) -> { // body: name, is_private | header: token
             EntityManager em = factory.createEntityManager();
-            
-            String username = req.params(":username");
+    
+            String token = req.headers(Token.PROPERTY_NAME);
+            if (token == null || !AccessControlService.isTokenValid(token)) {
+                resp.status(401);
+                return ErrorMessages.userMustBeLoggedIn();
+            }
+    
+            String username = AccessControlService.getUsernameFromToken(token);
             UserRepository userRepository = new UserRepository(em);
             Optional<User> user = userRepository.findByUsername(username);
             if (user.isEmpty()) {
                 resp.status(404);
-                return ErrorMessages.usernameNotFound(username);
+                return ErrorMessages.informationNotFound("User");
             }
             
             JsonObject body = JsonParser
@@ -244,8 +256,22 @@ public class ShelfController implements Controller {
     }
     
     private void routeAddGame() {
-        Spark.put(ROUTE_ADD_GAME, "application/json", (req, resp) -> { // :shelf_id, :game_id
+        Spark.put(ROUTE_ADD_GAME, "application/json", (req, resp) -> { // :shelf_id, :game_id | header: token
             EntityManager em = factory.createEntityManager();
+            
+            String token = req.headers(Token.PROPERTY_NAME);
+            if (token == null || !AccessControlService.isTokenValid(token)) {
+                resp.status(401);
+                return ErrorMessages.userMustBeLoggedIn();
+            }
+    
+            String username = AccessControlService.getUsernameFromToken(token);
+            UserRepository userRepository = new UserRepository(em);
+            Optional<User> user = userRepository.findByUsername(username);
+            if (user.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.informationNotFound("User");
+            }
             
             long shelfId;
             try {
@@ -256,6 +282,19 @@ public class ShelfController implements Controller {
                 return ErrorMessages.informationNotNumber("Shelf ID");
             }
     
+            ShelfRepository shelfRepository = new ShelfRepository(em);
+            Optional<Shelf> shelf = shelfRepository.findById(shelfId);
+            if (shelf.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.informationNotFound("Shelf");
+            }
+            
+            User shelfOwner = shelf.get().getOwner();
+            if (!shelfOwner.getId().equals(user.get().getId())) {
+                resp.status(403);
+                return ErrorMessages.userNotAllowedToPerformAction();
+            }
+    
             long gameId;
             try {
                 String idStr = req.params(":game_id");
@@ -263,13 +302,6 @@ public class ShelfController implements Controller {
             } catch (NumberFormatException e) {
                 resp.status(400);
                 return ErrorMessages.informationNotNumber("Shelf ID");
-            }
-            
-            ShelfRepository shelfRepository = new ShelfRepository(em);
-            Optional<Shelf> shelf = shelfRepository.findById(shelfId);
-            if (shelf.isEmpty()) {
-                resp.status(404);
-                return ErrorMessages.informationNotFound("Shelf");
             }
     
             GameRepository gameRepository = new GameRepository(em);
