@@ -4,7 +4,8 @@ public enum ImageExample {
   CAT_WITH_A_PROBLEM(get1()),
   LAZY_COOL_CAT(get2()),
   COOL_GLASSES_CAT(get3()),
-  COMPUTER_CAT_BANNER_MAYBE(get4());
+  COMPUTER_CAT_BANNER_MAYBE(get4()),
+  RED_DOT("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==");
   
   ImageExample(String s) {
     this.image = s;

@@ -63,6 +63,21 @@ public class NewsRepository {
   public List<News> listAll() {
     return entityManager.createQuery("SELECT n FROM News n ORDER BY n.date DESC", News.class).getResultList();
   }
+
+  public boolean deleteById(Long id) {
+    EntityTransaction tx = entityManager.getTransaction();
+    tx.begin();
+
+    Optional<News> newsOptional = findById(id);
+    if (newsOptional.isPresent()) {
+      entityManager.remove(newsOptional.get());
+      tx.commit();
+      return true;
+    }
+
+    tx.commit();
+    return false;
+  }
   
   public News persist(News news) {
     EntityTransaction tx = entityManager.getTransaction();

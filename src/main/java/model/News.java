@@ -41,6 +41,7 @@ public class News {
   
   public JsonObject asJson() {
     JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("id", id);
     jsonObject.addProperty("title", title);
     jsonObject.addProperty("description", description);
     jsonObject.addProperty("date", date.toString());

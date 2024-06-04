@@ -70,6 +70,14 @@ public class Game {
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private final Set<Review> reviews = new HashSet<>();
+    
+    @ManyToMany
+    @JoinTable(
+        name = "game_subscriptions",
+        joinColumns = @JoinColumn(name = "game_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> subscribers = new HashSet<>();
 
     public Game() {}
 
@@ -182,8 +190,8 @@ public class Game {
         jsonObj.addProperty("owner_id", (owner == null ? null : owner.getId()));
         jsonObj.addProperty("cover", cover);
         jsonObj.addProperty("background_image", backgroundImage);
-        jsonObj.addProperty("releaseDate", releaseDate.toString());
-        jsonObj.addProperty("lastUpdate", lastUpdate.toString());
+        jsonObj.addProperty("release_date", releaseDate.toString());
+        jsonObj.addProperty("last_update", lastUpdate.toString());
         jsonObj.add("tags", jsonArray);
         return jsonObj;
     }
@@ -226,7 +234,7 @@ public class Game {
         return new StatusResponse(200);
     }
     
-    // ADDS? //
+    // UTILITY METHODS //
     
     protected void addInShelf(Shelf shelf) {
         inShelves.add(shelf);
@@ -251,7 +259,14 @@ public class Game {
         if (!user.getUpvotedGames().contains(this)) {
             user.addGameUpvote(this);
         }
-     }
+    }
+    
+    public void addSubscriber(User user) {
+        subscribers.add(user);
+        if (!user.getSubscribedGames().contains(this)) {
+            user.subscribe(this);
+        }
+    }
     
     // GETTERS - SETTERS //
     
@@ -263,15 +278,6 @@ public class Game {
         return id;
     }
 
-    public String getCover() {
-        return cover;
-    }
-
-    public void setCover(String cover, LocalDate lastUpdate) {
-        this.cover = cover;
-        this.setLastUpdate(lastUpdate);
-    }
-
     public String getName() {
         return name;
     }
@@ -279,6 +285,10 @@ public class Game {
     public void setName(String name, LocalDate lastUpdate) {
         this.name = name;
         this.setLastUpdate(lastUpdate);
+    }
+
+    public void setName(String name) {
+        setName(name, LocalDate.now());
     }
 
     public User getOwner() {
@@ -297,6 +307,10 @@ public class Game {
         this.description = description;
         this.setLastUpdate(lastUpdate);
     }
+
+    public void setDescription(String description) {
+        setDescription(description, LocalDate.now());
+    }
     
     public LocalDate getReleaseDate() {
         return releaseDate;
@@ -306,7 +320,11 @@ public class Game {
         this.releaseDate = releaseDate;
         this.setLastUpdate(lastUpdate);
     }
-    
+
+    public void setReleaseDate(LocalDate releaseDate) {
+        setReleaseDate(releaseDate, LocalDate.now());
+    }
+
     public LocalDate getLastUpdate() {
         return lastUpdate;
     }
@@ -323,10 +341,45 @@ public class Game {
         return tags;
     }
 
+    public void setTag(Collection<Tag> tags) {
+        this.tags.clear();
+        this.tags.addAll(tags);
+    }
+
     public Set<User> getUpvotes() {
         return upvotes;
     }
 
+    public String getCover() {
+        return cover;
+    }
+
+    public void setCover(String cover, LocalDate lastUpdate) {
+        this.cover = cover;
+        this.setLastUpdate(lastUpdate);
+    }
+
+    public void setCover(String cover) {
+        setCover(cover, LocalDate.now());
+    }
+
+    public String getBackgroundImage() {
+        return backgroundImage;
+    }
+
+    public void setBackgroundImage(String backgroundImage, LocalDate lastUpdate) {
+        this.backgroundImage = backgroundImage;
+        this.setLastUpdate(lastUpdate);
+    }
+
+    public void setBackgroundImage(String backgroundImage) {
+        setBackgroundImage(backgroundImage, LocalDate.now());
+    }
+    
+    public Set<User> getSubscribers() {
+        return Collections.unmodifiableSet(subscribers);
+    }
+    
     // OTHERS //
 
     @Override

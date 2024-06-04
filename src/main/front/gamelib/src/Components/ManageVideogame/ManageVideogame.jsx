@@ -1,25 +1,40 @@
 import React, {useEffect, useState} from "react";
+import {Navigate, useParams} from "react-router-dom";
 import './ManageVideogame.css';
 import axios from "axios";
-import {Navigate, useParams} from "react-router-dom";
 
 function ManageVideogame({type}) {
     const videogameID = useParams();
     const [tags, setTags] = useState([]);
 
-    const [cover, setCover] = useState('');
-    const [backgroundImage, setBackgroundImage] = useState('');
+    // new way
+    const [theVideogame, setTheVideogame] = useState({
+        name: '',
+        description: '',
+        release_date: '',
+        last_update: '',
+        tags: [],
+        cover: '',
+        background_image: ''
+    });
+    // new way
+
+    // rethink
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [releaseDate, setReleaseDate] = useState('');
-    const [selectedTags, setSelectedTags] = useState([]);
+    const [release_date, setRelease_date] = useState('');
+    const [selected_tags, setSelected_tags] = useState([]);
+    const [cover, setCover] = useState('');
+    const [background_image, setBackground_image] = useState('');
     const [videogame, setVideogame] = useState({});
+    // rethink
 
     const [errorMessage, setErrorMessage] = useState('');
 
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [navigate, setNavigate] = useState(false);
+    const [toView, setToView] = useState(false);
 
     let config = {
         headers: {
@@ -42,7 +57,7 @@ function ManageVideogame({type}) {
             })
             .then(userResponseData => {
                 checkIfUser(userResponseData, setNavigate);
-                axios.get('http://localhost:4567/tags')
+                axios.get('http://localhost:4567/tag/get')
                     .catch(error => {
                         console.error('Error en tags:', error);
                         setNavigate(true);
@@ -50,23 +65,26 @@ function ManageVideogame({type}) {
                     .then(response => {
                         setTags(formatAllTagsJSON(response.data));
                         console.log(formatAllTagsJSON(response.data));
-                    })
-                if (type === "Edit") {
-                    axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
-                        .then(gameResponseData => {
-                            checkOwnership(gameResponseData, userResponseData, setNavigate);
-
-                            setVideogame(gameResponseData.data);
+                        if (type === "Add") {
                             setIsLoading(false);
-                            console.log(gameResponseData.data);
-                        })
-                        .catch(error => {
-                            console.error('Error en getGame:', error);
-                            setNavigate(true);
-                        });
-                } else {
-                    setIsLoading(false);
-                }
+                        }
+                        if (type === "Edit") {
+                            axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
+                                .then(gameResponseData => {
+                                    checkOwnership(gameResponseData, userResponseData, setNavigate);
+
+                                    let formattedJSON = formatJSON(gameResponseData.data);
+                                    setTheVideogame(formattedJSON);
+                                    setIsLoading(false);
+                                    console.log(formattedJSON);
+                                })
+                                .catch(error => {
+                                    console.error('Error en getGame:', error);
+                                    setNavigate(true);
+                                });
+                        }
+                    })
+
             });
     }, []);
 
@@ -79,95 +97,71 @@ function ManageVideogame({type}) {
 
     }
 
-    // function checkProperties() {
-    //     if (cover.isEmpty()) {
-    //         return "Cover is required";
-    //     }
-    //     if (backgroundImage.isEmpty()) {
-    //         return "Background Image is required";
-    //     }
-    // }
-
     const addVideogame = async e => {
         e.preventDefault()
 
-        let dataToSend = {
-            name: name,
-            description: description,
-            releaseDate: releaseDate,
-            lastUpdate: formatDate(new Date()),
-            cover: cover,
-            backgroundImage: backgroundImage,
-            tags: selectedTags
-        };
+        setTheVideogame({...theVideogame, last_update: formatDate(new Date())});
 
-        // const error = checkProperties(dataToSend);
-
-
-
-        console.log(dataToSend)
-
-        await axios.post("http://localhost:4567/newgame", dataToSend, config)
-            .then(r =>
+        await axios.post("http://localhost:4567/game/create", theVideogame, config)
+            .then(() =>
                 manageSuccess()
             )
             .catch(error => {
                 manageFailure(error);
             });
-        // setNavigate(true);
     }
 
     const editVideogame = async e => {
         e.preventDefault()
 
-        let dataToSend = {
-            name: name ? name : videogame.name,
-            description: description ? description : videogame.description,
-            // selectedTags: selectedTags,
-            releaseDate: releaseDate ? releaseDate : videogame.releaseDate,
-            lastUpdate: formatDate(new Date()),
-            cover: cover ? cover : videogame.cover
-        };
-        await axios.put(`http://localhost:4567/editgame/${videogameID.videogameID}`, dataToSend, config)
-            .then(r => manageSuccess())
-            .catch(error => {
-                console.log(error.response)
-                if (error.response.status) {
-                    setErrorMessage(error.response.data)
-                }
-                else {
-                    setErrorMessage("Something went wrong")
-                }
-                console.error('Error:', error);
-            });
+        // let dataToSend = {
+        //     name: name ? name : videogame.name,
+        //     description: description ? description : videogame.description,
+        //     releaseDate: release_date ? release_date : videogame.release_date,
+        //     lastUpdate: formatDate(new Date()),
+        //     tags: selected_tags ? selected_tags : videogame.tags,
+        //     cover: cover ? cover : videogame.cover,
+        //     backgroundImage: background_image ? background_image : videogame.background_image,
+        //     ownerId: videogame.owner_id
+        // };
+        // console.log(dataToSend);
 
-        setNavigate(true);
+        setTheVideogame({...theVideogame, last_update: formatDate(new Date())});
+
+        await axios.put(`http://localhost:4567/game/edit/${videogameID.videogameID}`, theVideogame, config)
+            .then(() =>
+                manageSuccess()
+            )
+            .catch(error => {
+                manageFailure(error);
+            });
     }
 
     const deleteGame = async () => {
-        //console.log(1);
         await axios.delete(`http://localhost:4567/deletegame/${videogameID.videogameID}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'token': localStorage.getItem('token')
             }
         })
-            .then(response => {
-                console.log("prev del game: ");
-                console.log(videogame);
+            .then(() => {
                 manageSuccess();
-                console.log("post del game:");
-                console.log(videogame);
             })
-        console.log("one more time: ");
-        console.log(videogame);
         setNavigate(true);
     }
 
     function manageSuccess() {
-        setVideogame({});
-        setIsSaving(true);
-        setNavigate(true);
+        setTheVideogame({
+            name: '',
+            description: '',
+            release_date: '',
+            last_update: '',
+            tags: [],
+            cover: '',
+            background_image: ''
+        });
+        // setIsSaving(true);
+        setToView(true);
     }
 
     function manageFailure(error) {
@@ -185,28 +179,14 @@ function ManageVideogame({type}) {
     }
 
     const cancel = () => {
-        setNavigate(true);
+        if (type === "Edit") {
+            setToView(true);
+        } else if (type === "Add") {
+            setNavigate(true);
+        }
     }
 
-    // useEffect(() => {
-    //     console.log("videogame has been updated: ");
-    //     console.log(videogame);
-    // }, [videogame]);
-
-    // useEffect(() => {
-    //     console.log("cover has been updated!")
-    //     console.log(cover)
-    //     let sizeInBytes = (cover.length * 3/4);
-    //     let sizeInKilobytes = sizeInBytes / 1024;
-    //     console.log("Size of cover in Kilobytes: ", sizeInKilobytes);
-    // }, [cover]);
-
-    useEffect(() => {
-        console.log("tags have been updated: ");
-        console.log(selectedTags);
-    }, [selectedTags]);
-
-    if(navigate) {
+    if (navigate) {
         return <Navigate to={"/"}/>;
     }
     if (isLoading) {
@@ -215,6 +195,9 @@ function ManageVideogame({type}) {
     }
     if (isSaving) {
         return standByScreen("Saving videogame...");
+    }
+    if (toView) {
+        return <Navigate to={`/videogame/${videogameID.videogameID}`}/>;
     }
 
     return (
@@ -228,14 +211,16 @@ function ManageVideogame({type}) {
                        accept={'image/*'}
                        onChange={e => {
                            formatBase64Image(e.target.files[0])
-                               .then(result => setCover(result))
+                               .then(result => setTheVideogame({...theVideogame, cover: result}))
                                .catch(error => console.error(error));
                        }}
                 />
-                {Object.keys(videogame).length === 0 ?
-                    (cover === '' ? null : <img src={cover} alt={"cover1"}/>) :
-                    (videogame.cover === null ? (cover === '' ? null : <img src={cover} alt={"cover2"}/>) :
-                        <img src={videogame.cover} alt={"cover3"}/>)
+
+                {
+                    theVideogame.cover === '' ?
+                        null
+                        :
+                        <img src={theVideogame.cover} alt={"cover1"}/>
                 }
             </div>
 
@@ -244,31 +229,33 @@ function ManageVideogame({type}) {
                        accept={'image/*'}
                        onChange={e => {
                            formatBase64Image(e.target.files[0])
-                               .then(result => setBackgroundImage(result))
+                               .then(result => setTheVideogame({...theVideogame, background_image: result}))
                                .catch(error => console.error(error));
                        }}
                 />
-                {Object.keys(videogame).length === 0 ?
-                    (backgroundImage === '' ? null : <img src={backgroundImage} alt={"cover1"}/>) :
-                    (videogame.backgroundImage === null ? (backgroundImage === '' ? null : <img src={backgroundImage} alt={"cover2"}/>) :
-                        <img src={videogame.backgroundImage} alt={"cover3"}/>)
+
+                {
+                    theVideogame.background_image === '' ?
+                        null
+                        :
+                        <img src={theVideogame.background_image} alt={"cover1"}/>
                 }
             </div>
 
             <div className={"titleDesc flex justify-center items-center"}>
                 <input className={'p-1 rounded mb-2'}
                        type={"text"}
-                       placeholder={"Add title"}
-                       defaultValue={videogame.name}
-                       onChange={e => setName(e.target.value)}
+                       placeholder={"Add videogame name"}
+                       defaultValue={theVideogame.name}
+                       onChange={e => setTheVideogame({...theVideogame, name: e.target.value})}
                 />
 
                 <input id={"desc"}
                        type={"text"}
                        className={'p-1 rounded mb-2'}
                        placeholder={"Add description"}
-                       defaultValue={videogame.description}
-                       onChange={e => setDescription(e.target.value)}
+                       defaultValue={theVideogame.description}
+                       onChange={e => setTheVideogame({...theVideogame, description: e.target.value})}
                 />
             </div>
 
@@ -279,12 +266,18 @@ function ManageVideogame({type}) {
                         <div key={index} className={"tagDiv"}>
                             <input
                                 type="checkbox"
-                                checked={selectedTags.includes(tag)}
+                                checked={theVideogame.tags.includes(tag.id)}
                                 onChange={() => {
-                                    if (selectedTags.includes(tag)) {
-                                        setSelectedTags(selectedTags.filter(t => t !== tag));
+                                    if (theVideogame.tags.includes(tag.id)) {
+                                        setTheVideogame({
+                                            ...theVideogame,
+                                            tags: theVideogame.tags.filter(t => t !== tag.id)
+                                        });
                                     } else {
-                                        setSelectedTags([...selectedTags, tag]);
+                                        setTheVideogame({
+                                            ...theVideogame,
+                                            tags: [...theVideogame.tags, tag.id]
+                                        });
                                     }
                                 }}
                             />
@@ -298,9 +291,11 @@ function ManageVideogame({type}) {
                 <div className={'flex justify-center'}>
                     <input type={"date"}
                            className={'rounded-b'}
-                           name={"releaseDate"}
-                           defaultValue={videogame.releaseDate}
-                           onChange={e => setReleaseDate(e.target.value)}
+                           name={"release_date"}
+                           defaultValue={theVideogame.release_date}
+                           onChange={e =>
+                               setTheVideogame({...theVideogame, release_date: e.target.value})
+                           }
                     />
                 </div>
             </div>
@@ -338,7 +333,10 @@ function checkIfUser(userResponseData, setNavigate) {
 }
 
 function checkOwnership(gameResponseData, userResponseData, setNavigate) {
-    if (!gameResponseData || !gameResponseData.data || !userResponseData || !userResponseData.data) {
+    if (!gameResponseData || !userResponseData) {
+        setNavigate(true);
+    }
+    if (!gameResponseData.data || !userResponseData.data) {
         setNavigate(true);
     }
     if (userResponseData.data.rol === "ADMIN") {
@@ -347,14 +345,6 @@ function checkOwnership(gameResponseData, userResponseData, setNavigate) {
     if (gameResponseData.data.owner_id !== userResponseData.data.id) {
         setNavigate(true);
     }
-}
-
-function standByScreen(msg) {
-    return (
-        <div className={"loadingScreen"}>
-            <h1>{msg}</h1>
-        </div>
-    )
 }
 
 function formatBase64Image(image) {
@@ -376,6 +366,21 @@ function formatDate(date) {
         String(date.getDate()).padStart(2, '0');
 }
 
+function formatJSON(videogame) {
+    return {
+        name: videogame.name.toString(),
+        description: videogame.description.toString(),
+        release_date: videogame.release_date.toString(),
+        tags: formatTagsToID(videogame.tags),
+        cover: videogame.cover.toString(),
+        background_image: videogame.background_image.toString()
+    }
+}
+
+function formatTagsToID(tags) {
+    return tags.map(tag => tag.id);
+}
+
 function formatAllTagsJSON(tags) {
     return tags.map(tag => formatTagJSON(tag));
 }
@@ -384,9 +389,15 @@ function formatTagJSON(tag) {
     return {
         id: tag.id,
         name: tag.name,
-        tag_type: tag.tag_type,
-        tagged_games: []
     }
+}
+
+function standByScreen(msg) {
+    return (
+        <div className={"loadingScreen"}>
+            <h1>{msg}</h1>
+        </div>
+    )
 }
 
 export default ManageVideogame;

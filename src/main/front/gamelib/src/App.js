@@ -1,7 +1,7 @@
 import './App.css';
 import {BrowserRouter, Routes, Route} from "react-router-dom"
 import ABM from "./Components/ManageVideogame/ManageVideogame";
-import VideogameView from "./Components/VideogameView/VideogameView2";
+import VideogameView from "./Components/VideogameView/VideogameView";
 import Library from "./Components/TheLibrary/Library";
 import Profile from "./Components/Profile/Profile";
 import Login from "./Components/LoginSignup/Login";
