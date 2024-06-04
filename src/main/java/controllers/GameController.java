@@ -32,6 +32,9 @@ public class GameController implements Controller {
   private static final String ROUTE_CREATE_GAME = "/game/create";
   private static final String ROUTE_EDIT_GAME = "/game/edit/:game_id";
   private static final String ROUTE_GET_BY_TAG = "/game/get/tag/:tag_id";
+  private static final String ROUTE_IS_SUBSCRIBED = "/game/subs/is/:game_id";         // header: token
+  private static final String ROUTE_SUBSCRIBE = "/game/subs/subscribe/:game_id";      // header: token
+  private static final String ROUTE_UNSUBSCRIBE = "/game/subs/unsubscribe/:game_id";  // header: token
   
   private EntityManagerFactory factory;
   private static Controller instance;
@@ -52,6 +55,9 @@ public class GameController implements Controller {
     setRouteCreateGame();
     setRouteEditGame();
     setRouteGetByTag();
+    setRouteIsSubscribed();
+    setRouteSubscribe();
+    setRouteUnsubscribe();
   }
 
   private void setRouteCreateGame() {
@@ -164,7 +170,6 @@ public class GameController implements Controller {
     });
 
   }
-
 
   private void setRouteEditGame() {
     Spark.put(ROUTE_EDIT_GAME, "application/json", (req, resp) -> {
@@ -288,7 +293,6 @@ public class GameController implements Controller {
 
   }
 
-
   private void setRouteGetByTag() {
     Spark.get(ROUTE_GET_BY_TAG, "application/json", (req, resp) -> {
       EntityManager em = factory.createEntityManager();
@@ -321,5 +325,139 @@ public class GameController implements Controller {
       return jsonArray;
     });
   
+  }
+
+  private void setRouteIsSubscribed() {
+    Spark.get(ROUTE_IS_SUBSCRIBED, "application/json", (req, resp) -> {
+      EntityManager em = factory.createEntityManager();
+
+      String token = req.headers(Token.PROPERTY_NAME);
+      if (token == null || !AccessControlService.isTokenValid(token)) {
+        resp.status(401);
+        return ErrorMessages.userMustBeLoggedIn();
+      }
+      String username = AccessControlService.getUsernameFromToken(token);
+      Optional<User> user = new UserRepository(em).findByUsername(username);
+
+      if (user.isEmpty()) {
+        resp.status(404);
+        return ErrorMessages.informationNotFound("User");
+      }
+
+      long gameId;
+      try {
+        gameId = Long.parseLong(req.params(":game_id"));
+      } catch (NumberFormatException e) {
+        resp.status(403);
+        return ErrorMessages.informationNotNumber("Game ID");
+      }
+
+      GameRepository gameRepository = new GameRepository(em);
+      Optional<Game> game = gameRepository.findById(gameId);
+
+      if (game.isEmpty()) {
+        resp.status(404);
+        return ErrorMessages.informationNotFound("Game");
+      }
+
+      resp.type("application/json");
+      resp.status(200);
+
+      boolean isSubscribed = game.get().getSubscribers().contains(user.get());
+
+      JsonObject jsonObject = new JsonObject();
+      jsonObject.addProperty("is_subscribed", isSubscribed);
+
+      em.close();
+      return jsonObject;
+    });
+  }
+
+  private void setRouteSubscribe() {
+    Spark.post(ROUTE_SUBSCRIBE, "application/json", (req, resp) -> {
+      EntityManager em = factory.createEntityManager();
+
+      String token = req.headers(Token.PROPERTY_NAME);
+      if (token == null || !AccessControlService.isTokenValid(token)) {
+        resp.status(401);
+        return ErrorMessages.userMustBeLoggedIn();
+      }
+      String username = AccessControlService.getUsernameFromToken(token);
+      UserRepository userRepository = new UserRepository(em);
+      Optional<User> user = userRepository.findByUsername(username);
+
+      if (user.isEmpty()) {
+        resp.status(404);
+        return ErrorMessages.informationNotFound("User");
+      }
+
+      long gameId;
+      try {
+        gameId = Long.parseLong(req.params(":game_id"));
+      } catch (NumberFormatException e) {
+        resp.status(403);
+        return ErrorMessages.informationNotNumber("Game ID");
+      }
+
+      GameRepository gameRepository = new GameRepository(em);
+      Optional<Game> game = gameRepository.findById(gameId);
+
+      if (game.isEmpty()) {
+        resp.status(404);
+        return ErrorMessages.informationNotFound("Game");
+      }
+
+      resp.type("application/json");
+      resp.status(204);
+
+      userRepository.subscribe(user.get(), game.get());
+
+      em.close();
+      return "";
+    });
+  }
+
+  private void setRouteUnsubscribe() {
+    Spark.post(ROUTE_UNSUBSCRIBE, "application/json", (req, resp) -> {
+      EntityManager em = factory.createEntityManager();
+
+      String token = req.headers(Token.PROPERTY_NAME);
+      if (token == null || !AccessControlService.isTokenValid(token)) {
+        resp.status(401);
+        return ErrorMessages.userMustBeLoggedIn();
+      }
+      String username = AccessControlService.getUsernameFromToken(token);
+      UserRepository userRepository = new UserRepository(em);
+      Optional<User> user = userRepository.findByUsername(username);
+
+      if (user.isEmpty()) {
+        resp.status(404);
+        return ErrorMessages.informationNotFound("User");
+      }
+
+      long gameId;
+      try {
+        gameId = Long.parseLong(req.params(":game_id"));
+      } catch (NumberFormatException e) {
+        resp.status(403);
+        return ErrorMessages.informationNotNumber("Game ID");
+      }
+
+      GameRepository gameRepository = new GameRepository(em);
+      Optional<Game> game = gameRepository.findById(gameId);
+
+      if (game.isEmpty()) {
+        resp.status(404);
+        return ErrorMessages.informationNotFound("Game");
+      }
+
+      resp.type("application/json");
+      resp.status(204);
+
+      userRepository.unsubscribe(user.get(), game.get());
+
+      em.close();
+      return "";
+    });
   }
 }
