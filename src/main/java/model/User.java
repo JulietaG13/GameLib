@@ -78,6 +78,9 @@ public class User {
   @ManyToMany(mappedBy = "subscribers")
   private Set<Game> subscribedGames = new HashSet<>();
 
+  @ManyToMany(mappedBy = "subscribers")
+  private Set<Developer> subscribedDevelopers = new HashSet<>();
+
   @Lob
   @Column(columnDefinition = "CLOB")
   private String pfp;
@@ -91,12 +94,16 @@ public class User {
   public static UserBuilder create(String username) {
     return new UserBuilder(username);
   }
-  
+
+  public User(String username, String email, String password, Rol rol) {
+    this.username = username;
+    this.email = email;
+    this.password = password;
+    this.rol = rol;
+  }
+
   private User(UserBuilder builder) {
-    this.username = builder.username;
-    this.email = builder.email;
-    this.password = builder.password;
-    this.rol = builder.rol;
+    this(builder.username, builder.email, builder.password, builder.rol);
   }
   
   public static class UserBuilder {
@@ -261,6 +268,13 @@ public class User {
       game.addSubscriber(this);
     }
   }
+
+  public void subscribe(Developer developer) {
+    subscribedDevelopers.add(developer);
+    if (!developer.getSubscribers().contains(this)) {
+      developer.addSubscriber(this);
+    }
+  }
   
   // GETTERS - SETTER //
   
@@ -359,7 +373,11 @@ public class User {
   public Set<Game> getSubscribedGames() {
     return Collections.unmodifiableSet(subscribedGames);
   }
-  
+
+  public Set<Developer> getSubscribedDevelopers() {
+    return Collections.unmodifiableSet(subscribedDevelopers);
+  }
+
   // INTERNAL HELPERS //
 
   protected Set<User> getFriendsInternal() {

@@ -1,5 +1,7 @@
 package repositories;
 
+import entities.Rol;
+import model.Developer;
 import model.User;
 
 import javax.persistence.EntityManager;
@@ -64,6 +66,9 @@ public class UserRepository {
         EntityTransaction tx = entityManager.getTransaction();
         tx.begin();
         entityManager.persist(user);
+        if (user.getRol() == Rol.DEVELOPER) {
+            entityManager.persist(new Developer(user));
+        }
         tx.commit();
         return user;
     }
