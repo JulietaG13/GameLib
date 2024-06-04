@@ -36,6 +36,13 @@ public class Developer {
         }
     }
 
+    public void removeSubscriber(User user) {
+        subscribers.remove(user);
+        if (user.getSubscribedDevelopers().contains(this)) {
+            user.unsubscribe(this);
+        }
+    }
+
     // GETTERS - SETTERS
 
     public void setId(Long id) {

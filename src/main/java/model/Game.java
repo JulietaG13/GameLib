@@ -267,6 +267,13 @@ public class Game {
             user.subscribe(this);
         }
     }
+
+    public void removeSubscriber(User user) {
+        subscribers.remove(user);
+        if (user.getSubscribedGames().contains(this)) {
+            user.unsubscribe(this);
+        }
+    }
     
     // GETTERS - SETTERS //
     
