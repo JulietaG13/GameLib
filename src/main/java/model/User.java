@@ -275,7 +275,21 @@ public class User {
       developer.addSubscriber(this);
     }
   }
-  
+
+  public void unsubscribe(Game game) {
+    subscribedGames.remove(game);
+    if (game.getSubscribers().contains(this)) {
+      game.removeSubscriber(this);
+    }
+  }
+
+  public void unsubscribe(Developer developer) {
+    subscribedDevelopers.remove(developer);
+    if (developer.getSubscribers().contains(this)) {
+      developer.removeSubscriber(this);
+    }
+  }
+
   // GETTERS - SETTER //
   
   public Long getId() {
