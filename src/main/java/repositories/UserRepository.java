@@ -2,6 +2,7 @@ package repositories;
 
 import entities.Rol;
 import model.Developer;
+import model.Game;
 import model.User;
 
 import javax.persistence.EntityManager;
@@ -60,6 +61,26 @@ public class UserRepository {
                 .setParameter("id", id)
                 .executeUpdate();
         tx.commit();
+    }
+
+    public void subscribe(User user, Game game) {
+        user.subscribe(game);
+        persist(user);
+    }
+
+    public void subscribe(User user, Developer dev) {
+        user.subscribe(dev);
+        persist(user);
+    }
+
+    public void unsubscribe(User user, Game game) {
+        user.unsubscribe(game);
+        persist(user);
+    }
+
+    public void unsubscribe(User user, Developer dev) {
+        user.unsubscribe(dev);
+        persist(user);
     }
 
     public User persist(User user) {
