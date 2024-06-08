@@ -73,11 +73,10 @@ const Login = () => {
             <div className={"w-1/2 h-full flex flex-col p-20 justify-between"}>
                 {/*Main Title */}
                 <h1 className={"text-3xl text-black font-semibold"}>
-                    Incredible title
                 </h1>
                 {/*Subtitle*/}
                 <div className={"w-full flex flex-col max-w-[700px]"}>
-                    <h3 className={"text-2xl font-semibold mb-4"}>Login</h3>
+                    <h3 className={"text-2xl font-semibold mb-4 text-black"}>Log in</h3>
                     <p className={"text-base mb-2"}>Welcome back! Please enter your credentials.</p>
 
                     {/*Email input */}

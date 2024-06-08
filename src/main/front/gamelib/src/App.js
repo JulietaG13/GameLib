@@ -6,6 +6,7 @@ import Library from "./Components/TheLibrary/Library";
 import Profile from "./Components/Profile/Profile";
 import Login from "./Components/LoginSignup/Login";
 import RegisterRework from "./Components/LoginSignup/Register";
+import EditProfile from "./Components/Profile/EditProfile";
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
                 <Route path="/editVideogame/:videogameID" element={<ABM type={"Edit"}/>}/>
                 <Route path="/videogame/:videogameID" element={<VideogameView/>}/>
                 <Route path="/profile/:username" element={<Profile/>}/>
+                <Route path="/profile/:username/edit" element={<EditProfile/>}/>
             </Routes>
         </div>
     </BrowserRouter>
