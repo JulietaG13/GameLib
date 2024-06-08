@@ -6,6 +6,7 @@ import pencil_icon from "../Assets/pencil-icon.png";
 import './VideogameView.css';
 import NewsComp from "./NewsComp";
 import ShelfManager from "./ShelfManager";
+import HeaderV2 from "../Header/HeaderV2";
 
 function VideogameView() {
     const videogameID = useParams();
@@ -102,6 +103,7 @@ function VideogameView() {
 
     return (
         <main className={"gameView"}>
+            <HeaderV2></HeaderV2>
             <img id={"backImg"} src={videogame.background_image} alt={"Game Background"}/>
             <div className={"titleDiv"}>
                 <h1>{videogame.name}</h1>
