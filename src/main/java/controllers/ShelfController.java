@@ -311,7 +311,7 @@ public class ShelfController implements Controller {
                 return ErrorMessages.informationNotFound("Game");
             }
             
-            shelf.get().addGame(game.get());
+            shelfRepository.addGame(shelf.get(), user.get(), game.get());
             
             resp.status(200);
             resp.type("application/json");
