@@ -1,4 +1,34 @@
+.shelvesPopUp {
+    background-color: #5b3fbf;
+    padding: 3%;
+    margin: 1em 0;
+}
+
 .shelf {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    background-color: #724aff;
+    padding: 2%;
+    margin-bottom: 0.8em;
+}
+
+.shelfCreator {
+    display: flex;
+    flex-direction: column;
+    background-color: #bf883f;
+    padding: 2%;
+}
+
+.shelfAttributes {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.7em;
+}
+.shelfAttributes input {
+    margin: 0;
+}
+.shelfAttributes label {
+    display: flex;
+    align-items: center;
 }

@@ -7,6 +7,11 @@ function ShelfManager({props}) {
     const [shelves, setShelves] = useState([]);
     const [refreshShelves, setRefreshShelves] = useState(false);
 
+    const [shelfToUpload, setShelfToUpload] = useState({
+        name: '',
+        is_private: false
+    });
+
     useEffect(() => {
         axios.get(`http://localhost:4567/shelf/get/user/${localStorage.getItem('username')}/10`, {
             headers: {
@@ -43,6 +48,29 @@ function ShelfManager({props}) {
             });
     }
 
+    const handleShelfSubmit = (e) => {
+        e.preventDefault();
+        console.log(shelfToUpload);
+        axios.post(`http://localhost:4567/shelf/add`, shelfToUpload, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        })
+            .then((response) => {
+                console.log('created shelf');
+                console.log(response.data);
+                setRefreshShelves(!refreshShelves);
+                setShelfToUpload({
+                    name: '',
+                    is_private: false
+                })
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
     useEffect(() => {
         console.log('shelves');
         console.log(shelves);
@@ -67,6 +95,33 @@ function ShelfManager({props}) {
                     </div>
                 ))}
             </div>
+            <form className={'shelfCreator'} onSubmit={handleShelfSubmit}>
+                <div className={'shelfAttributes'}>
+                    <input type={'text'}
+                           placeholder={'Shelf name'}
+                           required
+                           value={shelfToUpload.name}
+                           onChange={(e) => {
+                               setShelfToUpload({
+                                   ...shelfToUpload,
+                                   name: e.target.value
+                               });
+                           }}
+                    />
+                    <label>
+                        <input type={"checkbox"}
+                               checked={shelfToUpload.is_private}
+                               onClick={() => {
+                                   setShelfToUpload({
+                                       ...shelfToUpload,
+                                       is_private: !shelfToUpload.is_private
+                                   });
+                               }}/>
+                        <p>Private shelf</p>
+                    </label>
+                </div>
+                <button type={'submit'}>Create shelf</button>
+            </form>
         </div>
     );
 }

@@ -30,12 +30,9 @@
     min-height: 100vh;
     background-color: #3f21aa;
 }
-.dataDiv div {
-    padding: 1%;
-}
 
 .coverDiv {
-    /*flex-grow: 2;*/
+    padding: 1%;
     width: 50%;
 }
 .coverDiv img {
@@ -67,7 +64,11 @@
     display: flex;
     align-items: flex-start;
     flex-direction: column;
+    padding: 1%;
     width: 100%;
+}
+.moreDataDiv div {
+    padding: 1%;
 }
 
 .attributesDiv {
@@ -106,7 +107,11 @@
     opacity: 0;
 }
 
+.newsDiv {
+    padding: 1%;
+}
 .newsDiv div {
+    padding: 1%;
     width: 100%;
 }
 .newsDiv li {

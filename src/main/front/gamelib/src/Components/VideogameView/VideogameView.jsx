@@ -110,7 +110,11 @@ function VideogameView() {
             <div className={"dataDiv"}>
                 <div className={"coverDiv"}>
                     <img src={videogame.cover} alt={"Game Cover"}/>
-                    <ShelfManager props={videogame}/>
+                    {user === -1 ?
+                        null
+                        :
+                        <ShelfManager props={videogame}/>
+                    }
                 </div>
 
                 <div className={"moreDataDiv"}>
