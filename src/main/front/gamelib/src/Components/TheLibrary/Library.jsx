@@ -43,7 +43,10 @@ function Library() {
             console.log("gamesFromDB:", response)
             setGamesFromDB(response.data)
             setIsLoading(false)
-        });
+        }).catch((error) => {
+            console.error("Error fetching games:", error)
+        })
+        ;
     }
 
     return(
