@@ -22,7 +22,12 @@ function Shelves({ username }) {
     };
 
     useEffect(() => {
-        axios.get(`http://localhost:4567/shelf/get/user/${username}/10`)
+        axios.get(`http://localhost:4567/shelf/get/user/${username}/100`, {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        })
             .then(r => setShelves(r.data))
             .catch(error => console.error("Error fetching shelves:", error));
     }, [username]);
