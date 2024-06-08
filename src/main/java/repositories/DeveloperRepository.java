@@ -1,6 +1,6 @@
 package repositories;
 
-import entities.Rol;
+import values.Rol;
 import model.Developer;
 import model.User;
 

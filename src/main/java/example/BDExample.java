@@ -1,7 +1,7 @@
 package example;
 
-import entities.Rol;
-import entities.TagType;
+import values.Rol;
+import values.TagType;
 import model.*;
 import repositories.*;
 

@@ -1,6 +1,6 @@
 package services;
 
-import entities.Rol;
+import values.Rol;
 import model.Game;
 import model.News;
 import model.User;

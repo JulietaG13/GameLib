@@ -1,7 +1,7 @@
 package repositories;
 
-import entities.responses.ErrorResponse;
-import entities.responses.ReviewResponse;
+import values.responses.ErrorResponse;
+import values.responses.ReviewResponse;
 import interfaces.Responses;
 import model.Game;
 import model.Review;

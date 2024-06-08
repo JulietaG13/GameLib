@@ -3,8 +3,8 @@ package controllers;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import entities.ErrorMessages;
-import entities.Token;
+import values.ErrorMessages;
+import values.Token;
 import interfaces.Controller;
 import model.Game;
 import model.News;
@@ -18,7 +18,6 @@ import spark.Spark;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 

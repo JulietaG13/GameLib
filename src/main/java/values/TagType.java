@@ -1,4 +1,4 @@
-package entities;
+package values;
 
 public enum TagType {
     GENRE,
