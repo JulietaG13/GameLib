@@ -51,7 +51,9 @@ function Shelves({ username }) {
             }
             ).then(r => {
 
-            })
+            }).catch(
+                error => console.error("Error removing game from shelf:", error)
+            )
         }
         contextMenuRef.current.style.display = 'none';
     };
