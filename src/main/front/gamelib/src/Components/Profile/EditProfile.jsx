@@ -15,7 +15,7 @@ function EditProfile() {
     //save the new data to be changed
     const [newBackgroundImage, setNewBackgroundImage] = useState(null);
     const [newProfilePicture, setNewProfilePicture] = useState(null);
-    const [newDescription, setNewDescription] = useState(null);
+    const [newDescription, setNewDescription] = useState(description);
     const [newUsername, setNewUsername] = useState(null);
 
     const loggedInUsername = localStorage.getItem('username');
@@ -47,19 +47,19 @@ function EditProfile() {
                 }
             }
         ).then(() => {
-                // Save the new data
-                axios.post(`http://localhost:4567/${username}/edit`, {
+            // Save the new data
+                axios.post(`http://localhost:4567/user/profile/${username}/edit`, {
                     username: newUsername,
                     biography: newDescription,
-                    banner: newBackgroundImage,
-                    pfp: newProfilePicture
+                    //banner: newBackgroundImage,
+                    //pfp: newProfilePicture
                 }, {
                     headers: {
                         'Content-Type': 'application/json',
                         'token': localStorage.getItem('token')
                     }
                 }).then((response) => {
-                    localStorage.setItem('username', response.data.username);
+                    localStorage.setItem('username', newUsername);
                     localStorage.setItem('description', newDescription);
                     localStorage.setItem('token', response.data.token);
                 }).catch(e => {
@@ -89,9 +89,9 @@ function EditProfile() {
                     <div className={"bg-blue-500 w-1/5 flex flex-col justify-between ml-16 z-40 -mt-40"}>
                         <img src={userProfile} className={"h-96 bg-amber-200"} alt={""} />
                         <div className={"pl-4"}>
-                            <input type={'text'} onChange={event => setNewUsername()} className={"flex font-bold items-center text-2xl"}></input>
+                            <input type={'text'} onChange={(event) => setNewUsername(event.target.value)} className={"flex font-bold items-center text-2xl"}></input>
                             <h2 className={"font-semibold text-xl pt-4 pb-1"}>About me</h2>
-                            <input type='text' onChange={event => setNewDescription()} className={"font-normal pl-5 pr-1"}></input>
+                            <input type='text' onChange={event => setNewDescription(event.target.value)} className={"font-normal pl-5 pr-1"}></input>
                         </div>
                     </div>
                 </div>
