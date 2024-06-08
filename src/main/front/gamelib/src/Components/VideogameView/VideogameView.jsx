@@ -12,7 +12,6 @@ import ErrorView from "../ErrorView/ErrorView";
 function VideogameView() {
     const videogameID = useParams();
     const [user, setUser] = useState({});
-
     const [videogame, setVideogame] = useState({});
     const [reviews, setReviews] = useState([]);
     const [review, setReview] = useState('');
@@ -52,7 +51,7 @@ function VideogameView() {
     useEffect(() => {
         axios.get(`http://localhost:4567/getreviews/${videogameID.videogameID}/2`)
             .then(response => {
-                setReviews(response.data);
+                setReviews(response.data.reverse());
             })
             .catch(error => {
                 console.log(error);
@@ -70,7 +69,10 @@ function VideogameView() {
                 'token': localStorage.getItem('token')
             }
         })
-            .then(() => setReview(''))
+            .then(() => {
+                setReview('');
+                setErrorMessage('');
+            })
             .catch(r => {
                     if (!r.response.status) {
                         setErrorMessage("Something went wrong")
@@ -157,7 +159,7 @@ function VideogameView() {
                                 <p>Be the first one to review!</p>
                             </div>
                             :
-                            reviews.reverse().map((review) => (
+                            reviews.map((review) => (
                                 <div key={review.id} className={"reviewDiv"}>
                                     <img src={user_icon} alt={"user_icon"}/>
                                     <p>{review.text}</p>
