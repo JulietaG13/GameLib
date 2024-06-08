@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-function GamesFromDB({ gamesFromDB }) {
+function GamesFromDB({gamesFromDB, title}) {
     const scrollRef = useRef(null);
 
     useEffect(() => {
@@ -21,7 +21,7 @@ function GamesFromDB({ gamesFromDB }) {
 
     return (
         <div className="bg-gray-200 relative">
-            <h2 className="font-bold text-[30px] text-black pt-10 pb-5">Popular Games</h2>
+            <h2 className="font-bold text-[30px] text-black pt-10 pb-5">{title}</h2>
 
             {/* Left Arrow */}
             <button className="absolute top-1/2 left-4 z-10 transform -translate-y-1/2 bg-gray-400 hover:bg-gray-500 text-white rounded-full p-2" onClick={scrollLeft}>
