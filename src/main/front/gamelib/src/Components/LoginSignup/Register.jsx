@@ -1,7 +1,7 @@
 import gamelib_logo from '../Assets/Designer(3).jpeg'
-import React, {useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from "axios";
-import {Link, Navigate} from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 
 const RegisterRework = () => {
     const [email, setEmail] = useState('');
@@ -11,7 +11,9 @@ const RegisterRework = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [isDeveloper, setIsDeveloper] = useState(false);
 
-
+    const handleDeveloperCheckboxChange = (event) => {
+        setIsDeveloper(event.target.checked);
+    };
 
     const ErrorMessage = ({ message }) => {
         return (
@@ -21,48 +23,47 @@ const RegisterRework = () => {
         );
     };
 
-
-    const handleRegister = async e => {
-        //prevents page to reload
-        e.preventDefault()
+    const handleRegister = async (e) => {
+        e.preventDefault();
         try {
-            //posts data to back
             await axios.post("http://localhost:4567/newuser", {
                 username: username, email: email, password: password, rol: isDeveloper ? "DEVELOPER" : "USER"
             });
-            //redirects to login page
             setNavigate(true);
-        }
-        catch (error) {
+        } catch (error) {
             if (error.response.status) {
-                setErrorMessage(error.response.data)
-            }
-            else {
-                setErrorMessage("Something went wrong")
+                setErrorMessage(error.response.data);
+            } else {
+                setErrorMessage("Something went wrong");
             }
             console.error('Error:', error);
         }
-    }
-
-
-    //if navigate is true, redirects to home page, this happens only when logged successfully
-    if (navigate) {
-        return <Navigate to={"/login"}/>
-    }
-
-
-    const handleDeveloperCheckboxChange = (event) => {
-        // Update the state variable based on the checkbox status
-        setIsDeveloper(event.target.checked);
     };
 
+    useEffect(() => {
+        axios.post('http://localhost:4567/tokenvalidation', {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        }).then(() => {
+            window.location.href = '/';
+        }).catch(e => {
+            console.error('Error:', e);
+        });
+    }, []);
+
+    if (navigate) {
+        return <Navigate to={"/login"} />;
+    }
 
     return (
-        //Main container
         <div className={"w-full h-screen flex items-start"}>
             {/*Left side*/}
             <div className={"relative w-1/2 h-full flex flex-col"}>
-                <img src={gamelib_logo} className={"w-full h-full object-cover brightness-50"} alt={""}/>
+                <Link to="/">
+                    <img src={gamelib_logo} className={"w-full h-full object-cover brightness-50 cursor-pointer"} alt="GameLib Logo" />
+                </Link>
                 <div className={"absolute top-[15%] left-[10%] flex flex-col"}>
                     <h1 className={"text-6xl text-white font-bold my-4"}>
                         Welcome to GameLib
@@ -79,7 +80,7 @@ const RegisterRework = () => {
                 </h1>
                 {/*Subtitle*/}
                 <div className={"w-full flex flex-col max-w-[700px]"}>
-                    <h3 className={"text-2xl font-semibold mb-4"}>Register</h3>
+                    <h3 className={"text-2xl font-semibold mb-4 text-black"}>Register</h3>
                     <p className={"text-base mb-2"}>Welcome!</p>
 
                     <div className={"w-full flex flex-col"}>
@@ -97,25 +98,23 @@ const RegisterRework = () => {
                         {/*Password input */}
                         <input type="password"
                                placeholder={"Password"}
-                               className={"bg-transparent  w-full text-black py-4 my-2 border-b border-black outline-none focus:outline-none"}
+                               className={"bg-transparent w-full text-black py-4 my-2 border-b border-black outline-none focus:outline-none"}
                                onChange={e => setPassword(e.target.value)}
                         />
-
-
                     </div>
                     {/*Is developer checkbox */}
                     <div>
-                        <input type="checkbox" id="developer" name="developer" value="developer" onChange={handleDeveloperCheckboxChange}/>
+                        <input type="checkbox" id="developer" name="developer" value="developer" onChange={handleDeveloperCheckboxChange} />
                         <label htmlFor="developer" className={"text-black"}>Are you a developer?</label>
                     </div>
 
-                    <div >
+                    <div>
                         <ErrorMessage message={errorMessage} />
                     </div>
                     {/*Register button*/}
                     <div className={"w-full flex flex-col my-4"}>
                         <button
-                            className={"w-full text-white bg-black rounded-md my-2 p-4 text-center flex items-center justify-center font-bold"}  onClick={handleRegister}>
+                            className={"w-full text-white bg-black rounded-md my-2 p-4 text-center flex items-center justify-center font-bold"} onClick={handleRegister}>
                             Register
                         </button>
                     </div>
@@ -131,7 +130,7 @@ const RegisterRework = () => {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default RegisterRework;
