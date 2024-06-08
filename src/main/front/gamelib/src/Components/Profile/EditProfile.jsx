@@ -5,7 +5,6 @@ import { Navigate, useParams } from "react-router-dom";
 import axios from "axios";
 import HeaderV2 from "../Header/HeaderV2";
 import Shelves from "./Shelves";
-import {response} from "express";
 
 function EditProfile() {
     const { username } = useParams();
@@ -59,7 +58,7 @@ function EditProfile() {
                         'Content-Type': 'application/json',
                         'token': localStorage.getItem('token')
                     }
-                }).then(() => {
+                }).then((response) => {
                     localStorage.setItem('username', response.data.username);
                     localStorage.setItem('description', newDescription);
                     localStorage.setItem('token', response.data.token);
