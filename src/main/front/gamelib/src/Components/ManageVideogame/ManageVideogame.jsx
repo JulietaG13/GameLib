@@ -7,7 +7,6 @@ function ManageVideogame({type}) {
     const videogameID = useParams();
     const [tags, setTags] = useState([]);
 
-    // new way
     const [theVideogame, setTheVideogame] = useState({
         name: '',
         description: '',
@@ -17,31 +16,13 @@ function ManageVideogame({type}) {
         cover: '',
         background_image: ''
     });
-    // new way
-
-    // rethink
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [release_date, setRelease_date] = useState('');
-    const [selected_tags, setSelected_tags] = useState([]);
-    const [cover, setCover] = useState('');
-    const [background_image, setBackground_image] = useState('');
-    const [videogame, setVideogame] = useState({});
-    // rethink
 
     const [errorMessage, setErrorMessage] = useState('');
 
+    // const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [isSaving, setIsSaving] = useState(false);
     const [navigate, setNavigate] = useState(false);
     const [toView, setToView] = useState(false);
-
-    let config = {
-        headers: {
-            'Content-Type': 'application/json',
-            'token': localStorage.getItem('token')
-        }
-    };
 
     useEffect(() => {
         axios.post('http://localhost:4567/tokenvalidation', {}, {
@@ -99,10 +80,14 @@ function ManageVideogame({type}) {
 
     const addVideogame = async e => {
         e.preventDefault()
-
         setTheVideogame({...theVideogame, last_update: formatDate(new Date())});
 
-        await axios.post("http://localhost:4567/game/create", theVideogame, config)
+        await axios.post("http://localhost:4567/game/create", theVideogame, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        })
             .then(() =>
                 manageSuccess()
             )
@@ -113,22 +98,14 @@ function ManageVideogame({type}) {
 
     const editVideogame = async e => {
         e.preventDefault()
-
-        // let dataToSend = {
-        //     name: name ? name : videogame.name,
-        //     description: description ? description : videogame.description,
-        //     releaseDate: release_date ? release_date : videogame.release_date,
-        //     lastUpdate: formatDate(new Date()),
-        //     tags: selected_tags ? selected_tags : videogame.tags,
-        //     cover: cover ? cover : videogame.cover,
-        //     backgroundImage: background_image ? background_image : videogame.background_image,
-        //     ownerId: videogame.owner_id
-        // };
-        // console.log(dataToSend);
-
         setTheVideogame({...theVideogame, last_update: formatDate(new Date())});
 
-        await axios.put(`http://localhost:4567/game/edit/${videogameID.videogameID}`, theVideogame, config)
+        await axios.put(`http://localhost:4567/game/edit/${videogameID.videogameID}`, theVideogame, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        })
             .then(() =>
                 manageSuccess()
             )
@@ -186,15 +163,15 @@ function ManageVideogame({type}) {
         }
     }
 
+    // if (isSaving) {
+    //     return standByScreen("Saving videogame...");
+    // }
     if (navigate) {
         return <Navigate to={"/"}/>;
     }
     if (isLoading) {
         return standByScreen("Loading videogame...");
 
-    }
-    if (isSaving) {
-        return standByScreen("Saving videogame...");
     }
     if (toView) {
         return <Navigate to={`/videogame/${videogameID.videogameID}`}/>;
