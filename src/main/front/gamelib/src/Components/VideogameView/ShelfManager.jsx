@@ -1,16 +1,17 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import './ShelfManager.css';
+import ErrorView from "../ErrorView/ErrorView";
 
 function ShelfManager({props}) {
-    // console.log(props);
     const [shelves, setShelves] = useState([]);
     const [refreshShelves, setRefreshShelves] = useState(false);
-
     const [shelfToUpload, setShelfToUpload] = useState({
         name: '',
         is_private: false
     });
+
+    const [shelfErrorMessage, setShelfErrorMessage] = useState('');
 
     useEffect(() => {
         axios.get(`http://localhost:4567/shelf/get/user/${localStorage.getItem('username')}/10`, {
@@ -20,11 +21,12 @@ function ShelfManager({props}) {
             }
         })
             .then(response => {
-                // console.log(response.data);
                 setShelves(response.data);
+                setShelfErrorMessage('');
             })
             .catch(error => {
                 console.error('Error:', error);
+                setShelfErrorMessage(error.response.data.message);
             });
     }, [refreshShelves]);
 
@@ -37,15 +39,18 @@ function ShelfManager({props}) {
                 'token': localStorage.getItem('token')
             }
         })
-            .then((response) => {
-                console.log('added game to shelf');
-                console.log(response.data);
-                // setShelves(response.data);
+            .then(() => {
                 setRefreshShelves(!refreshShelves);
+                setShelfErrorMessage('');
             })
             .catch(error => {
                 console.error('Error:', error);
+                setShelfErrorMessage(error.response.data.message);
             });
+    }
+
+    const handleRemoveFromShelf = (shelfID, gameID) => {
+        console.log('Removing game' + gameID + ' from shelf ' + shelfID);
     }
 
     const handleShelfSubmit = (e) => {
@@ -65,35 +70,41 @@ function ShelfManager({props}) {
                     name: '',
                     is_private: false
                 })
+                setShelfErrorMessage('');
             })
             .catch(error => {
                 console.error('Error:', error);
+                setShelfErrorMessage(error.response.data.message);
             });
     }
 
-    useEffect(() => {
-        console.log('shelves');
-        console.log(shelves);
-        // shelves.map(shelf => console.log(shelf.games));
-        // shelves.map(shelf => shelf.games.map(game => console.log(game)));
-    }, [shelves]);
+    // useEffect(() => {
+    //     console.log('shelves');
+    //     console.log(shelves);
+    // }, [shelves]);
 
     return (
         <div className={'shelvesPopUp'} >
             <h2>Shelves Manager</h2>
             <div className={'shelvesList'}>
-                {shelves.map(shelf => (
-                    <div key={shelf.id} className={'shelf'}>
-                        {shelf.name}
-                        {shelfIncludesGame(shelf, props) ?
-                            <button onClick={() => {console.log('removed game from shelf')}}
-                            >Remove from shelf</button>
-                            :
-                            <button onClick={() => {handleAddToShelf(shelf.id, props.id)}}
-                            >Add to shelf</button>
-                        }
+                {shelves.length === 0 ?
+                    <div className={'shelf'}>
+                        <p>Create your own shelves!</p>
                     </div>
-                ))}
+                    :
+                    shelves.map(shelf => (
+                        <div key={shelf.id} className={'shelf'}>
+                            {shelf.name}
+                            {shelfIncludesGame(shelf, props) ?
+                                <button onClick={() => {handleRemoveFromShelf(shelf.id, props.id)}}
+                                >Remove from shelf</button>
+                                :
+                                <button onClick={() => {handleAddToShelf(shelf.id, props.id)}}
+                                >Add to shelf</button>
+                            }
+                        </div>
+                    ))
+                }
             </div>
             <form className={'shelfCreator'} onSubmit={handleShelfSubmit}>
                 <div className={'shelfAttributes'}>
@@ -122,6 +133,7 @@ function ShelfManager({props}) {
                 </div>
                 <button type={'submit'}>Create shelf</button>
             </form>
+            <ErrorView message={shelfErrorMessage}/>
         </div>
     );
 }

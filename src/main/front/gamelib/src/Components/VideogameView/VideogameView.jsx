@@ -7,6 +7,7 @@ import './VideogameView.css';
 import NewsComp from "./NewsComp";
 import ShelfManager from "./ShelfManager";
 import HeaderV2 from "../Header/HeaderV2";
+import ErrorView from "../ErrorView/ErrorView";
 
 function VideogameView() {
     const videogameID = useParams();
@@ -57,15 +58,6 @@ function VideogameView() {
                 console.log(error);
             });
     }, [videogameID, review]);
-
-    const ErrorMessage = ({ message }) => {
-        return (
-            <div className={message ? 'errorMessageDiv' : ''}>
-                {message}
-            </div>
-        );
-
-    }
 
     const publishReview = (event) => {
         event.preventDefault();
@@ -153,9 +145,11 @@ function VideogameView() {
                             <input id={'2'} type={"button"} value={"Publish"} onClick={publishReview}/>
                         </form>
 
-                        <div>
-                            <ErrorMessage message={errorMessage}/>
-                        </div>
+                        {errorMessage !== '' ?
+                            <ErrorView message={errorMessage}/>
+                            :
+                            null
+                        }
 
                         {reviews.length === 0 ?
                             <div className={"reviewDiv"}>
