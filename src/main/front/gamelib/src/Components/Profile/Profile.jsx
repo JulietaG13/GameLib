@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import gamelib_logo from "../Assets/Designer(3).jpeg";
 import userProfile from "../Assets/user-icon.png";
-import { useParams, useNavigate, Navigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import axios from "axios";
 import HeaderV2 from "../Header/HeaderV2";
 import Shelves from "./Shelves";
@@ -12,8 +12,7 @@ function Profile() {
     const [usernameResponse, setUsernameResponse] = useState('DefaultName');
     const [description, setDescription] = useState('DefaultDescription');
     const [notFound, setNotFound] = useState(false);
-    const [friends, setFriends] = useState([]);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isFriend, setIsFriend] = useState(false);
 
     const loggedInUsername = localStorage.getItem('username');
 
@@ -30,14 +29,16 @@ function Profile() {
     }, [username]);
 
     useEffect(() => {
-        axios.get(`http://localhost:4567/user/friends/get/${localStorage.getItem( "id")}/${username}`)
-            .then(response => {
-                setFriends(response.data.friends);
-            })
-            .catch(error => {
-                console.error("Error fetching friends:", error);
-            });
-    }, [username]);
+        if (loggedInUsername !== username) {
+            axios.post('http://localhost:4567/user/isFriend', { username })
+                .then(response => {
+                    setIsFriend(response.data.isFriend);
+                })
+                .catch(error => {
+                    console.error("Error checking friendship status:", error);
+                });
+        }
+    }, [username, loggedInUsername]);
 
     if (notFound) {
         return <Navigate to="/error" />;
@@ -56,11 +57,34 @@ function Profile() {
         ).catch(e => {
             console.error('Error:', e);
         });
-    }
+    };
 
-    const toggleMenu = () => {
-        setIsMenuOpen(!isMenuOpen);
-    }
+    const handleAddFriend = () => {
+        console.log("Adding friend:", localStorage.getItem("id"));
+        axios.put(`http://localhost:4567/user/friends/send/${localStorage.getItem("id")}`, {},{
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        })
+            .then(response => {
+                console.log("Friend request sent:", response);
+                setIsFriend(true);
+            })
+            .catch(error => {
+                console.error("Error adding friend:", error);
+            });
+    };
+
+    const handleDeleteFriend = () => {
+        axios.post('http://localhost:4567/user/removeFriend', { username })
+            .then(response => {
+                setIsFriend(false);
+            })
+            .catch(error => {
+                console.error("Error removing friend:", error);
+            });
+    };
 
     return (
         <div>
@@ -71,12 +95,24 @@ function Profile() {
                         {/* Banner */}
                         <div className='bg-white relative'>
                             <img src={gamelib_logo} className="w-full h-[250px] object-cover" alt="GameLib Logo"/>
-                            {/* Botón de edición */}
-                            {loggedInUsername === username && (
+                            {/* Add/Remove Friend*/}
+                            {loggedInUsername === username ? (
                                 <button onClick={navigateToEditProfile}
                                         className="absolute top-4 right-4 bg-blue-600 text-white py-2 px-4 rounded">
                                     Edit Profile
                                 </button>
+                            ) : (
+                                isFriend ? (
+                                    <button onClick={handleDeleteFriend}
+                                            className="absolute top-4 right-4 bg-red-600 text-white py-2 px-4 rounded">
+                                        Remove Friend
+                                    </button>
+                                ) : (
+                                    <button onClick={handleAddFriend}
+                                            className="absolute top-4 right-4 bg-green-600 text-white py-2 px-4 rounded">
+                                        Add Friend
+                                    </button>
+                                )
                             )}
                             {/* Profile Information */}
                             <div
@@ -90,7 +126,6 @@ function Profile() {
                                     <p className="font-normal px-2 md:px-4">{description}</p>
                                 </div>
                             </div>
-
                         </div>
                         {/* Shelves */}
                         <div className="bg-white mt-8">
@@ -99,33 +134,6 @@ function Profile() {
                         </div>
                     </div>
                 </div>
-                {/* Options Menu Icon */}
-                {loggedInUsername === username && (
-                    <>
-                        <div className={`absolute top-4 ${isMenuOpen ? 'right-32' : 'right-0'} mt-12 transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-1/2'}`}>
-                            <button onClick={toggleMenu} className="bg-gray-600 text-white py-2 px-4 rounded-full">
-                                ☰
-                            </button>
-                        </div>
-                        {/* Sidebar Menu */}
-                        <div className={`fixed top-0 right-0 h-full bg-gray-100 p-4 shadow-lg transition-transform duration-300 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-                            <h2 className='font-bold text-xl mb-4'>Friends</h2>
-                            {friends.length === 0 ? (
-                                <p>No friends found</p>
-                            ) : (
-                                <ul>
-                                    {friends.map(friend => (
-                                        <li key={friend.username} className='mb-2'>
-                                            <Link to={`/profile/${friend.username}`} className='text-blue-600 block p-2 hover:bg-gray-100'>
-                                                {friend.username}
-                                            </Link>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-                    </>
-                )}
             </div>
         </div>
     );
