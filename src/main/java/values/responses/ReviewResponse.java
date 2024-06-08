@@ -1,4 +1,4 @@
-package entities.responses;
+package values.responses;
 
 import interfaces.Responses;
 import model.Review;

@@ -1,9 +1,9 @@
 package repositories;
 
-import entities.ErrorMessages;
-import entities.Rol;
-import entities.responses.ErrorResponse;
-import entities.responses.GameResponse;
+import values.ErrorMessages;
+import values.Rol;
+import values.responses.ErrorResponse;
+import values.responses.GameResponse;
 import interfaces.Responses;
 import model.Game;
 import model.Tag;

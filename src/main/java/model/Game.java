@@ -5,9 +5,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import entities.Rol;
-import entities.responses.ErrorResponse;
-import entities.responses.StatusResponse;
+import values.Rol;
+import values.responses.ErrorResponse;
+import values.responses.StatusResponse;
 import example.ImageExample;
 import interfaces.Responses;
 

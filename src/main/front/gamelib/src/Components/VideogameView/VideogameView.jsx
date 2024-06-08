@@ -7,11 +7,11 @@ import './VideogameView.css';
 import NewsComp from "./NewsComp";
 import ShelfManager from "./ShelfManager";
 import HeaderV2 from "../Header/HeaderV2";
+import ErrorView from "../ErrorView/ErrorView";
 
 function VideogameView() {
     const videogameID = useParams();
     const [user, setUser] = useState({});
-
     const [videogame, setVideogame] = useState({});
     const [reviews, setReviews] = useState([]);
     const [review, setReview] = useState('');
@@ -51,21 +51,12 @@ function VideogameView() {
     useEffect(() => {
         axios.get(`http://localhost:4567/getreviews/${videogameID.videogameID}/2`)
             .then(response => {
-                setReviews(response.data);
+                setReviews(response.data.reverse());
             })
             .catch(error => {
                 console.log(error);
             });
     }, [videogameID, review]);
-
-    const ErrorMessage = ({ message }) => {
-        return (
-            <div className={message ? 'errorMessageDiv' : ''}>
-                {message}
-            </div>
-        );
-
-    }
 
     const publishReview = (event) => {
         event.preventDefault();
@@ -78,7 +69,10 @@ function VideogameView() {
                 'token': localStorage.getItem('token')
             }
         })
-            .then(() => setReview(''))
+            .then(() => {
+                setReview('');
+                setErrorMessage('');
+            })
             .catch(r => {
                     if (!r.response.status) {
                         setErrorMessage("Something went wrong")
@@ -153,9 +147,11 @@ function VideogameView() {
                             <input id={'2'} type={"button"} value={"Publish"} onClick={publishReview}/>
                         </form>
 
-                        <div>
-                            <ErrorMessage message={errorMessage}/>
-                        </div>
+                        {errorMessage !== '' ?
+                            <ErrorView message={errorMessage}/>
+                            :
+                            null
+                        }
 
                         {reviews.length === 0 ?
                             <div className={"reviewDiv"}>
@@ -163,7 +159,7 @@ function VideogameView() {
                                 <p>Be the first one to review!</p>
                             </div>
                             :
-                            reviews.reverse().map((review) => (
+                            reviews.map((review) => (
                                 <div key={review.id} className={"reviewDiv"}>
                                     <img src={user_icon} alt={"user_icon"}/>
                                     <p>{review.text}</p>

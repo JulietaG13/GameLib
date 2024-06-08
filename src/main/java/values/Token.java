@@ -1,4 +1,4 @@
-package entities;
+package values;
 
 import com.google.gson.Gson;
 

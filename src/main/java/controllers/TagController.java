@@ -1,7 +1,7 @@
 package controllers;
 
 import com.google.gson.JsonArray;
-import entities.TagType;
+import values.TagType;
 import interfaces.Controller;
 import model.Tag;
 import repositories.TagRepository;

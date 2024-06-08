@@ -1,6 +1,6 @@
 package repositories;
 
-import entities.TagType;
+import values.TagType;
 import model.Tag;
 
 import javax.persistence.EntityManager;

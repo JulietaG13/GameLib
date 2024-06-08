@@ -2,8 +2,7 @@ package model;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import entities.TagType;
+import values.TagType;
 
 import javax.persistence.*;
 import java.util.HashSet;

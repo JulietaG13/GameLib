@@ -3,11 +3,6 @@
     flex-direction: column;
     /*min-height: 100vh;*/
 }
-
-.gameView h2 {
-    font-size: 2em;
-    color: white;
-}
 .gameView p {
     color: white;
     word-break: break-all;
@@ -29,6 +24,10 @@
     flex-direction: row;
     min-height: 100vh;
     background-color: #3f21aa;
+}
+.dataDiv h2 {
+    font-size: 2em;
+    color: white;
 }
 
 .coverDiv {

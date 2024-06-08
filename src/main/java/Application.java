@@ -1,9 +1,9 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import entities.Rol;
-import entities.Token;
-import entities.responses.UserResponse;
+import values.Rol;
+import values.Token;
+import values.responses.UserResponse;
 import example.BDExample;
 import interfaces.Controller;
 import interfaces.Responses;
@@ -20,7 +20,6 @@ import javax.persistence.Persistence;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 

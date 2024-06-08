@@ -1,9 +1,9 @@
 package services;
 
-import entities.responses.ErrorResponse;
-import entities.responses.StatusResponse;
-import entities.responses.UserResponse;
-import entities.Token;
+import values.responses.ErrorResponse;
+import values.responses.StatusResponse;
+import values.responses.UserResponse;
+import values.Token;
 import interfaces.Responses;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
