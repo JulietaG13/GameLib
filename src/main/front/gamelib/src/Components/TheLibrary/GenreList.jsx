@@ -39,7 +39,7 @@ function GenreList({genreId}) {
                         className={`w-[40px] h-[40px]
                         object-cover rounded-lg group-hover:scale-105 transition-all
                         ease-out duration-300 ${activeIndex === index ? "scale-105" : null}`}
-                    />
+                     alt={'genre_image'}/>
                     <h3 className={`group-hover:font-bold transition-all
                         ease-out duration-300 ${activeIndex === index ? "font-bold text-white" : null}`}>{genre.name}
                     </h3>
