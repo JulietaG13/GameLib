@@ -19,7 +19,8 @@ function Profile() {
         axios.get(`http://localhost:4567/getprofile/${username}`)
             .then(response => {
                 setUsernameResponse(response.data.username);
-                setDescription(response.data.description);
+                console.log(response.data.biography);
+                setDescription(response.data.biography);
                 //localStorage.setItem('profilePicture', response.data.profilePicture);
                 //localStorage.setItem('user_banner', response.data.user_banner);
             })
@@ -65,8 +66,8 @@ function Profile() {
                         </button>
                     )}
                     {/* Profile Information */}
-                    <div className={"bg-blue-500 w-1/5 flex flex-col justify-between ml-16 z-40 -mt-40"}>
-                        <img src={userProfile} className={"h-96 bg-amber-200"} alt={""} />
+                    <div className={"bg-blue-500 w-1/6 flex flex-col justify-between ml-16 z-40 -mt-40"}>
+                        <img src={userProfile} className={"h-80 bg-amber-200"} alt={""} />
                         <div className={"pl-4"}>
                             <h1 className={"flex font-bold items-center text-2xl"}>{usernameResponse}</h1>
                             <h2 className={"font-semibold text-xl pt-4 pb-1"}>About me</h2>
@@ -80,8 +81,12 @@ function Profile() {
                     <Shelves username={username} />
                 </div>
             </div>
+
+
+
         </div>
     );
 }
+
 
 export default Profile;
