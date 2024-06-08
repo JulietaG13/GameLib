@@ -4,7 +4,7 @@ import TrendingGames from './TrendingGames';
 import GamesFromDB from './GamesFromDB';
 import axios from "axios";
 import HeaderV2 from "../Header/HeaderV2";
-import SkeletonLoader from "./SkeletonLoader"; // Importa el nuevo SkeletonLoader
+import SkeletonLoader from "./SkeletonLoader";
 
 function Library() {
     const [gamesFromDB, setGamesFromDB] = useState([]);
@@ -12,6 +12,7 @@ function Library() {
     const [genreList, setGenreList] = useState([]);
     const [activeIndex, setActivateIndex] = useState(0);
     const [gamesByGenreId, setGamesByGenreId] = useState([]);
+    const [activeGenreName, setActiveGenreName] = useState('Action');
 
     useEffect(() => {
         axios.get('http://localhost:4567/tag/get/genres').then((response) => {
@@ -20,11 +21,12 @@ function Library() {
         });
     }, []);
 
-    const getGamesByGenreId = async (genreId) => {
+    const getGamesByGenreId = async (genreId, genreName) => {
         try {
             const response = await axios.get(`http://localhost:4567/game/get/tag/${genreId}`);
             console.log("Games by genre ID:", response.data);
             setGamesByGenreId(response.data);
+            setActiveGenreName(genreName);
         } catch (error) {
             console.error("Error fetching games by genre ID:", error);
             return [];
@@ -33,7 +35,7 @@ function Library() {
 
     useEffect(() => {
         getGamesFromDB();
-        getGamesByGenreId(26);
+        getGamesByGenreId(26, 'Action').then(() => {}); //Default genre
     }, []);
 
     const getGamesFromDB = () => {
@@ -52,7 +54,7 @@ function Library() {
         <div>
             <HeaderV2 />
             {isLoading ? (
-                <SkeletonLoader /> // Usar SkeletonLoader durante la carga
+                <SkeletonLoader />
             ) : (
                 <div className='grid grid-cols-4 p-5 bg-gray-200'>
                     <div className='h-full hidden md:block'>
@@ -61,7 +63,10 @@ function Library() {
                             {genreList.map((genre, index) => (
                                 <div
                                     key={index}
-                                    onClick={() => { setActivateIndex(index); getGamesByGenreId(genre.id); }}
+                                    onClick={() => {
+                                        setActivateIndex(index);
+                                        getGamesByGenreId(genre.id, genre.name).then(() => {} );
+                                    }}
                                     className={`text-black flex gap-2 items-center mb-2 cursor-pointer hover:bg-gray-800 hover:text-white hover:rounded-xl p-2 rounded-lg group ${activeIndex === index ? "bg-gray-950 rounded-xl" : null}`}
                                 >
                                     <img src={genre.background_image}
@@ -77,8 +82,8 @@ function Library() {
                             <div>
                                 <Banner gameBanner={gamesFromDB[0]} />
                                 <TrendingGames gameList={gamesFromDB} />
-                                <GamesFromDB gamesFromDB={gamesFromDB} />
-                                <GamesFromDB gamesFromDB={gamesByGenreId} />
+                                <GamesFromDB gamesFromDB={gamesFromDB} title="Popular Games" />
+                                <GamesFromDB gamesFromDB={gamesByGenreId} title={activeGenreName} />
                             </div>
                             : null}
                     </div>
