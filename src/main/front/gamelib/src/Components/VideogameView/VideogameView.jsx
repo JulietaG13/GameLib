@@ -5,6 +5,7 @@ import user_icon from "../Assets/user-icon.png";
 import pencil_icon from "../Assets/pencil-icon.png";
 import './VideogameView.css';
 import NewsComp from "./NewsComp";
+import ShelfManager from "./ShelfManager";
 
 function VideogameView() {
     const videogameID = useParams();
@@ -26,7 +27,6 @@ function VideogameView() {
         else {
             axios.get(`http://localhost:4567/getuser/${actualUsername}`)
                 .then(response => {
-                    console.log(response.data);
                     setUser(getIDAndRol(response.data));
                 })
                 .catch(() => {
@@ -39,7 +39,6 @@ function VideogameView() {
         axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
             .then(response => {
                 setVideogame(response.data);
-                console.log(response.data);
                 setIsLoading(false);
             })
             .catch(error => {
@@ -52,7 +51,6 @@ function VideogameView() {
         axios.get(`http://localhost:4567/getreviews/${videogameID.videogameID}/2`)
             .then(response => {
                 setReviews(response.data);
-                // console.log(response.data);
             })
             .catch(error => {
                 console.log(error);
@@ -112,6 +110,7 @@ function VideogameView() {
             <div className={"dataDiv"}>
                 <div className={"coverDiv"}>
                     <img src={videogame.cover} alt={"Game Cover"}/>
+                    <ShelfManager props={videogame}/>
                 </div>
 
                 <div className={"moreDataDiv"}>
