@@ -1,0 +1,71 @@
+/* SkeletonLoader.css */
+.skeleton-library {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+.skeleton-header {
+    height: 50px;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+}
+
+.skeleton-content {
+    display: flex;
+    gap: 20px;
+}
+
+.skeleton-genres {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.skeleton-genre-title {
+    height: 45px;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.skeleton-genre-item {
+    height: 65px;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+}
+
+.skeleton-main {
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.skeleton-banner {
+    height: 400px;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+}
+
+.skeleton-trending-title {
+    height: 30px;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+}
+
+.skeleton-trending-games {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.skeleton-trending-item {
+    flex: 1;
+    height: 325px;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+    width: calc(20% - 10px); /* Ajuste del ancho para que se distribuyan correctamente */
+}
