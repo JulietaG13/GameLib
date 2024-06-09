@@ -34,6 +34,8 @@ public class User {
   
   @Column(nullable = false)
   private Rol rol;
+  
+  private boolean isBanned = false;
 
   @OneToMany(mappedBy = "owner")  // TODO(deleteuser)
   private final Set<Game> developed = new HashSet<>();
@@ -389,6 +391,18 @@ public class User {
 
   public Set<Developer> getSubscribedDevelopers() {
     return Collections.unmodifiableSet(subscribedDevelopers);
+  }
+  
+  public void ban() {
+    this.isBanned = true;
+  }
+  
+  public void unban() {
+    this.isBanned = false;
+  }
+  
+  public boolean isBanned() {
+    return isBanned;
   }
 
   // INTERNAL HELPERS //
