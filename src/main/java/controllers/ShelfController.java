@@ -50,6 +50,7 @@ public class ShelfController implements Controller {
         setRouteGetFromUser();
         setRouteGetFromShelf();
         setRouteAddShelf();
+        setRouteDeleteShelf();
         setRouteAddGame();
         setRouteRemoveGame();
     }
@@ -253,6 +254,61 @@ public class ShelfController implements Controller {
     
             em.close();
             return shelf.asJson();
+        });
+    }
+    
+    private void setRouteDeleteShelf() {
+        Spark.put(ROUTE_DELETE_SHELF, "application/json", (req, resp) -> { // :shelf_id | header: token
+            EntityManager em = factory.createEntityManager();
+            
+            String token = req.headers(Token.PROPERTY_NAME);
+            if (token == null || !AccessControlService.isTokenValid(token)) {
+                resp.status(401);
+                return ErrorMessages.userMustBeLoggedIn();
+            }
+            
+            String username = AccessControlService.getUsernameFromToken(token);
+            UserRepository userRepository = new UserRepository(em);
+            Optional<User> user = userRepository.findByUsername(username);
+            if (user.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.informationNotFound("User");
+            }
+            
+            long shelfId;
+            try {
+                String idStr = req.params(":shelf_id");
+                shelfId = Long.parseLong(idStr);
+            } catch (NumberFormatException e) {
+                resp.status(400);
+                return ErrorMessages.informationNotNumber("Shelf ID");
+            }
+            
+            ShelfRepository shelfRepository = new ShelfRepository(em);
+            Optional<Shelf> shelf = shelfRepository.findById(shelfId);
+            if (shelf.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.informationNotFound("Shelf");
+            }
+            
+            User shelfOwner = shelf.get().getOwner();
+            if (!shelfOwner.getId().equals(user.get().getId())) {
+                resp.status(403);
+                return ErrorMessages.userNotAllowedToPerformAction();
+            }
+            
+            if (!ShelfService.canDeleteShelf(shelfOwner, user.get())) {
+                resp.status(403);
+                return ErrorMessages.userNotAllowedToPerformAction();
+            }
+            
+            shelfRepository.deleteShelf(shelf.get(), user.get());
+            
+            resp.status(204);
+            resp.type("application/json");
+            
+            em.close();
+            return "";
         });
     }
     

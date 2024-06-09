@@ -3,6 +3,7 @@ package repositories;
 import model.Game;
 import model.Shelf;
 import model.User;
+import values.ErrorMessages;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -36,7 +37,7 @@ public class ShelfRepository {
                 .setParameter("username", user.getUsername()).getResultList();
     }
 
-    public Shelf find(String name, User user) {
+    public Optional<Shelf> find(String name, User user) {
         List<Shelf> shelves = listByUser(user);
         Shelf res = null;
         for(Shelf s : shelves) {
@@ -44,7 +45,7 @@ public class ShelfRepository {
                 res = s;
             }
         }
-        return res;
+        return Optional.ofNullable(res);
     }
 
     public List<Shelf> listAll() {
@@ -59,21 +60,19 @@ public class ShelfRepository {
         EntityTransaction t = entityManager.getTransaction();
 
         t.begin();
-        /*
-        Optional<Shelf> managedShelf = findById(shelf.getId());
-        if(managedShelf.isEmpty()) throw new NoSuchElementException("Shelf not in BD!");
 
-        Optional<Game> managedGame = new GameService(entityManager).findById(game.getId());
-        if(managedGame.isEmpty()) throw new NoSuchElementException("Game not in BD!");
-        */
-
-        Shelf managedShelf = find(shelf.getName(), user);
+        Optional<Shelf> managedShelf = find(shelf.getName(), user);
+        if (managedShelf.isEmpty()) {
+            throw new NoSuchElementException(ErrorMessages.informationNotFound("Shelf"));
+        }
         Optional<Game> managedGame = new GameRepository(entityManager).findByName(game.getName());
-        if(managedGame.isEmpty()) throw new NoSuchElementException("Game not in BD!");
+        if(managedGame.isEmpty()) {
+            throw new NoSuchElementException(ErrorMessages.informationNotFound("Game"));
+        }
 
-        managedShelf.addGame(managedGame.get());
+        managedShelf.get().addGame(managedGame.get());
 
-        persist(managedShelf);
+        persist(managedShelf.get());
 
         t.commit();
     }
@@ -82,14 +81,43 @@ public class ShelfRepository {
         EntityTransaction t = entityManager.getTransaction();
         
         t.begin();
-        Shelf managedShelf = find(shelf.getName(), user);
-        Optional<Game> managedGame = new GameRepository(entityManager).findByName(game.getName());
-        if(managedGame.isEmpty()) throw new NoSuchElementException("Game not in BD!");
     
-        managedShelf.takeOutGame(game);
+        Optional<Shelf> managedShelf = find(shelf.getName(), user);
+        if (managedShelf.isEmpty()) {
+            throw new NoSuchElementException(ErrorMessages.informationNotFound("Shelf"));
+        }
+        Optional<Game> managedGame = new GameRepository(entityManager).findByName(game.getName());
+        if(managedGame.isEmpty()) {
+            throw new NoSuchElementException(ErrorMessages.informationNotFound("Game"));
+        }
+    
+        managedShelf.get().takeOutGame(game);
         
-        persist(managedShelf);
+        persist(managedShelf.get());
         
+        t.commit();
+    }
+    
+    public void deleteShelf(Shelf shelf, User user) {
+        EntityTransaction t = entityManager.getTransaction();
+    
+        t.begin();
+    
+        Optional<Shelf> managedShelf = find(shelf.getName(), user);
+        if (managedShelf.isEmpty()) {
+            throw new NoSuchElementException(ErrorMessages.informationNotFound("Shelf"));
+        }
+        
+        long id = managedShelf.get().getId();
+    
+        entityManager.createNativeQuery("DELETE FROM game_in_shelf WHERE shelf_id = :shelfId")
+            .setParameter("shelfId", id)
+            .executeUpdate();
+    
+        entityManager.createNativeQuery("DELETE FROM shelf WHERE id = :shelfId")
+            .setParameter("shelfId", id)
+            .executeUpdate();
+    
         t.commit();
     }
 
