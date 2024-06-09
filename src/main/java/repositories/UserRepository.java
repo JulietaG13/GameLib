@@ -82,6 +82,16 @@ public class UserRepository {
         user.unsubscribe(dev);
         persist(user);
     }
+    
+    public void ban(User user) {
+        user.ban();
+        persist(user);
+    }
+    
+    public void unban(User user) {
+        user.unban();
+        persist(user);
+    }
 
     public User persist(User user) {
         EntityTransaction tx = entityManager.getTransaction();

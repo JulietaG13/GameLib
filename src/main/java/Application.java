@@ -265,7 +265,7 @@ public class Application {
       em.close();
       if (authResponse.hasError()) {
         resp.status(authResponse.getStatusCode());
-        return ErrorMessages.invalidCredentials();
+        return authResponse.getMessage();
       }
       resp.status(200);
       
@@ -754,7 +754,8 @@ public class Application {
         ShelfController.getInstance(factory),
         TagController.getInstance(factory),
         NewsController.getInstance(factory),
-        DeveloperController.getInstance(factory)
+        DeveloperController.getInstance(factory),
+        AdminController.getInstance(factory)
     );
     controllers.forEach(Controller::run);
   }
