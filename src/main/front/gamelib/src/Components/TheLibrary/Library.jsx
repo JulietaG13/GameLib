@@ -35,7 +35,7 @@ function Library() {
 
     useEffect(() => {
         getGamesFromDB();
-        getGamesByGenreId(26, 'Action').then(() => {}); //Default genre
+        getGamesByGenreId(26, 'Action').then(() => { }); //Default genre
     }, []);
 
     const getGamesFromDB = () => {
@@ -65,14 +65,16 @@ function Library() {
                                     key={index}
                                     onClick={() => {
                                         setActivateIndex(index);
-                                        getGamesByGenreId(genre.id, genre.name).then(() => {} );
+                                        getGamesByGenreId(genre.id, genre.name).then(() => { });
                                     }}
-                                    className={`text-black flex gap-2 items-center mb-2 cursor-pointer hover:bg-gray-800 hover:text-white hover:rounded-xl p-2 rounded-lg group ${activeIndex === index ? "bg-gray-950 rounded-xl" : null}`}
+                                    className={`text-black flex gap-2 items-center mb-2 cursor-pointer hover:bg-gray-800 hover:text-white hover:rounded-xl p-2 rounded-lg group ${activeIndex === index ? "bg-gray-950 rounded-xl" : ""}`}
                                 >
                                     <img src={genre.background_image}
-                                         className={`w-[40px] h-[40px] object-cover rounded-lg group-hover:scale-105 transition-all ease-out duration-300 ${activeIndex === index ? "scale-105" : null}`}
+                                         className={`w-[40px] h-[40px] object-cover rounded-lg group-hover:scale-105 transition-all ease-out duration-300 ${activeIndex === index ? "scale-105" : ""}`}
                                          alt='genre_image' />
-                                    <h3 className={`group-hover:font-bold transition-all ease-out duration-300 ${activeIndex === index ? "font-bold text-white" : null}`}>{genre.name}</h3>
+                                    <h3 className={`transition-all ease-out duration-300 ${activeIndex === index ? "font-bold text-white" : "text-black"}`}>
+                                        {genre.name}
+                                    </h3>
                                 </div>
                             ))}
                         </div>
