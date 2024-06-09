@@ -1,6 +1,5 @@
-// SkeletonLoader.js
 import React from 'react';
-import './SkeletonLoader.css'; // Estilos CSS para el esqueleto
+import './SkeletonLoader.css';
 
 const SkeletonLoader = () => {
     return (
