@@ -4,7 +4,7 @@ import user_icon from "../Assets/user-icon.png";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-function HeaderV2() {
+function Header() {
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -100,8 +100,8 @@ function HeaderV2() {
                         )}
                     </div>
                 ) : (
-                    <h2 className="font-bold text-[20px] pr-14">
-                        <a href="/login">Login</a>
+                    <h2 className="font-bold pr-14">
+                        <a  className={"font-avenir text-[26px]"} href="/login">Login</a>
                     </h2>
                 )}
             </div>
@@ -109,4 +109,4 @@ function HeaderV2() {
     );
 }
 
-export default HeaderV2;
+export default Header;

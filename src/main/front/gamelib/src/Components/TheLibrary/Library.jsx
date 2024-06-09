@@ -1,12 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Banner from './Banner';
 import TrendingGames from './TrendingGames';
 import GamesFromDB from './GamesFromDB';
 import axios from "axios";
-import HeaderV2 from "../Header/HeaderV2";
+import Header from "../Header/Header";
 import SkeletonLoader from "./SkeletonLoader";
-
-
 
 function Library() {
     const [gamesFromDB, setGamesFromDB] = useState([]);
@@ -37,8 +35,7 @@ function Library() {
 
     useEffect(() => {
         getGamesFromDB();
-        getGamesByGenreId(26, 'Action').then(() => {
-        }); //Default genre
+        getGamesByGenreId(26, 'Action').then(() => { }); // Default genre
     }, []);
 
     const getGamesFromDB = () => {
@@ -55,27 +52,26 @@ function Library() {
 
     return (
         <div>
-            <HeaderV2/>
+            <Header />
             {isLoading ? (
-                <SkeletonLoader/>
+                <SkeletonLoader />
             ) : (
-                <div className='grid grid-cols-4 p-5 bg-gray-200'>
-                    <div className='h-full hidden md:block'>
-                        <div className='pr-10'>
-                            <h2 className='text-[30px] font-bold text-black mb-4'>Genres</h2>
+                <div className="grid grid-cols-4 p-5 bg-gray-200">
+                    <div className="col-span-4 md:col-span-1">
+                        <div className="pr-10 sticky top-0">
+                            <h2 className="text-[30px] font-bold text-black mb-4">Genres</h2>
                             {genreList.map((genre, index) => (
                                 <div
                                     key={index}
                                     onClick={() => {
                                         setActivateIndex(index);
-                                        getGamesByGenreId(genre.id, genre.name).then(() => {
-                                        });
+                                        getGamesByGenreId(genre.id, genre.name).then(() => { });
                                     }}
                                     className={`text-black flex gap-4 items-center mb-3 cursor-pointer hover:bg-gray-800 hover:text-white hover:rounded-xl p-3 rounded-lg group ${activeIndex === index ? "bg-gray-950 text-white rounded-xl" : ""}`}
                                 >
                                     <img src={genre.background_image}
                                          className={`w-[50px] h-[50px] object-cover rounded-lg group-hover:scale-110 transition-all ease-out duration-300 ${activeIndex === index ? "scale-110" : ""}`}
-                                         alt='genre_image'/>
+                                         alt="genre_image" />
                                     <h3 className={`transition-all ease-out duration-300 ${activeIndex === index ? "font-bold text-white" : "text-black"}`}>
                                         {genre.name}
                                     </h3>
@@ -83,20 +79,19 @@ function Library() {
                             ))}
                         </div>
                     </div>
-                    <div className='col-span-4 md:col-span-3'>
-                        {gamesFromDB.length > 0 ?
+                    <div className="col-span-4 md:col-span-3">
+                        {gamesFromDB.length > 0 ? (
                             <div>
-
-                                <Banner gameBanner={gamesFromDB[0]}/>
-                                <TrendingGames gameList={gamesFromDB}/>
+                                <Banner gameBanner={gamesFromDB[0]} />
+                                <TrendingGames gameList={gamesFromDB} />
                                 <div className="mt-10">
-                                    <GamesFromDB gamesFromDB={gamesFromDB} title="Popular Games"/>
+                                    <GamesFromDB gamesFromDB={gamesFromDB} title="Popular Games" />
                                 </div>
                                 <div className="mt-10">
-                                    <GamesFromDB gamesFromDB={gamesByGenreId} title={activeGenreName}/>
+                                    <GamesFromDB gamesFromDB={gamesByGenreId} title={activeGenreName} />
                                 </div>
                             </div>
-                            : null}
+                        ) : null}
                     </div>
                 </div>
             )}

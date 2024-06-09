@@ -3,7 +3,7 @@ import gamelib_logo from "../Assets/Designer(3).jpeg";
 import userProfile from "../Assets/user-icon.png";
 import { Navigate, useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import HeaderV2 from "../Header/HeaderV2";
+import Header from "../Header/Header";
 import Shelves from "./Shelves";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -77,7 +77,7 @@ function EditProfile() {
     return (
         /* Main container */
         <div>
-            <HeaderV2 />
+            <Header />
             <div className='relative'>
                 {/* Botón de cerrar */}
                 <Link to={`/profile/${username}`} className="absolute top-10 left-4 bg-gray-600 text-white py-2 px-4 rounded-full z-50">

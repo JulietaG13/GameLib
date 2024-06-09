@@ -3,7 +3,7 @@ import gamelib_logo from "../Assets/Designer(3).jpeg";
 import userProfile from "../Assets/user-icon.png";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import axios from "axios";
-import HeaderV2 from "../Header/HeaderV2";
+import Header from "../Header/Header";
 import Shelves from "./Shelves";
 
 function Profile() {
@@ -88,7 +88,7 @@ function Profile() {
 
     return (
         <div>
-            <HeaderV2 />
+            <Header />
             <div className='relative'>
                 <div className='flex flex-col md:flex-row'>
                     <div className='flex-grow'>
