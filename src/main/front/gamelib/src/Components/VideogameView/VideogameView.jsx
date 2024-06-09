@@ -23,17 +23,19 @@ function VideogameView() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        let actualUsername = localStorage.getItem('username');
-        if (actualUsername === null) return setUser(-1);
-        else {
-            axios.get(`http://localhost:4567/getuser/${actualUsername}`)
-                .then(response => {
-                    setUser(getIDAndRol(response.data));
-                })
-                .catch(() => {
-                    setUser(-1);
-                })
-        }
+        axios.post(`http://localhost:4567/tokenvalidation`, {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        })
+            .then(response => {
+                setUser(getIDAndRol(response.data));
+            })
+            .catch(() => {
+                localStorage.clear();
+                setUser(-1);
+            })
     }, []);
 
     useEffect(() => {
@@ -95,6 +97,8 @@ function VideogameView() {
     if(navigateEdit) {return <Navigate to={`/editVideogame/${videogameID.videogameID}`}/>;}
     if (isLoading) {return loadingScreen();}
 
+    console.log(user);
+
     return (
         <main className={"gameView"}>
             <HeaderV2></HeaderV2>
@@ -144,7 +148,7 @@ function VideogameView() {
                                        setReview(e.target.value)
                                    }
                             />
-                            <input id={'2'} type={"button"} value={"Publish"} onClick={publishReview}/>
+                            <button type={'submit'} >Publish</button>
                         </form>
 
                         {errorMessage !== '' ?

@@ -78,11 +78,6 @@ function ShelfManager({props}) {
             });
     }
 
-    // useEffect(() => {
-    //     console.log('shelves');
-    //     console.log(shelves);
-    // }, [shelves]);
-
     return (
         <div className={'shelvesPopUp'} >
             <h2>Shelves Manager</h2>
@@ -94,7 +89,7 @@ function ShelfManager({props}) {
                     :
                     shelves.map(shelf => (
                         <div key={shelf.id} className={'shelf'}>
-                            {shelf.name}
+                            <p>{shelf.name}</p>
                             {shelfIncludesGame(shelf, props) ?
                                 <button onClick={() => {handleRemoveFromShelf(shelf.id, props.id)}}
                                 >Remove from shelf</button>

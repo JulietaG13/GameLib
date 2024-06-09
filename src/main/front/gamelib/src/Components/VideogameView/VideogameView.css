@@ -75,6 +75,11 @@
     border-bottom: 0.1em solid white;
 }
 
+.reviewsDiv button {
+    background-color: #AEADF0;
+    padding: 0.4em;
+    width: auto;
+}
 .reviewsDiv img {
     width: 7%;
     height: 7%;
@@ -139,7 +144,7 @@
     height: 2.7em;
     padding: 2%;
     background-color: #745bc1;
-    border-radius: 1em;
+    border-radius: 0.5em;
     transition: background-color 0.2s ease;
 }
 #plus:hover {

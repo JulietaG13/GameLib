@@ -3,6 +3,11 @@
     padding: 3%;
     margin: 1em 0;
 }
+.shelvesPopUp button {
+    background-color: #AEADF0;
+    padding: 0.4em;
+    width: auto;
+}
 
 .shelf {
     display: flex;
@@ -16,7 +21,7 @@
 .shelfCreator {
     display: flex;
     flex-direction: column;
-    background-color: #bf883f;
+    background-color: #2a1b41;
     padding: 2%;
 }
 
