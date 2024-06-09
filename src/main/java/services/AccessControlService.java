@@ -1,5 +1,6 @@
 package services;
 
+import values.ErrorMessages;
 import values.responses.ErrorResponse;
 import values.responses.StatusResponse;
 import values.responses.UserResponse;
@@ -84,11 +85,15 @@ public class AccessControlService {
         tx.commit();
 
         if (possibleUser.isEmpty()) {
-            return new ErrorResponse( 404, "User does not exist!");
+            return new ErrorResponse(404, ErrorMessages.invalidCredentials());
         }
 
         if (!possibleUser.get().getPassword().equals(password)) {
-            return new ErrorResponse( 404, "Password is incorrect!");
+            return new ErrorResponse(404, ErrorMessages.invalidCredentials());
+        }
+        
+        if (possibleUser.get().isBanned()) {
+            return new ErrorResponse(403, "You are banned");
         }
         return new UserResponse(possibleUser.get());
     }
