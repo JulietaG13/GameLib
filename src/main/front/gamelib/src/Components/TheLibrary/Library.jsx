@@ -16,7 +16,6 @@ function Library() {
 
     useEffect(() => {
         axios.get('http://localhost:4567/tag/get/genres').then((response) => {
-            console.log("All Genres: ", response.data);
             setGenreList(response.data);
         });
     }, []);
@@ -24,7 +23,6 @@ function Library() {
     const getGamesByGenreId = async (genreId, genreName) => {
         try {
             const response = await axios.get(`http://localhost:4567/game/get/tag/${genreId}`);
-            console.log("Games by genre ID:", response.data);
             setGamesByGenreId(response.data);
             setActiveGenreName(genreName);
         } catch (error) {
@@ -41,7 +39,6 @@ function Library() {
     const getGamesFromDB = () => {
         setIsLoading(true);
         axios.get('http://localhost:4567/games').then((response) => {
-            console.log("gamesFromDB:", response);
             setGamesFromDB(response.data);
             setIsLoading(false);
         }).catch((error) => {

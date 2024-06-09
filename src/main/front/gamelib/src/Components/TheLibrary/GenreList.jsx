@@ -9,7 +9,6 @@ function GenreList({genreId}) {
     // Get the list of genres when the component is mounted
     useEffect(() => {
         axios.get('http://localhost:4567/tag/get/genres').then((response) =>{
-            console.log("All Genres: ", response.data);
             setGenreList(response.data);
         })
     }, []);
@@ -18,7 +17,6 @@ function GenreList({genreId}) {
     const getGamesByGenreId = async (genreId) => {
         try {
             const response = await axios.get(`http://localhost:4567/game/get/tag/${genreId}`);
-            console.log("Games by genre ID:", response.data)
             return response.data;
         } catch (error) {
             console.error("Error fetching games by genre ID:", error);
