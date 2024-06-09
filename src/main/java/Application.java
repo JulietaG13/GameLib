@@ -755,7 +755,8 @@ public class Application {
         TagController.getInstance(factory),
         NewsController.getInstance(factory),
         DeveloperController.getInstance(factory),
-        AdminController.getInstance(factory)
+        AdminController.getInstance(factory),
+        CommonController.getInstance(factory)
     );
     controllers.forEach(Controller::run);
   }
