@@ -29,10 +29,16 @@ public class GameRepository {
 
     public Optional<Game> findByName(String name) {
         return entityManager
-                .createQuery("SELECT g FROM Game g WHERE g.name LIKE :name", Game.class)
+                .createQuery("SELECT g FROM Game g WHERE LOWER(g.name) LIKE LOWER(:name)", Game.class)
                 .setParameter("name", name).getResultList()
                 .stream()
                 .findFirst();
+    }
+    
+    public List<Game> findByNameLike(String name) {
+        return entityManager
+            .createQuery("SELECT g FROM Game g WHERE LOWER(g.name) LIKE :like", Game.class)
+            .setParameter("like", name.toLowerCase() + "%").getResultList();
     }
 
     public List<Game> listAll() {
