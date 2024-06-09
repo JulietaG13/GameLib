@@ -47,7 +47,14 @@
     height: 100%;
 }
 
-.goToEdit img {
+.options {
+    display: flex;
+}
+.options div {
+    margin-right: 1em;
+}
+
+.optionImage img {
     background-color: #745bc1;
     padding: 10%;
     width: 3em;
@@ -55,7 +62,7 @@
     border-radius: 0.5em;
     transition: background-color 0.2s ease;
 }
-.goToEdit img:hover {
+.optionImage img:hover {
     background-color: #3fbf45;
 }
 

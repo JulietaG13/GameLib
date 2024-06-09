@@ -3,6 +3,8 @@ import {Navigate, useParams} from "react-router-dom";
 import axios from "axios";
 import user_icon from "../Assets/user-icon.png";
 import pencil_icon from "../Assets/pencil-icon.png";
+import mail_icon from "../Assets/mail-icon.png";
+import un_mail_icon from "../Assets/un-mail-icon.png";
 import './VideogameView.css';
 import NewsComp from "./NewsComp";
 import ShelfManager from "./ShelfManager";
@@ -13,6 +15,7 @@ function VideogameView() {
     const videogameID = useParams();
     const [user, setUser] = useState({});
     const [videogame, setVideogame] = useState({});
+    const [subscription, setSubscription] = useState(false);
     const [reviews, setReviews] = useState([]);
     const [review, setReview] = useState('');
 
@@ -31,6 +34,19 @@ function VideogameView() {
         })
             .then(response => {
                 setUser(getIDAndRol(response.data));
+                axios.get(`http://localhost:4567/game/subs/is/${videogameID.videogameID}`, {}, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'token': localStorage.getItem('token')
+                    }
+                })
+                    .then(r => {
+                        console.log(r);
+                        setSubscription(true);
+                    })
+                    .catch(() => {
+                        setSubscription(false);
+                    })
             })
             .catch(() => {
                 localStorage.clear();
@@ -93,11 +109,35 @@ function VideogameView() {
         setNavigateEdit(true);
     }
 
+    const handleSubscription = () => {
+        let config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        };
+        if (subscription) {
+            axios.post(`http://localhost:4567/game/subs/unsubscribe/${videogameID.videogameID}`, {}, config)
+                .then(() => {
+                    setSubscription(false);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        } else {
+            axios.post(`http://localhost:4567/game/subs/subscribe/${videogameID.videogameID}`, {}, config)
+                .then(() => {
+                    setSubscription(true);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    }
+
     if(navigateHome) {return <Navigate to={`/`}/>;}
     if(navigateEdit) {return <Navigate to={`/editVideogame/${videogameID.videogameID}`}/>;}
     if (isLoading) {return loadingScreen();}
-
-    console.log(user);
 
     return (
         <main className={"gameView"}>
@@ -118,13 +158,27 @@ function VideogameView() {
                 </div>
 
                 <div className={"moreDataDiv"}>
-                    {checkPrivilege(user, videogame.owner_id) ?
-                        <div className={'goToEdit'}>
-                            <img alt={"Edit videogame"} src={pencil_icon} onClick={redirectEdit}/>
-                        </div>
-                        :
-                        null
-                    }
+                    <div className={'options'}>
+                        {checkPrivilege(user, videogame.owner_id) ?
+                            <div className={'optionImage'}>
+                                <img alt={"Edit videogame"}
+                                     src={pencil_icon}
+                                     onClick={redirectEdit}/>
+                            </div>
+                            :
+                            null
+                        }
+                        {user !== -1 ?
+                            <div className={'optionImage'}>
+                                <img alt={"Sub/Unsub videogame"}
+                                     src={subscription ? un_mail_icon : mail_icon}
+                                     onClick={handleSubscription}
+                                />
+                            </div>
+                            :
+                            null
+                        }
+                    </div>
 
                     <div className={"attributesDiv"}>
                         <h2>About the game:</h2>
