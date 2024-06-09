@@ -46,14 +46,15 @@ public class ShelfController implements Controller {
     }
 
     public void run() {
-        routeGetAll();
-        routeGetFromUser();
-        routeGetFromShelf();
-        routeAddShelf();
-        routeAddGame();
+        setRouteGetAll();
+        setRouteGetFromUser();
+        setRouteGetFromShelf();
+        setRouteAddShelf();
+        setRouteAddGame();
+        setRouteRemoveGame();
     }
 
-    private void routeGetAll() {
+    private void setRouteGetAll() {
         Spark.get(ROUTE_GET_ALL, "application/json", (req, resp) -> {
             EntityManager em = factory.createEntityManager();
             ShelfRepository service = new ShelfRepository(em);
@@ -70,7 +71,7 @@ public class ShelfController implements Controller {
         });
     }
 
-    private void routeGetFromUser() {
+    private void setRouteGetFromUser() {
         Spark.get(ROUTE_GET_FROM_USER, "application/json", (req, resp) -> { // :username, :max  | header: token
             EntityManager em = factory.createEntityManager();
 
@@ -143,7 +144,7 @@ public class ShelfController implements Controller {
         });
     }
     
-    private void routeGetFromShelf() {
+    private void setRouteGetFromShelf() {
         Spark.get(ROUTE_GET_FROM_SHELF, "application/json", (req, resp) -> { // :shelf_id, :max
             EntityManager em = factory.createEntityManager();
             
@@ -196,7 +197,7 @@ public class ShelfController implements Controller {
         });
     }
     
-    private void routeAddShelf() {
+    private void setRouteAddShelf() {
         Spark.post(ROUTE_ADD_SHELF, "application/json", (req, resp) -> { // body: name, is_private | header: token
             EntityManager em = factory.createEntityManager();
     
@@ -255,7 +256,7 @@ public class ShelfController implements Controller {
         });
     }
     
-    private void routeAddGame() {
+    private void setRouteAddGame() {
         Spark.put(ROUTE_ADD_GAME, "application/json", (req, resp) -> { // :shelf_id, :game_id | header: token
             EntityManager em = factory.createEntityManager();
             
@@ -316,12 +317,78 @@ public class ShelfController implements Controller {
             resp.status(200);
             resp.type("application/json");
             
-            JsonArray array = new JsonArray();
-            List<Game> games = shelf.get().getGames();
-            games.forEach(g -> array.add(g.asJson()));
+            JsonObject jsonShelf = shelf.get().asJson();
             
             em.close();
-            return array.toString();
+            return jsonShelf;
+        });
+    }
+    
+    private void setRouteRemoveGame() {
+        Spark.put(ROUTE_REMOVE_GAME, "application/json", (req, resp) -> { // :shelf_id, :game_id | header: token
+            EntityManager em = factory.createEntityManager();
+            
+            String token = req.headers(Token.PROPERTY_NAME);
+            if (token == null || !AccessControlService.isTokenValid(token)) {
+                resp.status(401);
+                return ErrorMessages.userMustBeLoggedIn();
+            }
+            
+            String username = AccessControlService.getUsernameFromToken(token);
+            UserRepository userRepository = new UserRepository(em);
+            Optional<User> user = userRepository.findByUsername(username);
+            if (user.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.informationNotFound("User");
+            }
+            
+            long shelfId;
+            try {
+                String idStr = req.params(":shelf_id");
+                shelfId = Long.parseLong(idStr);
+            } catch (NumberFormatException e) {
+                resp.status(400);
+                return ErrorMessages.informationNotNumber("Shelf ID");
+            }
+            
+            ShelfRepository shelfRepository = new ShelfRepository(em);
+            Optional<Shelf> shelf = shelfRepository.findById(shelfId);
+            if (shelf.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.informationNotFound("Shelf");
+            }
+            
+            User shelfOwner = shelf.get().getOwner();
+            if (!shelfOwner.getId().equals(user.get().getId())) {
+                resp.status(403);
+                return ErrorMessages.userNotAllowedToPerformAction();
+            }
+            
+            long gameId;
+            try {
+                String idStr = req.params(":game_id");
+                gameId = Long.parseLong(idStr);
+            } catch (NumberFormatException e) {
+                resp.status(400);
+                return ErrorMessages.informationNotNumber("Shelf ID");
+            }
+            
+            GameRepository gameRepository = new GameRepository(em);
+            Optional<Game> game = gameRepository.findById(gameId);
+            if (game.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.informationNotFound("Game");
+            }
+            
+            shelfRepository.takeOutGame(shelf.get(), user.get(), game.get());
+            
+            resp.status(200);
+            resp.type("application/json");
+            
+            JsonObject jsonShelf = shelf.get().asJson();
+            
+            em.close();
+            return jsonShelf;
         });
     }
 }

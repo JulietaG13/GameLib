@@ -7,11 +7,15 @@ import Profile from "./Components/Profile/Profile";
 import Login from "./Components/LoginSignup/Login";
 import RegisterRework from "./Components/LoginSignup/Register";
 import EditProfile from "./Components/Profile/EditProfile";
+import FriendMenu from "./Components/Profile/FriendMenu";
+import React from "react";
 
 
 function App() {
     return <BrowserRouter>
         <div className={'min-h-[100vh]'}>
+            {/* Options Menu Icon */}
+            <FriendMenu />
             <Routes>
                 <Route path="/" element={<Library/>}/>
                 <Route path="/Login" element={<Login/>}/>

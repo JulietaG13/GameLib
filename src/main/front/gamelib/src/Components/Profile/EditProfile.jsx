@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import gamelib_logo from "../Assets/Designer(3).jpeg";
 import userProfile from "../Assets/user-icon.png";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import HeaderV2 from "../Header/HeaderV2";
+import Header from "../Header/Header";
 import Shelves from "./Shelves";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 function EditProfile() {
     const { username } = useParams();
+    const navigate = useNavigate(); // Hook para redirigir
     const [usernameResponse, setUsernameResponse] = useState('DefaultName');
     const [description, setDescription] = useState('DefaultDescription');
     const [notFound, setNotFound] = useState(false);
@@ -16,7 +19,7 @@ function EditProfile() {
     const [newBackgroundImage, setNewBackgroundImage] = useState(null);
     const [newProfilePicture, setNewProfilePicture] = useState(null);
     const [newDescription, setNewDescription] = useState(description);
-    const [newUsername, setNewUsername] = useState(null);
+    const [newUsername, setNewUsername] = useState(username);
 
     const loggedInUsername = localStorage.getItem('username');
 
@@ -26,8 +29,6 @@ function EditProfile() {
                 localStorage.setItem('id', response.data.id);
                 setUsernameResponse(response.data.username);
                 setDescription(response.data.description);
-                //localStorage.setItem('profilePicture', response.data.profilePicture);
-                //localStorage.setItem('user_banner', response.data.user_banner);
             })
             .catch(() => {
                 setNotFound(true);
@@ -39,34 +40,36 @@ function EditProfile() {
     }
 
     function handleSave() {
-        // Check if user is logged in using token
         axios.post('http://localhost:4567/tokenvalidation', {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        }).then(() => {
+            axios.post(`http://localhost:4567/user/profile/${username}/edit`, {
+                username: newUsername,
+                biography: newDescription,
+                //banner: newBackgroundImage,
+                //pfp: newProfilePicture
+            }, {
                 headers: {
                     'Content-Type': 'application/json',
                     'token': localStorage.getItem('token')
                 }
-            }
-        ).then(() => {
-            // Save the new data
-                axios.post(`http://localhost:4567/user/profile/${username}/edit`, {
-                    username: newUsername,
-                    biography: newDescription,
-                    //banner: newBackgroundImage,
-                    //pfp: newProfilePicture
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'token': localStorage.getItem('token')
-                    }
-                }).then((response) => {
-                    localStorage.setItem('username', newUsername);
-                    localStorage.setItem('description', newDescription);
-                    localStorage.setItem('token', response.data.token);
-                }).catch(e => {
-                    console.error('Error:', e);
-                })
-            }
-        ).catch(e => {
+            }).then((response) => {
+                localStorage.setItem('username', newUsername);
+                localStorage.setItem('description', newDescription);
+                localStorage.setItem('token', response.data.token);
+                // Redirects to the new profile
+                if (newUsername !== username) {
+                    navigate(`/profile/${newUsername}`);
+                } else {
+                    navigate(`/profile/${username}`);
+                }
+            }).catch(e => {
+                console.error('Error:', e);
+            })
+        }).catch(e => {
             console.error('Error:', e);
         })
     }
@@ -74,8 +77,12 @@ function EditProfile() {
     return (
         /* Main container */
         <div>
-            <HeaderV2 />
-            <div className=''>
+            <Header />
+            <div className='relative'>
+                {/* Botón de cerrar */}
+                <Link to={`/profile/${username}`} className="absolute top-10 left-4 bg-gray-600 text-white py-2 px-4 rounded-full z-50">
+                    <FontAwesomeIcon icon={faTimes} />
+                </Link>
                 {/* Banner */}
                 <div className='bg-white relative'>
                     <img src={gamelib_logo} className={"md:w-full h-[250px] object-cover"} alt={""} />
@@ -89,9 +96,9 @@ function EditProfile() {
                     <div className={"bg-blue-500 w-1/5 flex flex-col justify-between ml-16 z-40 -mt-40"}>
                         <img src={userProfile} className={"h-96 bg-amber-200"} alt={""} />
                         <div className={"pl-4"}>
-                            <input type={'text'} onChange={(event) => setNewUsername(event.target.value)} className={"flex font-bold items-center text-2xl"}></input>
+                            <input type={'text'} value={newUsername} onChange={(event) => setNewUsername(event.target.value)} className={"flex font-bold items-center text-2xl"}></input>
                             <h2 className={"font-semibold text-xl pt-4 pb-1"}>About me</h2>
-                            <input type='text' onChange={event => setNewDescription(event.target.value)} className={"font-normal pl-5 pr-1"}></input>
+                            <input type='text' value={newDescription} onChange={event => setNewDescription(event.target.value)} className={"font-normal pl-5 pr-1"}></input>
                         </div>
                     </div>
                 </div>

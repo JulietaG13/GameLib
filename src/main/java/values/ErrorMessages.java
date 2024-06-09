@@ -1,6 +1,10 @@
 package values;
 
 public class ErrorMessages {
+    
+    public static String invalidCredentials() {
+        return "Invalid credentials";
+    }
 
     public static String usernameNotFound(String username) {
         return "There is no user " + username + "!";

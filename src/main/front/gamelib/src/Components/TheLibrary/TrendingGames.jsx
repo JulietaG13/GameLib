@@ -1,22 +1,24 @@
-import React from 'react'
-import {Link} from "react-router-dom";
+import React from 'react';
+import { Link } from "react-router-dom";
 
-function TrendingGames({gameList}) {
-
+function TrendingGames({ gameList }) {
     return (
-        <div className='mt-5 pr-2 hidden md:block bg-gray-200'>
-            <h2 className={'font-bold text-[30px] text-black pt-5 pb-7'}> Trending Games</h2>
-            <div className={'hidden md:grid md:grid-cols-3  gap-5 lg:grid-cols-4'}>
-                {gameList.map((game, index) => index<4&&(
-                    <div className={'bg-black rounded-xl p-0.1 hover:scale-110 transition-all duration-300 ease-in-out cursor-pointer'}>
+        <div className='mt-5 pr-2 bg-gray-200'>
+            <h2 className={'font-schibsted text-[30px] text-black pt-5 pb-7'}>Trending Games</h2>
+            <div className={'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5'}>
+                {gameList.map((game, index) => index < 4 && (
+                    <div key={game.id} className={'bg-black rounded-xl overflow-hidden shadow-lg hover:scale-105 transition-all duration-300 ease-in-out cursor-pointer'}>
                         <Link to={'/videogame/' + game.id}>
-                            <img src={game.background_image} className={'h-[500px] rounded-lg object-cover'}/>
-                            <h2 className={'text-white text-[23px] font-bold px-3'}>{game.name}</h2>
+                            <img src={game.background_image} className={'h-[450px] w-full object-cover'} alt={game.name} />
+                            <div className='p-3'>
+                                <h2 className={'text-white text-[23px] font-bold'}>{game.name}</h2>
+                            </div>
                         </Link>
                     </div>
                 ))}
             </div>
         </div>
-        )
+    );
 }
-export default TrendingGames
+
+export default TrendingGames;

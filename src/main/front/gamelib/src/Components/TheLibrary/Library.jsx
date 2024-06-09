@@ -3,8 +3,8 @@ import Banner from './Banner';
 import TrendingGames from './TrendingGames';
 import GamesFromDB from './GamesFromDB';
 import axios from "axios";
-import HeaderV2 from "../Header/HeaderV2";
-import SkeletonLoader from "./SkeletonLoader"; // Importa el nuevo SkeletonLoader
+import Header from "../Header/Header";
+import SkeletonLoader from "./SkeletonLoader";
 
 function Library() {
     const [gamesFromDB, setGamesFromDB] = useState([]);
@@ -12,6 +12,7 @@ function Library() {
     const [genreList, setGenreList] = useState([]);
     const [activeIndex, setActivateIndex] = useState(0);
     const [gamesByGenreId, setGamesByGenreId] = useState([]);
+    const [activeGenreName, setActiveGenreName] = useState('Action');
 
     useEffect(() => {
         axios.get('http://localhost:4567/tag/get/genres').then((response) => {
@@ -20,11 +21,12 @@ function Library() {
         });
     }, []);
 
-    const getGamesByGenreId = async (genreId) => {
+    const getGamesByGenreId = async (genreId, genreName) => {
         try {
             const response = await axios.get(`http://localhost:4567/game/get/tag/${genreId}`);
             console.log("Games by genre ID:", response.data);
             setGamesByGenreId(response.data);
+            setActiveGenreName(genreName);
         } catch (error) {
             console.error("Error fetching games by genre ID:", error);
             return [];
@@ -33,7 +35,7 @@ function Library() {
 
     useEffect(() => {
         getGamesFromDB();
-        getGamesByGenreId(26);
+        getGamesByGenreId(26, 'Action').then(() => { }); // Default genre
     }, []);
 
     const getGamesFromDB = () => {
@@ -50,37 +52,46 @@ function Library() {
 
     return (
         <div>
-            <HeaderV2 />
+            <Header />
             {isLoading ? (
-                <SkeletonLoader /> // Usar SkeletonLoader durante la carga
+                <SkeletonLoader />
             ) : (
-                <div className='grid grid-cols-4 p-5 bg-gray-200'>
-                    <div className='h-full hidden md:block'>
-                        <div className='pr-40'>
-                            <h2 className='text-[30px] font-bold text-black'>Genres</h2>
+                <div className="grid grid-cols-4 p-5 bg-gray-200">
+                    <div className="col-span-4 md:col-span-1">
+                        <div className="pr-10 sticky top-0">
+                            <h2 className="text-[30px] font-bold text-black mb-4">Genres</h2>
                             {genreList.map((genre, index) => (
                                 <div
                                     key={index}
-                                    onClick={() => { setActivateIndex(index); getGamesByGenreId(genre.id); }}
-                                    className={`text-black flex gap-2 items-center mb-2 cursor-pointer hover:bg-gray-800 hover:text-white hover:rounded-xl p-2 rounded-lg group ${activeIndex === index ? "bg-gray-950 rounded-xl" : null}`}
+                                    onClick={() => {
+                                        setActivateIndex(index);
+                                        getGamesByGenreId(genre.id, genre.name).then(() => { });
+                                    }}
+                                    className={`text-black flex gap-4 items-center mb-3 cursor-pointer hover:bg-gray-800 hover:text-white hover:rounded-xl p-3 rounded-lg group ${activeIndex === index ? "bg-gray-950 text-white rounded-xl" : ""}`}
                                 >
                                     <img src={genre.background_image}
-                                         className={`w-[40px] h-[40px] object-cover rounded-lg group-hover:scale-105 transition-all ease-out duration-300 ${activeIndex === index ? "scale-105" : null}`}
-                                         alt='genre_image' />
-                                    <h3 className={`group-hover:font-bold transition-all ease-out duration-300 ${activeIndex === index ? "font-bold text-white" : null}`}>{genre.name}</h3>
+                                         className={`w-[50px] h-[50px] object-cover rounded-lg group-hover:scale-110 transition-all ease-out duration-300 ${activeIndex === index ? "scale-110" : ""}`}
+                                         alt="genre_image" />
+                                    <h3 className={`transition-all ease-out duration-300 ${activeIndex === index ? "font-bold text-white" : "text-black"}`}>
+                                        {genre.name}
+                                    </h3>
                                 </div>
                             ))}
                         </div>
                     </div>
-                    <div className='col-span-4 md:col-span-3'>
-                        {gamesFromDB.length > 0 ?
+                    <div className="col-span-4 md:col-span-3">
+                        {gamesFromDB.length > 0 ? (
                             <div>
                                 <Banner gameBanner={gamesFromDB[0]} />
                                 <TrendingGames gameList={gamesFromDB} />
-                                <GamesFromDB gamesFromDB={gamesFromDB} />
-                                <GamesFromDB gamesFromDB={gamesByGenreId} />
+                                <div className="mt-10">
+                                    <GamesFromDB gamesFromDB={gamesFromDB} title="Popular Games" />
+                                </div>
+                                <div className="mt-10">
+                                    <GamesFromDB gamesFromDB={gamesByGenreId} title={activeGenreName} />
+                                </div>
                             </div>
-                            : null}
+                        ) : null}
                     </div>
                 </div>
             )}

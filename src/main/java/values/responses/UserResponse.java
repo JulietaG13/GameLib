@@ -16,6 +16,6 @@ public class UserResponse implements Responses {
   }
 
   public static String genericMessage() {
-    return "\"\"\"Something went wrong\"\"\"";
+    return "Something went wrong";
   }
 }

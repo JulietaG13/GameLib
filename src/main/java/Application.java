@@ -1,8 +1,10 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import values.ErrorMessages;
 import values.Rol;
 import values.Token;
+import values.responses.ErrorResponse;
 import values.responses.UserResponse;
 import example.BDExample;
 import interfaces.Controller;
@@ -249,13 +251,13 @@ public class Application {
       Responses usernameResponse = AccessControlService.isUsernameValid(username);
       if (usernameResponse.hasError()) {
         resp.status(usernameResponse.getStatusCode());
-        return UserResponse.genericMessage();
+        return ErrorMessages.invalidCredentials();
       }
 
       Responses passwordResponse = AccessControlService.isPasswordValid(password);
       if (passwordResponse.hasError()) {
         resp.status(passwordResponse.getStatusCode());
-        return UserResponse.genericMessage();
+        return ErrorMessages.invalidCredentials();
       }
 
       EntityManager em = getEntityManager();
@@ -263,7 +265,7 @@ public class Application {
       em.close();
       if (authResponse.hasError()) {
         resp.status(authResponse.getStatusCode());
-        return UserResponse.genericMessage();
+        return ErrorMessages.invalidCredentials();
       }
       resp.status(200);
       
