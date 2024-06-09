@@ -753,7 +753,8 @@ public class Application {
         GameController.getInstance(factory),
         ShelfController.getInstance(factory),
         TagController.getInstance(factory),
-        NewsController.getInstance(factory)
+        NewsController.getInstance(factory),
+        DeveloperController.getInstance(factory)
     );
     controllers.forEach(Controller::run);
   }
