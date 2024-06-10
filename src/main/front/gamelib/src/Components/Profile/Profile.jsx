@@ -47,21 +47,21 @@ function Profile() {
     };
 
     const handleFollow = () => {
-        const endpoint = isFollowing ? 'unfollow' : 'follow';
-        axios.post(`http://localhost:4567/dev/subs/subscribe/${localStorage.getItem("currentProfileId")}`, {}, {
+        const endpoint = isFollowing ? 'unsubscribe' : 'subscribe';
+        axios.post(`http://localhost:4567/dev/subs/${endpoint}/${localStorage.getItem("currentProfileId")}`, {}, {
             headers: {
                 'Content-Type': 'application/json',
                 'token': localStorage.getItem('token')
             }
         })
-            .then(response => {
-                console.log(response.data.message);
+            .then(() => {
                 setIsFollowing(!isFollowing); // Toggle the follow status
             })
-            .catch(error => {
-                console.error("Error following/unfollowing developer:", error);
+            .catch(() => {
             });
     };
+
+
     useEffect(() => {
         if (loggedInUsername !== username) {
             axios.get(`http://localhost:4567/user/friends/status/${localStorage.getItem("currentProfileId")}`, {
@@ -80,22 +80,28 @@ function Profile() {
                 });
         }
     }, [username, loggedInUsername]);
+
     useEffect(() => {
-        if (loggedInUsername !== username && localStorage.getItem('currentProfileRol') === 'developer') {
-            axios.get(`http://localhost:4567/dev/subs/subscribe/${localStorage.getItem("currentProfileId")}`, {
+        if (loggedInUsername !== username) {
+            axios.get(`http://localhost:4567/dev/subs/is/${localStorage.getItem("currentProfileId")}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'token': localStorage.getItem('token')
                 }
             })
                 .then(response => {
-                    setIsFollowing(response.data.isFollowing);
+                    console.log(response.data);
+                    setIsFollowing(response.data.is_subscribed);
                 })
                 .catch(error => {
-                    console.error("Error checking follow status:", error);
+                    console.error("Error checking following status:", error);
                 });
         }
     }, [username, loggedInUsername]);
+
+
+
+
 
     useEffect(() => {
         axios.get(`http://localhost:4567/getprofile/${username}`)
@@ -113,8 +119,6 @@ function Profile() {
                 setNotFound(true);
             });
     }, [username]);
-
-
 
     if (notFound) {
         return <Navigate to="/error" />;
@@ -156,7 +160,7 @@ function Profile() {
                 'token': localStorage.getItem('token')
             }
         })
-            .then(response => {
+            .then(() => {
                 setIsFriend(false);
                 setIsPending(false);
             })
