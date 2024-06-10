@@ -40,6 +40,7 @@ function ShelfManager({props}) {
             }
         })
             .then(() => {
+                console.log('Added game to shelf ' + shelfID);
                 setRefreshShelves(!refreshShelves);
                 setShelfErrorMessage('');
             })
@@ -51,6 +52,22 @@ function ShelfManager({props}) {
 
     const handleRemoveFromShelf = (shelfID, gameID) => {
         console.log('Removing game' + gameID + ' from shelf ' + shelfID);
+        console.log(shelfID);
+        console.log(gameID);
+        axios.put(`http://localhost:4567/shelf/remove/${shelfID}/${gameID}`, {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        })
+            .then(() => {
+                setRefreshShelves(!refreshShelves);
+                setShelfErrorMessage('');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                setShelfErrorMessage(error.response.data.message);
+            });
     }
 
     const handleShelfSubmit = (e) => {
