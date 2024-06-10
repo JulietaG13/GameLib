@@ -11,6 +11,7 @@
         <class>model.News</class>
         <class>model.Developer</class>
         <class>model.Notification</class>
+        <class>model.GameNotification</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbc.JDBCDriver"/>
