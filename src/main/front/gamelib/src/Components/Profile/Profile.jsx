@@ -5,6 +5,7 @@ import { useParams, useNavigate, Navigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../Header/Header";
 import Shelves from "./Shelves";
+import AlertMessage from "./AlertMessage";
 
 function Profile() {
     const navigate = useNavigate();
@@ -17,6 +18,9 @@ function Profile() {
     const [isFollowing, setIsFollowing] = useState(false); // State to track follow status
     const [isBanned, setIsBanned] = useState(false); // State to track if the user is banned
     const loggedInUsername = localStorage.getItem('username');
+    const [alert, setAlert] = useState({ message: '', visible: false, position: { top: 0, left: 0 } }); // State for alert
+
+
 
     const handleAdminAction = () => {
         axios.put('http://localhost:4567/admin/ban/' + localStorage.getItem("currentProfileId"), {}, {
@@ -30,6 +34,21 @@ function Profile() {
         }).catch(e => {
             console.error('Error:', e);
         })
+    };
+
+    const validateLogin = async () => {
+        try {
+            await axios.post('http://localhost:4567/tokenvalidation', {}, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': localStorage.getItem('token')
+                }
+            });
+            return true;
+        } catch (error) {
+            console.error('Error validating login:', error);
+            return false;
+        }
     };
 
     const handleUnbanUser = () => {
@@ -46,7 +65,13 @@ function Profile() {
         })
     };
 
-    const handleFollow = () => {
+    const handleFollow = async (event) => {
+        const isLoggedIn = await validateLogin();
+        if (!isLoggedIn) {
+            showAlert("You need to be logged in to perform this action.", event);
+            return;
+        }
+
         const endpoint = isFollowing ? 'unsubscribe' : 'subscribe';
         axios.post(`http://localhost:4567/dev/subs/${endpoint}/${localStorage.getItem("currentProfileId")}`, {}, {
             headers: {
@@ -57,8 +82,23 @@ function Profile() {
             .then(() => {
                 setIsFollowing(!isFollowing); // Toggle the follow status
             })
-            .catch(() => {
+            .catch(error => {
+                console.error(`Error ${isFollowing ? 'unfollowing' : 'following'} developer:`, error);
             });
+    };
+
+    const showAlert = (message, event) => {
+        const rect = event.target.getBoundingClientRect();
+        let leftPosition = rect.left;
+        if (leftPosition + 300 > window.innerWidth) {
+            leftPosition = window.innerWidth - 320; // Ajuste para que el popup no se salga de la pantalla
+        }
+        setAlert({
+            message,
+            visible: true,
+            position: { top: rect.top + rect.height - 70, left: leftPosition }
+        });
+        setTimeout(() => setAlert({ ...alert, visible: false }), 6000);
     };
 
 
@@ -124,6 +164,7 @@ function Profile() {
         return <Navigate to="/error" />;
     }
 
+
     const navigateToEditProfile = () => {
         axios.post('http://localhost:4567/tokenvalidation', {}, {
             headers: {
@@ -137,7 +178,15 @@ function Profile() {
         });
     };
 
-    const handleAddFriend = () => {
+
+
+    const handleAddFriend = async (event) => {
+        const isLoggedIn = await validateLogin();
+        if (!isLoggedIn) {
+            showAlert("You need to be logged in to perform this action.", event);
+            return;
+        }
+
         axios.put(`http://localhost:4567/user/friends/send/${localStorage.getItem("currentProfileId")}`, {}, {
             headers: {
                 'Content-Type': 'application/json',
@@ -153,7 +202,13 @@ function Profile() {
             });
     };
 
-    const handleDeleteFriend = () => {
+    const handleDeleteFriend = async (event) => {
+        const isLoggedIn = await validateLogin();
+        if (!isLoggedIn) {
+            showAlert("You need to be logged in to perform this action.", event);
+            return;
+        }
+
         axios.put('http://localhost:4567/user/friends/remove/' + localStorage.getItem("currentProfileId"), {}, {
             headers: {
                 'Content-Type': 'application/json',
@@ -215,6 +270,11 @@ function Profile() {
                                             {isBanned ? 'Unban' : 'Ban'}
                                         </button>
                                     )}
+                                </div>
+                            )}
+                            {alert.visible && (
+                                <div style={{ position: 'absolute', top: alert.position.top, left: alert.position.left }}>
+                                    <AlertMessage message={alert.message} onClose={() => setAlert({ ...alert, visible: false })} />
                                 </div>
                             )}
                             {/* Profile Information */}
