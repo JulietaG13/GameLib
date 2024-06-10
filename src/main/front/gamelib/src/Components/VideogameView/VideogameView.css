@@ -7,7 +7,8 @@
 }
 
 .titleDiv {
-    padding: 2%;
+    padding: 1em;
+    margin-bottom: 10em;
 }
 .titleDiv h1 {
     display: inline-block;
@@ -32,7 +33,9 @@
 }
 
 .coverDiv {
-    padding: 1%;
+    position: relative;
+    top: -7em;
+    padding: 1em;
     width: 50%;
 }
 .coverDiv img {
@@ -73,7 +76,7 @@
     display: flex;
     align-items: flex-start;
     flex-direction: column;
-    padding: 1%;
+    padding: 1em;
     width: 100%;
 }
 .moreDataDiv div {
@@ -134,7 +137,7 @@
 }
 
 .newsDiv {
-    padding: 1%;
+    padding: 1em;
 }
 .newsDiv div {
     padding: 1%;

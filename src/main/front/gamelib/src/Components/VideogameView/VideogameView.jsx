@@ -143,9 +143,7 @@ function VideogameView() {
     return (
         <main className={"gameView"}>
             <Header/>
-            <div className={"pb-40"}>
-                <img id={"backImg"} src={videogame.background_image} alt={"Game Background"}/>
-            </div>
+            <img id={"backImg"} src={videogame.background_image} alt={"Game Background"}/>
             <div className={"titleDiv "}>
                 <h1>{videogame.name}</h1>
             </div>
