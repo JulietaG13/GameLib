@@ -88,12 +88,13 @@ function Header() {
 
     function fetchNotifications() {
         // Fetch notifications from backend
-        axios.get('http://localhost:4567/notifications', {
+        axios.get('http://localhost:4567/notif/get/user/all', {
             headers: {
                 'Content-Type': 'application/json',
                 'token': localStorage.getItem('token')
             }
         }).then(response => {
+            console.log('Notifications:', response.data.notifications)
             setNotifications(response.data.notifications);
         }).catch(error => {
             console.error('Error fetching notifications:', error);
