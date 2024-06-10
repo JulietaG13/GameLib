@@ -22,6 +22,7 @@ import java.util.Optional;
 public class UserController implements Controller {
     private static final String ROUTE_GET_ALL = "/user/all";
     private static final String ROUTE_GET_USER = "/user/:username";
+    private static final String ROUTE_GET_USER_BY_ID = "/user/get/:id";
     private static final String ROUTE_GET_PROFILE = "/user/profile/:username";
     private static final String ROUTE_DELETE = "/user/delete/:username";
     private static final String ROUTE_CREATE = "/user/create";
@@ -54,6 +55,7 @@ public class UserController implements Controller {
 
     public void run() {
         setRouteGetAll();
+        setRouteGetUserById();
         setRouteEditProfile();
         setRouteEditPfp();
         setRouteEditBanner();
@@ -87,6 +89,33 @@ public class UserController implements Controller {
         });
     }
 
+    private void setRouteGetUserById() {
+        Spark.get(ROUTE_GET_USER_BY_ID, "application/json", (req, resp) -> {
+            EntityManager em = factory.createEntityManager();
+            
+            long userId;
+            try {
+                userId = Long.parseLong(req.params(":id"));
+            } catch (NumberFormatException e) {
+                resp.status(403);
+                return ErrorMessages.informationNotNumber("User ID");
+            }
+    
+            UserRepository userRepository = new UserRepository(em);
+            Optional<User> user = userRepository.findById(userId);
+            if (user.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.informationNotFound("User");
+            }
+        
+            resp.type("application/json");
+            resp.status(200);
+        
+            em.close();
+            return user.get().asJsonProfile();
+        });
+    }
+    
     private void setRouteEditProfile() {
         Spark.post(ROUTE_PROFILE_EDIT, "application/json", (req, resp) -> {
             // body: username, biography, pfp, banner | header: token
