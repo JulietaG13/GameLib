@@ -209,41 +209,6 @@ public class Application {
       return user.get().asJsonProfile();
     });
 
-    Spark.post("/deleteuser/:username", "application/json", (req, resp) -> {
-      String token = req.headers(Token.PROPERTY_NAME);
-      if (token == null || !AccessControlService.isTokenValid(token)) {
-        resp.status(401);
-        return "Token is invalid or has expired!";
-      }
-
-      /*
-      long id;
-      try {
-        id = Long.parseLong(req.params("id"));
-      } catch (NumberFormatException e) {
-        resp.status(403);
-        return "User ID must be a number!";
-      }
-      */
-      String username = req.params("username");
-
-      EntityManager em = getEntityManager();
-      UserRepository userRepository = new UserRepository(em);
-      Optional<User> user = userRepository.findByUsername(username);
-      if (user.isEmpty()) {
-        resp.status(404);
-        return "Theres no user with username " + username + "!";
-      }
-
-      userRepository.deleteUserByID(user.get().getId());
-
-      resp.type("application/json");
-      resp.status(200);
-
-      em.close();
-      return user.get().asJson().toString();
-    });
-    
     Spark.post("/login", "application/json", (req, resp) -> {
       final User user = User.fromJson(req.body());
       final String username = user.getUsername();
@@ -417,41 +382,6 @@ public class Application {
       resp.status(201);
       
       return gameResponse.getGame().asJson();
-    });
-    
-    Spark.delete("/deletegame/:id", "application/json", (req, res) -> {
-      //TODO(get token from header and validate it)
-      String token = req.headers(Token.PROPERTY_NAME);
-      if (token == null || !AccessControlService.isTokenValid(token)) {
-        res.status(401);
-        return "Token is invalid or has expired!";
-      }
-
-      //System.out.println("Esta línea es absolutamente necesaria para que la eliminacion funcione correctamente");
-      EntityManager em = getEntityManager();
-      final GameRepository gameRepository = new GameRepository(em);
-      
-      long id;
-      try {
-        id = Long.parseLong(req.params(":id"));
-      } catch (NumberFormatException e) {
-        res.status(403);
-        return "Game ID must be a number!";
-      }
-      
-      Optional<Game> game = gameRepository.findById(id);
-
-      if (game.isEmpty()) {
-        res.status(404);
-        return "There's no game with id " + req.params(":id") + "!";
-      }
-
-      gameRepository.delete(id);
-      em.close();
-
-      res.type("application/json");
-      res.status(200);
-      return game.get().asJson();
     });
     
     Spark.get("/latestupdated/:max", "application/json", (req, resp) -> {
