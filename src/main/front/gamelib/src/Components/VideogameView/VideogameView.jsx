@@ -34,7 +34,8 @@ function VideogameView() {
         })
             .then(response => {
                 setUser(getIDAndRol(response.data));
-                axios.get(`http://localhost:4567/game/subs/is/${videogameID.videogameID}`, {}, {
+                console.log(localStorage.getItem('token'));
+                axios.get(`http://localhost:4567/game/subs/is/${videogameID.videogameID}`, {
                     headers: {
                         'Content-Type': 'application/json',
                         'token': localStorage.getItem('token')
@@ -42,10 +43,10 @@ function VideogameView() {
                 })
                     .then(r => {
                         console.log(r);
-                        setSubscription(true);
+                        setSubscription(r.data.is_subscribed);
                     })
-                    .catch(() => {
-                        setSubscription(false);
+                    .catch((e) => {
+                        console.log(e.response.data);
                     })
             })
             .catch(() => {
@@ -196,13 +197,12 @@ function VideogameView() {
                     <div className={"reviewsDiv"}>
                         <h2>Reviews section</h2>
                         <form className={'publishReviewDiv'} onSubmit={publishReview}>
-                            <input id={'1'}
-                                   type={'text'}
-                                   placeholder={'Add your review'}
-                                   value={review}
-                                   onChange={e =>
-                                       setReview(e.target.value)
-                                   }
+                            <textarea id={'1'}
+                                      placeholder={'Add your review'}
+                                      value={review}
+                                      onChange={e =>
+                                          setReview(e.target.value)
+                                      }
                             />
                             <button type={'submit'} >Publish</button>
                         </form>

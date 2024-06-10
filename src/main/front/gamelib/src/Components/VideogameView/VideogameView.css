@@ -1,10 +1,8 @@
 .gameView {
     display: flex;
     flex-direction: column;
-    /*min-height: 100vh;*/
 }
 .gameView p {
-    color: white;
     word-break: break-all;
 }
 
@@ -12,9 +10,13 @@
     padding: 2%;
 }
 .titleDiv h1 {
+    display: inline-block;
     font-size: 3em;
     color: #ff6d11;
+    font-weight: bold;
     text-decoration: underline;
+    font-style: italic;
+    background-color: white;
     word-break: break-all;
 }
 
@@ -23,11 +25,10 @@
     align-items: flex-start;
     flex-direction: row;
     min-height: 100vh;
-    background-color: #3f21aa;
+    background-color: #ffffff;
 }
 .dataDiv h2 {
     font-size: 2em;
-    color: white;
 }
 
 .coverDiv {
@@ -42,7 +43,6 @@
 .newsDiv {
     display: flex;
     align-items: flex-start;
-    /*flex-grow: 1;*/
     width: 30%;
     height: 100%;
 }
@@ -55,7 +55,7 @@
 }
 
 .optionImage img {
-    background-color: #745bc1;
+    background-color: #fd8240;
     padding: 10%;
     width: 3em;
     height: 3em;
@@ -66,7 +66,7 @@
     background-color: #3fbf45;
 }
 .rejectOptionImage img:hover {
-    background-color: #ca2828;
+    background-color: #e32525;
 }
 
 .moreDataDiv {
@@ -82,17 +82,28 @@
 
 .attributesDiv {
     width: 100%;
-    border-bottom: 0.1em solid white;
+    border-bottom: 0.2em solid #000000;
 }
 
 .reviewsDiv button {
-    background-color: #AEADF0;
-    padding: 0.4em;
+    background-color: #fd8240;
+    color: white;
+    padding: 0.5em;
+    border-radius: 2em;
     width: auto;
+}
+.reviewsDiv textarea {
+    width: 100%;
+    border: 1px solid black;
+    margin-right: 1em;
 }
 .reviewsDiv img {
     width: 7%;
     height: 7%;
+}
+.publishReviewDiv {
+    display: flex;
+    align-items: center;
 }
 
 .reviewDiv {
@@ -100,7 +111,7 @@
     align-items: center;
     flex-direction: row;
     margin: 0.7em;
-    background-color: #5b3fbf;
+    background-color: #d1d1d1;
 }
 
 .errorMessageDiv {
@@ -129,7 +140,7 @@
     width: 100%;
 }
 .newsDiv li {
-    background-color: #5b3fbf;
+    background-color: #fd8240;
     padding: 1em;
     margin-bottom: 0.5em;
 }
@@ -153,7 +164,7 @@
     width: 2.7em;
     height: 2.7em;
     padding: 2%;
-    background-color: #745bc1;
+    background-color: #fd8240;
     border-radius: 0.5em;
     transition: background-color 0.2s ease;
 }
@@ -165,7 +176,7 @@
     align-items: center;
     flex-direction: column;
     margin: 0.7em;
-    background-color: #5b3fbf;
+    background-color: #fd8240;
 }
 .addNewDiv div {
     display: flex;
