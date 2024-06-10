@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Navigate, useParams} from "react-router-dom";
+import {Link, Navigate, useParams} from "react-router-dom";
 import axios from "axios";
 import user_icon from "../Assets/user-icon.png";
 import pencil_icon from "../Assets/pencil-icon.png";
@@ -16,6 +16,7 @@ function VideogameView() {
     const [user, setUser] = useState({});
     const [videogame, setVideogame] = useState({});
     const [subscription, setSubscription] = useState(false);
+    const [developer, setDeveloper] = useState('');
     const [reviews, setReviews] = useState([]);
     const [review, setReview] = useState('');
 
@@ -58,6 +59,19 @@ function VideogameView() {
             .then(response => {
                 setVideogame(response.data);
                 setIsLoading(false);
+                axios.get('http://localhost:4567/user/get/' + response.data.owner_id,{
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'token': localStorage.getItem('token')
+                    }
+                })
+                    .then(response => {
+                        console.log(response.data);
+                        setDeveloper(response.data.username);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -103,10 +117,6 @@ function VideogameView() {
                     console.error('Error:', error);
                 });
         }
-    }
-
-    const getDeveloper = (ownerID) => {
-
     }
 
     const publishReview = (event) => {
@@ -188,11 +198,13 @@ function VideogameView() {
                     <div className={"attributesDiv"}>
                         <h2>About the game:</h2>
                         <p>{videogame.description}</p>
-                        {videogame.owner_id === null ?
-                            null
+                        <p>Developer: {developer !== '' ?
+                            <Link to={`/profile/${developer}`}>
+                                {developer}
+                            </Link>
                             :
-                            null
-                        }
+                            "Unknown"
+                        }</p>
                         <p>Date of release: {formatDate(videogame.release_date)}</p>
                         {videogame.tags.length === 0 ?
                             <p>No tags available</p>
