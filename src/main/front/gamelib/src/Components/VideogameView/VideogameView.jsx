@@ -160,8 +160,9 @@ function VideogameView() {
                 <div className={"moreDataDiv"}>
                     <div className={'options'}>
                         {checkPrivilege(user, videogame.owner_id) ?
-                            <div className={'optionImage'}>
+                            <div className={'optionImage acceptOptionImage'}>
                                 <img alt={"Edit videogame"}
+                                     title={"Edit videogame"}
                                      src={pencil_icon}
                                      onClick={redirectEdit}/>
                             </div>
@@ -169,8 +170,9 @@ function VideogameView() {
                             null
                         }
                         {user !== -1 ?
-                            <div className={'optionImage'}>
+                            <div className={`optionImage ${subscription ? 'rejectOptionImage': 'acceptOptionImage'}`}>
                                 <img alt={"Sub/Unsub videogame"}
+                                     title={subscription ? "Unsubscribe" : "Subscribe"}
                                      src={subscription ? un_mail_icon : mail_icon}
                                      onClick={handleSubscription}
                                 />

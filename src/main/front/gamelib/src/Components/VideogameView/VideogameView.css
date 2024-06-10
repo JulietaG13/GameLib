@@ -62,8 +62,11 @@
     border-radius: 0.5em;
     transition: background-color 0.2s ease;
 }
-.optionImage img:hover {
+.acceptOptionImage img:hover {
     background-color: #3fbf45;
+}
+.rejectOptionImage img:hover {
+    background-color: #ca2828;
 }
 
 .moreDataDiv {

@@ -35,7 +35,7 @@ function AddNewPopUp(props) {
 
     return (
         <div>
-            <button id={'plus'} onClick={handleShow} ><img alt={'Add new'} src={plus_icon} /></button>
+            <button id={'plus'} onClick={handleShow} ><img alt={'Add new'} title={'Add a new'} src={plus_icon} /></button>
             {showForm ?
                 <form className={'addNewDiv'} onSubmit={handleNewSubmit} >
                     <div className={'newTitleDiv'} >
