@@ -77,11 +77,11 @@ function ManageVideogame({type}) {
 
     }
 
-    const addVideogame = async e => {
+    const addVideogame = e => {
         e.preventDefault()
         setTheVideogame({...theVideogame, last_update: formatDate(new Date())});
 
-        await axios.post("http://localhost:4567/game/create", theVideogame, {
+        axios.post("http://localhost:4567/game/create", theVideogame, {
             headers: {
                 'Content-Type': 'application/json',
                 'token': localStorage.getItem('token')
@@ -95,11 +95,11 @@ function ManageVideogame({type}) {
             });
     }
 
-    const editVideogame = async e => {
+    const editVideogame = e => {
         e.preventDefault()
         setTheVideogame({...theVideogame, last_update: formatDate(new Date())});
 
-        await axios.put(`http://localhost:4567/game/edit/${videogameID.videogameID}`, theVideogame, {
+        axios.put(`http://localhost:4567/game/edit/${videogameID.videogameID}`, theVideogame, {
             headers: {
                 'Content-Type': 'application/json',
                 'token': localStorage.getItem('token')
@@ -113,9 +113,9 @@ function ManageVideogame({type}) {
             });
     }
 
-    const deleteGame = async () => {
+    const deleteGame = () => {
         console.log("About to delete game");
-        await axios.post(`http://localhost:4567/game/delete/${videogameID.videogameID}`, {}, {
+        axios.post(`http://localhost:4567/game/delete/${videogameID.videogameID}`, {}, {
             headers: {
                 'Content-Type': 'application/json',
                 'token': localStorage.getItem('token')
