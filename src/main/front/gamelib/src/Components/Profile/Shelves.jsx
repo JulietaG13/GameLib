@@ -32,7 +32,7 @@ function Shelves({ username }) {
             }
         })
             .then(r => {
-                setShelves(r.data)
+                setShelves(r.data);
             })
             .catch(error => console.error("Error fetching shelves:", error));
     }, [username]);
@@ -50,27 +50,61 @@ function Shelves({ username }) {
         };
     }, []);
 
-    const handleRemoveGame = () => {
-        if (selectedGame && selectedShelf) {
-            console.log("Remove game:", selectedGame, "from shelf:", selectedShelf);
-            axios.put(`http://localhost:4567/shelf/remove/${selectedShelf.id}/${selectedGame.id}`, {}, {
+    const validateLogin = async () => {
+        try {
+            await axios.post('http://localhost:4567/tokenvalidation', {}, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': localStorage.getItem('token')
+                }
+            });
+            return true;
+        } catch (error) {
+            console.error('Error validating login:', error);
+            return false;
+        }
+    };
+
+    const handleRemoveGame = async () => {
+        if (await validateLogin()) {
+            if (selectedGame && selectedShelf) {
+                axios.put(`http://localhost:4567/shelf/remove/${selectedShelf.id}/${selectedGame.id}`, {}, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'token': localStorage.getItem('token')
+                    }
+                }).then(r => {
+                    setShelves(prevShelves => prevShelves.map(shelf => {
+                        if (shelf.id === selectedShelf.id) {
+                            return { ...shelf, games: shelf.games.filter(game => game.id !== selectedGame.id) };
+                        }
+                        return shelf;
+                    }));
+                }).catch(
+                    error => console.error("Error removing game from shelf:", error)
+                );
+            }
+            contextMenuRef.current.style.display = 'none';
+        } else {
+            alert('You must be logged in to perform this action.');
+        }
+    };
+
+    const handleDeleteShelf = async (shelfId) => {
+        if (await validateLogin()) {
+            axios.put(`http://localhost:4567/shelf/delete/${shelfId}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'token': localStorage.getItem('token')
                 }
             }).then(r => {
-                // Actualizar la lista de juegos después de eliminar uno
-                setShelves(prevShelves => prevShelves.map(shelf => {
-                    if (shelf.id === selectedShelf.id) {
-                        return { ...shelf, games: shelf.games.filter(game => game.id !== selectedGame.id) };
-                    }
-                    return shelf;
-                }));
+                setShelves(prevShelves => prevShelves.filter(shelf => shelf.id !== shelfId));
             }).catch(
-                error => console.error("Error removing game from shelf:", error)
+                error => console.error("Error deleting shelf:", error)
             );
+        } else {
+            alert('You must be logged in to perform this action.');
         }
-        contextMenuRef.current.style.display = 'none';
     };
 
     return (
@@ -83,7 +117,17 @@ function Shelves({ username }) {
                 shelves.map((shelf) => (
                     <div key={shelf.id} className={"pl-16"}>
                         <div className={'bg-white'} key={shelf.id}>
-                            <h2 className={'font-bold text-[30px] text-black pt-10 pb-5'}> {shelf.name}</h2>
+                            <div className="flex items-center justify-between">
+                                <h2 className={'font-bold text-[30px] text-black pt-10 pb-5'}>{shelf.name}</h2>
+                                {username === loggedInUsername && (
+                                    <button
+                                        onClick={() => handleDeleteShelf(shelf.id)}
+                                        className="bg-red-600 text-white py-1 px-2 rounded mr-5"
+                                    >
+                                        Delete Shelf
+                                    </button>
+                                )}
+                            </div>
                             <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6'}>
                                 {shelf.games.map((game) => (
                                     <div
