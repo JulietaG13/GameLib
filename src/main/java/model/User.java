@@ -36,6 +36,9 @@ public class User {
   private Rol rol;
   
   private boolean isBanned = false;
+  
+  @OneToMany(mappedBy = "owner")
+  private final Set<Notification> notifications = new HashSet<>();
 
   @OneToMany(mappedBy = "owner")  // TODO(deleteuser)
   private final Set<Game> developed = new HashSet<>();

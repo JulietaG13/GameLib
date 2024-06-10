@@ -10,6 +10,7 @@
         <class>model.Review</class>
         <class>model.News</class>
         <class>model.Developer</class>
+        <class>model.Notification</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbc.JDBCDriver"/>
