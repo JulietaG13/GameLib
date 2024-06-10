@@ -114,16 +114,19 @@ function ManageVideogame({type}) {
     }
 
     const deleteGame = async () => {
-        await axios.delete(`http://localhost:4567/deletegame/${videogameID.videogameID}`, {
+        console.log("About to delete game");
+        await axios.post(`http://localhost:4567/game/delete/${videogameID.videogameID}`, {}, {
             headers: {
                 'Content-Type': 'application/json',
                 'token': localStorage.getItem('token')
             }
         })
             .then(() => {
+                console.log("Game deleted");
                 manageSuccess();
             })
             .catch((e) => {
+                console.log("Error deleting game");
                 console.log(e);
                 manageFailure(e);
             })
