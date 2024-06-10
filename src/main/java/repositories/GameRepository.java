@@ -46,7 +46,7 @@ public class GameRepository {
     }
     
     public List<Game> listByLatest(int max) {
-        return entityManager.createQuery("SELECT g FROM Game g ORDER BY g.last_update DESC", Game.class)
+        return entityManager.createQuery("SELECT g FROM Game g ORDER BY g.lastUpdate DESC", Game.class)
             .setMaxResults(max)
             .getResultList();
     }
@@ -54,29 +54,36 @@ public class GameRepository {
     public void delete(Long id) {
         EntityTransaction tx = entityManager.getTransaction();
         tx.begin();
-
-        Game game = entityManager.find(Game.class, id);
-
-        System.out.println(100);
-        // Removes reviews related to the game
-        entityManager.createQuery("DELETE FROM Review r WHERE r.game.id = :id")
+    
+        // Delete related entities
+        entityManager.createNativeQuery("DELETE FROM game_in_shelf gis WHERE gis.game_id = :id")
             .setParameter("id", id)
             .executeUpdate();
-
-        System.out.println(101);
-        // Removes shelves related to the game
-        game.getInShelves().forEach(shelf -> shelf.getGames().remove(game));
-
-        System.out.println(102);
-        // Removes tags related to the game
-        game.getTags().forEach(tag -> tag.getTaggedGames().remove(game));
-
-        System.out.println(103);
-        // Finally, removes the game
-        entityManager.createQuery("DELETE FROM Game g WHERE g.id = :id")
+    
+        entityManager.createNativeQuery("DELETE FROM games_tagged gt WHERE gt.game_id = :id")
             .setParameter("id", id)
             .executeUpdate();
-        System.out.println(104);
+    
+        entityManager.createNativeQuery("DELETE FROM games_upvoted gu WHERE gu.game_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+    
+        entityManager.createNativeQuery("DELETE FROM game_subscriptions gs WHERE gs.game_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+    
+        entityManager.createNativeQuery("DELETE FROM upvoted_by ub WHERE ub.game_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+    
+        entityManager.createNativeQuery("DELETE FROM Review r WHERE r.game_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+    
+        // Delete the game itself
+        entityManager.createNativeQuery("DELETE FROM Game g WHERE g.id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
 
         tx.commit();
     }

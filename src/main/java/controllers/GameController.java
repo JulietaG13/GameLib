@@ -31,6 +31,7 @@ import java.util.Optional;
 public class GameController implements Controller {
   private static final String ROUTE_CREATE_GAME = "/game/create";
   private static final String ROUTE_EDIT_GAME = "/game/edit/:game_id";
+  private static final String ROUTE_DELETE_GAME = "/game/delete/:game_id";
   private static final String ROUTE_GET_BY_TAG = "/game/get/tag/:tag_id";
   private static final String ROUTE_IS_SUBSCRIBED = "/game/subs/is/:game_id";         // header: token
   private static final String ROUTE_SUBSCRIBE = "/game/subs/subscribe/:game_id";      // header: token
@@ -54,6 +55,7 @@ public class GameController implements Controller {
   public void run() {
     setRouteCreateGame();
     setRouteEditGame();
+    setRouteDeleteGame();
     setRouteGetByTag();
     setRouteIsSubscribed();
     setRouteSubscribe();
@@ -293,6 +295,57 @@ public class GameController implements Controller {
 
   }
 
+  private void setRouteDeleteGame() {
+    Spark.post(ROUTE_DELETE_GAME, "application/json", (req, resp) -> {
+      EntityManager em = factory.createEntityManager();
+  
+      String token = req.headers(Token.PROPERTY_NAME);
+      if (token == null || !AccessControlService.isTokenValid(token)) {
+        resp.status(401);
+        return ErrorMessages.userMustBeLoggedIn();
+      }
+      String username = AccessControlService.getUsernameFromToken(token); // already checked with token validation
+      Optional<User> dev = new UserRepository(em).findByUsername(username);
+  
+      if (dev.isEmpty()) {
+        resp.status(404);
+        return ErrorMessages.usernameNotFound(username);
+      }
+      if (!UserService.isAbleToCreateGame(dev.get())) {
+        resp.status(401);
+        return ErrorMessages.userMustBeDeveloper();
+      }
+      
+      long gameId;
+      try {
+        gameId = Long.parseLong(req.params(":game_id"));
+      } catch (NumberFormatException e) {
+        resp.status(403);
+        return ErrorMessages.informationNotNumber("Game ID");
+      }
+      GameRepository gameRepository = new GameRepository(em);
+      Optional<Game> game = gameRepository.findById(gameId);
+  
+      if (game.isEmpty()) {
+        resp.status(404);
+        return ErrorMessages.informationNotFound("Game");
+      }
+  
+      if (!GameService.isAbleToDeleteGame(dev.get(), game.get())) {
+        resp.status(401);
+        return ErrorMessages.userNotAllowedToPerformAction();
+      }
+    
+      resp.type("application/json");
+      resp.status(204);
+      
+      gameRepository.delete(gameId);
+      
+      em.close();
+      return "";
+    });
+  }
+  
   private void setRouteGetByTag() {
     Spark.get(ROUTE_GET_BY_TAG, "application/json", (req, resp) -> {
       EntityManager em = factory.createEntityManager();

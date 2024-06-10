@@ -9,4 +9,8 @@ public class GameService {
     public static boolean isAbleToEditGame(User user, Game game) {
         return user.getRol() == Rol.ADMIN || user.getId().equals(game.getOwner().getId());
     }
+    
+    public static boolean isAbleToDeleteGame(User user, Game game) {
+        return user.getRol() == Rol.ADMIN || user.getId().equals(game.getOwner().getId());
+    }
 }
