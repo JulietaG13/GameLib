@@ -20,7 +20,6 @@ function VideogameView() {
     const [review, setReview] = useState('');
 
     const [errorMessage, setErrorMessage] = useState('');
-    const [errorSubscribeMessage, setErrorSubscribeMessage] = useState('');
 
     const [navigateHome, setNavigateHome] = useState(false);
     const [navigateEdit, setNavigateEdit] = useState(false);
@@ -48,13 +47,11 @@ function VideogameView() {
                     })
                     .catch((e) => {
                         console.log(e.response.data);
-                        setErrorSubscribeMessage(e.response.data);
                     })
             })
             .catch((e) => {
                 localStorage.clear();
                 setUser(-1);
-                setErrorSubscribeMessage(e.response.data);
             })
     }, []);
 
@@ -181,11 +178,6 @@ function VideogameView() {
                                      onClick={handleSubscription}
                                 />
                             </div>
-                            :
-                            null
-                        }
-                        {errorSubscribeMessage !== '' ?
-                            <ErrorView message={errorSubscribeMessage}/>
                             :
                             null
                         }
