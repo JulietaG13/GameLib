@@ -34,57 +34,22 @@ const ScrollContainer = styled.div`
     }
 `;
 
-// Adjusted GameItem styling
-const GameItem = styled.div`
-  flex-shrink: 0;
-  width: 250px;
-  background-color: black;
-  padding: 0.1rem;
-  border-radius: 0.75rem; 
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-  transition: transform 0.3s ease-in-out; 
 
-  &:hover {
-    transform: translateY(-5px); // Lift up on hover instead of scaling
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  img {
-    width: 100%;
-    height: 400px;
-    object-fit: cover; 
-    border-radius: 0.5rem;  
-  }
-
-  h2 {
-    color: white;
-    margin-top: 1rem;
-    font-size: 1.125rem;  
-    font-weight: bold;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-`;
-
-
-function GamesFromDB({ gamesFromDB, title }) {
+function MapUsers({users}) {
     const scrollRef = useRef(null);
-
 
     return (
         <Container>
-            <h2 className="font-schibsted text-[30px] text-black pt-10 pb-5">{title}</h2>
+            <h2 className="font-schibsted text-[30px] text-black pt-10 pb-5">Users</h2>
             <ScrollContainer ref={scrollRef}>
-                {gamesFromDB.map((game) => (
-                    <Link key={game.id} to={'/videogame/' + game.id}>
-                        <GameItem> {/* Use the styled GameItem component */}
-                            <img
-                                src={game.background_image}
-                                alt={game.name}
-                            />
-                            <h2 className={"p-1 flex justify-center"}>{game.name}</h2>
-                        </GameItem>
+                {users.map((user) => (
+                    <Link key={user.id} to={'/profile/' + user.username}>
+                        <div className="flex-shrink-0 w-[250px] bg-black p-1.5  rounded-lg hover:scale-105 ease-in-out duration-300 cursor-pointer shadow-md">
+                            <img src={user.pfp} className="w-full h-[400px] rounded-xl object-cover" alt={user.name} />
+                            <h2 className="text-white pt-5 text-lg font-bold truncate">
+                                {user.name}
+                            </h2>
+                        </div>
                     </Link>
                 ))}
             </ScrollContainer>
@@ -92,4 +57,4 @@ function GamesFromDB({ gamesFromDB, title }) {
     );
 }
 
-export default GamesFromDB;
+export default MapUsers;

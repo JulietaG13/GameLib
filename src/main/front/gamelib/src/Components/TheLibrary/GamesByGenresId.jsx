@@ -2,9 +2,6 @@ import {useEffect} from 'react';
 import {Link} from "react-router-dom";
 
 function GamesByGenresId({gameList}) {
-    useEffect(() => {
-        console.log("gameListByGenres", gameList);
-    });
 
 
 

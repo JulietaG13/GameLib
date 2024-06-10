@@ -30,6 +30,7 @@ public class UserController implements Controller {
     private static final String ROUTE_PROFILE_EDIT_PFP = "/user/profile/:username/edit/pfp";
     private static final String ROUTE_PROFILE_EDIT_BANNER = "/user/profile/:username/edit/banner";
     private static final String ROUTE_GET_FRIENDS = "/user/friends/get/:id";
+    private static final String ROUTE_GET_IS_FRIEND = "/user/friends/isfriend/:friend_id";              // header: token
     private static final String ROUTE_GET_PENDING_FRIENDS_REQUESTS = "/user/friends/pending/get";       // header: token
     private static final String ROUTE_GET_SENT_FRIENDS_REQUESTS = "/user/friends/sent/get";             // header: token
     private static final String ROUTE_SEND_FRIEND_REQUEST = "/user/friends/send/:friend_id";            // header: token
@@ -57,6 +58,7 @@ public class UserController implements Controller {
         setRouteEditPfp();
         setRouteEditBanner();
         setRouteGetFriends();
+        setRouteGetIsFriend();
         setRouteGetPendingFriendsRequests();
         setRouteGetSentFriendsRequests();
         setRouteSendFriendRequest();
@@ -252,6 +254,51 @@ public class UserController implements Controller {
             JsonObject jsonObject = new JsonObject();
             jsonObject.add("friends", jsonFriends);
 
+            em.close();
+            return jsonObject;
+        });
+    }
+    
+    private void setRouteGetIsFriend() {
+        Spark.get(ROUTE_GET_IS_FRIEND, "application/json", (req, resp) -> {   // :friend_id | header: token
+            EntityManager em = factory.createEntityManager();
+    
+            String token = req.headers(Token.PROPERTY_NAME);
+            if (token == null || !AccessControlService.isTokenValid(token)) {
+                resp.status(401);
+                return ErrorMessages.userMustBeLoggedIn();
+            }
+            String username = AccessControlService.getUsernameFromToken(token);
+    
+            UserRepository userRepository = new UserRepository(em);
+            Optional<User> user = userRepository.findByUsername(username);
+            if (user.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.informationNotFound("User");
+            }
+            
+            long userId;
+            try {
+                userId = Long.parseLong(req.params(":friend_id"));
+            } catch (NumberFormatException e) {
+                resp.status(403);
+                return ErrorMessages.informationNotNumber("User ID");
+            }
+            
+            Optional<User> friend = userRepository.findById(userId);
+            if (friend.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.informationNotFound("Friend");
+            }
+            
+            resp.type("application/json");
+            resp.status(200);
+            
+            boolean isFriend = user.get().getFriends().contains(friend.get());
+            
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("is_friend", isFriend);
+            
             em.close();
             return jsonObject;
         });

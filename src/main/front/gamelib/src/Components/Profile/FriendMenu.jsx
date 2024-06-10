@@ -5,17 +5,22 @@ import axios from 'axios';
 function FriendMenu() {
     const [friends, setFriends] = useState([]);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const loggedInUsername = localStorage.getItem('username');
+    const [isRequestValid, setIsRequestValid] = useState(false);
 
     useEffect(() => {
         const fetchFriends = async () => {
-            try {
-                const userId = localStorage.getItem("id");
-                const response = await axios.get(`http://localhost:4567/user/friends/get/${userId}`);
-                setFriends(response.data.friends);
-            } catch (error) {
-                console.error("Error fetching friends:", error);
-            }
+            const userId = localStorage.getItem("id");
+            axios.get(`http://localhost:4567/user/friends/get/${userId}`,{},{
+            })
+                .then((response) => {
+                    setFriends(response.data.friends);
+                    setIsRequestValid(true); // La solicitud fue exitosa, establecer isRequestValid a true
+                }
+            ).catch(error => {
+                    console.error("Error fetching friends:", error);
+                    setIsRequestValid(false); // La solicitud falló, establecer isRequestValid a false
+                }
+            )
         };
 
         fetchFriends();
@@ -25,8 +30,8 @@ function FriendMenu() {
         setIsMenuOpen(!isMenuOpen);
     };
 
-    if (!loggedInUsername) {
-        return null; // No renderiza el menú si el usuario no está logueado
+    if (!isRequestValid) {
+        return null; // No renderiza el menú si el usuario no está logueado o la solicitud no es válida
     }
 
     return (

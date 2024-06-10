@@ -7,8 +7,8 @@ import model.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class UserRepository {
 
@@ -28,6 +28,12 @@ public class UserRepository {
                 .setParameter("username", username).getResultList()
                 .stream()
                 .findFirst();
+    }
+    
+    public List<User> findByUsernameLike(String username) {
+        return entityManager
+            .createQuery("SELECT u FROM User u WHERE LOWER(u.username) LIKE :like", User.class)
+            .setParameter("like", username.toLowerCase() + "%").getResultList();
     }
 
     public Optional<User> findByEmail(String email) {

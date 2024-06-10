@@ -22,7 +22,7 @@ public class TagRepository {
   
   public Optional<Tag> findByName(String name) {
     return entityManager
-        .createQuery("SELECT t FROM Tag t WHERE t.name LIKE :name", Tag.class)
+        .createQuery("SELECT t FROM Tag t WHERE LOWER(t.name) LIKE LOWER(:name)", Tag.class)
         .setParameter("name", name).getResultList()
         .stream()
         .findFirst();
