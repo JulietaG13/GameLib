@@ -32,6 +32,7 @@ function Shelves({ username }) {
             }
         })
             .then(r => {
+                console.log(r.data)
                 setShelves(r.data);
             })
             .catch(error => console.error("Error fetching shelves:", error));
