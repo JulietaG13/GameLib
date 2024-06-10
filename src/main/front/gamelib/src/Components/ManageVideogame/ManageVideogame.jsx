@@ -124,6 +124,10 @@ function ManageVideogame({type}) {
             .then(() => {
                 manageSuccess();
             })
+            .catch((e) => {
+                console.log(e);
+                manageFailure(e);
+            })
         setNavigate(true);
     }
 

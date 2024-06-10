@@ -34,7 +34,6 @@ function VideogameView() {
         })
             .then(response => {
                 setUser(getIDAndRol(response.data));
-                console.log(localStorage.getItem('token'));
                 axios.get(`http://localhost:4567/game/subs/is/${videogameID.videogameID}`, {
                     headers: {
                         'Content-Type': 'application/json',
@@ -42,7 +41,6 @@ function VideogameView() {
                     }
                 })
                     .then(r => {
-                        console.log(r);
                         setSubscription(r.data.is_subscribed);
                     })
                     .catch((e) => {
@@ -77,35 +75,6 @@ function VideogameView() {
             });
     }, [videogameID, review]);
 
-    const publishReview = (event) => {
-        event.preventDefault();
-        if (review === '') return;
-        axios.post(`http://localhost:4567/newreview/${videogameID.videogameID}`, {
-            'text': review
-        }, {
-            headers: {
-                'Content-Type': 'application/json',
-                'token': localStorage.getItem('token')
-            }
-        })
-            .then(() => {
-                setReview('');
-                setErrorMessage('');
-            })
-            .catch(r => {
-                    if (!r.response.status) {
-                        setErrorMessage("Something went wrong")
-                    } else if (r.response.status === 401) {
-                        setErrorMessage("You need to be logged in to post a review.");
-                    } else {
-                        setErrorMessage(r.response.data)
-                    }
-                    setReview('');
-                    console.error('Error:', r);
-                }
-            );
-    }
-
     const redirectEdit = () => {
         setNavigateEdit(true);
     }
@@ -134,6 +103,39 @@ function VideogameView() {
                     console.error('Error:', error);
                 });
         }
+    }
+
+    const getDeveloper = (ownerID) => {
+
+    }
+
+    const publishReview = (event) => {
+        event.preventDefault();
+        if (review === '') return;
+        axios.post(`http://localhost:4567/newreview/${videogameID.videogameID}`, {
+            'text': review
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        })
+            .then(() => {
+                setReview('');
+                setErrorMessage('');
+            })
+            .catch(r => {
+                    if (!r.response.status) {
+                        setErrorMessage("Something went wrong")
+                    } else if (r.response.status === 401) {
+                        setErrorMessage("You need to be logged in to post a review.");
+                    } else {
+                        setErrorMessage(r.response.data)
+                    }
+                    setReview('');
+                    console.error('Error:', r);
+                }
+            );
     }
 
     if(navigateHome) {return <Navigate to={`/`}/>;}
@@ -186,11 +188,16 @@ function VideogameView() {
                     <div className={"attributesDiv"}>
                         <h2>About the game:</h2>
                         <p>{videogame.description}</p>
+                        {videogame.owner_id === null ?
+                            null
+                            :
+                            null
+                        }
                         <p>Date of release: {formatDate(videogame.release_date)}</p>
                         {videogame.tags.length === 0 ?
                             <p>No tags available</p>
                             :
-                            <p>Tags: {videogame.tags.map((tag) => tag.name + ', ')}</p>
+                            <p>Tags: {videogame.tags.map(tag => tag.name).join(', ')}</p>
                         }
                     </div>
 
