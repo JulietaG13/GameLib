@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class Notification implements interfaces.Notification {
+public class Notification implements interfaces.Notification, Comparable<Notification> {
   @Id
   private Long id;
   
@@ -24,6 +24,8 @@ public class Notification implements interfaces.Notification {
     this.owner = owner;
     this.description = description;
     dateTime = LocalDateTime.now();
+    
+    owner.addNotification(this);
   }
   
   // GETTERS AND SETTERS
@@ -32,6 +34,7 @@ public class Notification implements interfaces.Notification {
     this.id = id;
   }
   
+  @Override
   public Long getId() {
     return id;
   }
@@ -49,5 +52,16 @@ public class Notification implements interfaces.Notification {
   @Override
   public LocalDateTime getDateTime() {
     return dateTime;
+  }
+  
+  public void setDateTime(LocalDateTime dateTime) {
+    this.dateTime = dateTime;
+  }
+  
+  // OTHER
+  
+  @Override
+  public int compareTo(Notification other) {
+    return other.dateTime.compareTo(this.dateTime); // Descending order
   }
 }

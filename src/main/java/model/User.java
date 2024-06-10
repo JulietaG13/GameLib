@@ -295,6 +295,10 @@ public class User {
       developer.removeSubscriber(this);
     }
   }
+  
+  public void addNotification(Notification notification) {
+    this.notifications.add(notification);
+  }
 
   // GETTERS - SETTER //
   
@@ -408,6 +412,10 @@ public class User {
   
   public boolean isBanned() {
     return isBanned;
+  }
+  
+  public Set<Notification> getNotifications() {
+    return Collections.unmodifiableSet(notifications);
   }
 
   // INTERNAL HELPERS //
