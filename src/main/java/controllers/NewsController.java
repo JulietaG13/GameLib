@@ -182,7 +182,7 @@ public class NewsController implements Controller {
       News news = new News(title, description, game.get(), user.get());
       newsRepository.persist(news);
 
-      NewsService.notifyUsers(news);
+      NewsService.notifyUsers(news, em);
 
       em.close();
       return news.asJson();

@@ -36,6 +36,9 @@ public class User {
   private Rol rol;
   
   private boolean isBanned = false;
+  
+  @OneToMany(mappedBy = "owner")
+  private final Set<Notification> notifications = new HashSet<>();
 
   @OneToMany(mappedBy = "owner")  // TODO(deleteuser)
   private final Set<Game> developed = new HashSet<>();
@@ -292,6 +295,10 @@ public class User {
       developer.removeSubscriber(this);
     }
   }
+  
+  public void addNotification(Notification notification) {
+    this.notifications.add(notification);
+  }
 
   // GETTERS - SETTER //
   
@@ -405,6 +412,10 @@ public class User {
   
   public boolean isBanned() {
     return isBanned;
+  }
+  
+  public Set<Notification> getNotifications() {
+    return Collections.unmodifiableSet(notifications);
   }
 
   // INTERNAL HELPERS //
