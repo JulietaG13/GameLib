@@ -153,6 +153,7 @@ public class User {
     jsonObj.addProperty("email", email);
     jsonObj.addProperty("password", password);
     jsonObj.addProperty("rol", rol.name());
+    jsonObj.addProperty("is_banned", isBanned);
     return jsonObj;
   }
 
@@ -164,6 +165,7 @@ public class User {
     jsonObj.addProperty("biography", biography);
     jsonObj.addProperty("pfp", pfp);
     jsonObj.addProperty("banner", banner);
+    jsonObj.addProperty("is_banned", isBanned);
     return jsonObj;
   }
   
