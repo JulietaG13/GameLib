@@ -1,14 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import gameLibLogoRework from '../Assets/gamelibLogoReRework.png';
 import user_icon from "../Assets/user-icon.png";
+import bell_icon from '../Assets/notifbell.png'; // Asegúrate de tener un icono de campana en tus assets
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
 function Header() {
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
     const dropdownRef = useRef(null);
+    const notificationsRef = useRef(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [notifications, setNotifications] = useState([]);
     const navigate = useNavigate();
 
     function handleLogout() {
@@ -39,10 +43,17 @@ function Header() {
         setShowDropdown(!showDropdown);
     };
 
+    const toggleNotifications = () => {
+        setShowNotifications(!showNotifications);
+    };
+
     useEffect(() => {
         function handleClickOutside(event) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setShowDropdown(false);
+            }
+            if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
+                setShowNotifications(false);
             }
         }
         // Add event listener when the component mounts
@@ -55,6 +66,7 @@ function Header() {
 
     useEffect(() => {
         validateLogin();
+        fetchNotifications();
     }, []);
 
     function validateLogin() {
@@ -74,12 +86,25 @@ function Header() {
         });
     }
 
+    function fetchNotifications() {
+        // Fetch notifications from backend
+        axios.get('http://localhost:4567/notifications', {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        }).then(response => {
+            setNotifications(response.data.notifications);
+        }).catch(error => {
+            console.error('Error fetching notifications:', error);
+        });
+    }
+
     function handleSearch(event) {
         if (event.key === 'Enter' && searchQuery.trim() !== '') {
             navigate(`/search?query=${searchQuery}`);
         }
     }
-
 
     return (
         <div className="flex items-center bg-[#ff8341] h-20 px-4 justify-between">
@@ -100,9 +125,30 @@ function Header() {
                 </div>
             </div>
             <div className="flex items-center">
+                {isLoggedIn && (
+                    <div className="relative" ref={notificationsRef}>
+                        <img src={bell_icon} alt="notifications icon" className="cursor-pointer w-6 h-6 mr-6" onClick={toggleNotifications} />
+                        {showNotifications && (
+                            <div className="dropdown-content absolute bg-gray-100 w-60 py-2 shadow-md z-10 top-full right-0 flex flex-col pl-2 rounded-s">
+                                <h3 className="font-bold mb-2 text-black">Notifications</h3>
+                                {notifications.length === 0 ? (
+                                    <p>No notifications found</p>
+                                ) : (
+                                    <ul>
+                                        {notifications.map((notification, index) => (
+                                            <li key={index} className="mb-2">
+                                                {notification.message}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
                 {isLoggedIn ? (
                     <div className="flex flex-row justify-end p-1 items-center relative" ref={dropdownRef}>
-                    <h2 className="mr-2 font-helvetica">{localStorage.getItem('username') || 'Name'}</h2>
+                        <h2 className="mr-2 font-helvetica">{localStorage.getItem('username') || 'Name'}</h2>
                         <img src={user_icon} alt="user icon" className="cursor-pointer w-[3em] h-[3em]" onClick={toggleDropdown} />
                         {showDropdown && (
                             <div className="dropdown-content absolute bg-gray-100 w-40 py-2 shadow-md z-10 top-full right-0 flex flex-col pl-2 rounded-s">
