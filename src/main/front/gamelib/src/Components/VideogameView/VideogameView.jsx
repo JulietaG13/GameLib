@@ -49,7 +49,7 @@ function VideogameView() {
                         console.log(e.response.data);
                     })
             })
-            .catch((e) => {
+            .catch(() => {
                 localStorage.clear();
                 setUser(-1);
             })
