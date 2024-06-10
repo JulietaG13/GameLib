@@ -8,6 +8,10 @@ function FriendMenu() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isRequestValid, setIsRequestValid] = useState(false);
 
+    useEffect(() => {
+        validateLogin();
+    }, []);
+
     const fetchFriends = async () => {
         const userId = localStorage.getItem("id");
         axios.get(`http://localhost:4567/user/friends/get/${userId}`, {})
@@ -81,9 +85,6 @@ function FriendMenu() {
         });
     }
 
-    useEffect(() => {
-        validateLogin();
-    }, []);
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);

@@ -13,6 +13,7 @@ function Profile() {
     const [description, setDescription] = useState('DefaultDescription');
     const [notFound, setNotFound] = useState(false);
     const [isFriend, setIsFriend] = useState(false);
+    const [isPending, setIsPending] = useState(false); // State to track if the friend request is pending
     const [isFollowing, setIsFollowing] = useState(false); // State to track follow status
     const [isBanned, setIsBanned] = useState(false); // State to track if the user is banned
     const loggedInUsername = localStorage.getItem('username');
@@ -46,7 +47,6 @@ function Profile() {
     };
 
     const handleFollow = () => {
-        // Logic to send follow/unfollow request to the backend
         const endpoint = isFollowing ? 'unfollow' : 'follow';
         axios.post(`http://localhost:4567/dev/subs/subscribe/${localStorage.getItem("currentProfileId")}`, {}, {
             headers: {
@@ -62,10 +62,26 @@ function Profile() {
                 console.error("Error following/unfollowing developer:", error);
             });
     };
-
+    useEffect(() => {
+        if (loggedInUsername !== username) {
+            axios.get(`http://localhost:4567/user/friends/status/${localStorage.getItem("currentProfileId")}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': localStorage.getItem('token')
+                }
+            })
+                .then(response => {
+                    console.log(response.data);
+                    setIsFriend(response.data.is_friend);
+                    setIsPending(response.data.is_sent);
+                })
+                .catch(error => {
+                    console.error("Error checking friendship status:", error);
+                });
+        }
+    }, [username, loggedInUsername]);
     useEffect(() => {
         if (loggedInUsername !== username && localStorage.getItem('currentProfileRol') === 'developer') {
-            // Check if the logged-in user is already following the developer
             axios.get(`http://localhost:4567/dev/subs/subscribe/${localStorage.getItem("currentProfileId")}`, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -98,18 +114,7 @@ function Profile() {
             });
     }, [username]);
 
-    useEffect(() => {
-        if (loggedInUsername !== username) {
-            axios.get('http://localhost:4567/user/friends/get/' + localStorage.getItem("currentProfileId"), {})
-                .then(response => {
-                    console.log(response.data);
-                    setIsFriend(response.data.isFriend);
-                })
-                .catch(error => {
-                    console.error("Error checking friendship status:", error);
-                });
-        }
-    }, [username, loggedInUsername]);
+
 
     if (notFound) {
         return <Navigate to="/error" />;
@@ -129,7 +134,6 @@ function Profile() {
     };
 
     const handleAddFriend = () => {
-        console.log("Adding friend:", localStorage.getItem("currentProfileId"));
         axios.put(`http://localhost:4567/user/friends/send/${localStorage.getItem("currentProfileId")}`, {}, {
             headers: {
                 'Content-Type': 'application/json',
@@ -138,7 +142,7 @@ function Profile() {
         })
             .then(response => {
                 console.log("Friend request sent:", response);
-                setIsFriend(true);
+                setIsPending(true);
             })
             .catch(error => {
                 console.error("Error adding friend:", error);
@@ -146,7 +150,7 @@ function Profile() {
     };
 
     const handleDeleteFriend = () => {
-        axios.post('http://localhost:4567/user/friends/remove/' + username, {}, {
+        axios.put('http://localhost:4567/user/friends/remove/' + localStorage.getItem("currentProfileId"), {}, {
             headers: {
                 'Content-Type': 'application/json',
                 'token': localStorage.getItem('token')
@@ -154,6 +158,7 @@ function Profile() {
         })
             .then(response => {
                 setIsFriend(false);
+                setIsPending(false);
             })
             .catch(error => {
                 console.error("Error removing friend:", error);
@@ -183,9 +188,15 @@ function Profile() {
                                             Remove Friend
                                         </button>
                                     ) : (
-                                        <button onClick={handleAddFriend} className="bg-green-600 text-white py-2 px-4 rounded">
-                                            Add Friend
-                                        </button>
+                                        isPending ? (
+                                            <button className="bg-gray-600 text-white py-2 px-4 rounded">
+                                                Request Sent
+                                            </button>
+                                        ) : (
+                                            <button onClick={handleAddFriend} className="bg-green-600 text-white py-2 px-4 rounded">
+                                                Add Friend
+                                            </button>
+                                        )
                                     )}
 
                                     {localStorage.getItem('currentProfileRol') === 'DEVELOPER' && (
