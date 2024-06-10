@@ -30,7 +30,7 @@ public class UserController implements Controller {
     private static final String ROUTE_PROFILE_EDIT_PFP = "/user/profile/:username/edit/pfp";
     private static final String ROUTE_PROFILE_EDIT_BANNER = "/user/profile/:username/edit/banner";
     private static final String ROUTE_GET_FRIENDS = "/user/friends/get/:id";
-    private static final String ROUTE_GET_IS_FRIEND = "/user/friends/isfriend/:friend_id";              // header: token
+    private static final String ROUTE_GET_FRIEND_STATUS = "/user/friends/status/:friend_id";            // header: token
     private static final String ROUTE_GET_PENDING_FRIENDS_REQUESTS = "/user/friends/pending/get";       // header: token
     private static final String ROUTE_GET_SENT_FRIENDS_REQUESTS = "/user/friends/sent/get";             // header: token
     private static final String ROUTE_SEND_FRIEND_REQUEST = "/user/friends/send/:friend_id";            // header: token
@@ -58,7 +58,7 @@ public class UserController implements Controller {
         setRouteEditPfp();
         setRouteEditBanner();
         setRouteGetFriends();
-        setRouteGetIsFriend();
+        setRouteGetFriendStatus();
         setRouteGetPendingFriendsRequests();
         setRouteGetSentFriendsRequests();
         setRouteSendFriendRequest();
@@ -259,8 +259,8 @@ public class UserController implements Controller {
         });
     }
     
-    private void setRouteGetIsFriend() {
-        Spark.get(ROUTE_GET_IS_FRIEND, "application/json", (req, resp) -> {   // :friend_id | header: token
+    private void setRouteGetFriendStatus() {
+        Spark.get(ROUTE_GET_FRIEND_STATUS, "application/json", (req, resp) -> {   // :friend_id | header: token
             EntityManager em = factory.createEntityManager();
     
             String token = req.headers(Token.PROPERTY_NAME);
@@ -295,9 +295,13 @@ public class UserController implements Controller {
             resp.status(200);
             
             boolean isFriend = user.get().getFriends().contains(friend.get());
+            boolean isPending = user.get().getFriendRequestsPending().contains(friend.get());
+            boolean isSent = user.get().getFriendRequestsSent().contains(friend.get());
             
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("is_friend", isFriend);
+            jsonObject.addProperty("is_pending", isPending);
+            jsonObject.addProperty("is_sent", isSent);
             
             em.close();
             return jsonObject;
