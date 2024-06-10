@@ -22,6 +22,7 @@ import javax.persistence.Persistence;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -610,11 +611,21 @@ public class Application {
   private static void storeUsers1(EntityManager entityManager) {
     UserRepository userRepository = new UserRepository(entityManager);
     
-    if(userRepository.listAll().size() < 4) {
-      for(int i = 1; i < 5; i++) {
-        User u = User.create("username" + i).email("user" + i + "@mail.com").password("qwerty123").build();
-        userRepository.persist(u);
-      }
+    List<User> users = new ArrayList<>(5);
+    for(int i = 1; i < 6; i++) {
+      User u = User.create("username" + i).email("user" + i + "@mail.com").password("qwerty123").build();
+      users.add(u);
+    }
+    
+    if(userRepository.listAll().size() < 5) {
+      users.forEach(userRepository::persist);
+  
+      users.get(0).addFriend(users.get(1));
+      users.get(0).addFriend(users.get(2));
+      users.get(0).sendFriendRequest(users.get(3));
+      users.get(4).sendFriendRequest(users.get(0));
+      
+      users.forEach(userRepository::persist);
     }
   }
   
