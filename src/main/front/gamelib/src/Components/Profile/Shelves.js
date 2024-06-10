@@ -7,28 +7,33 @@ function Shelves({ username }) {
     const [selectedGame, setSelectedGame] = useState(null);
     const [selectedShelf, setSelectedShelf] = useState(null);
     const contextMenuRef = useRef(null);
+    const loggedInUsername = localStorage.getItem('username');
 
     const handleContextMenu = (event, game, shelf) => {
         event.preventDefault();
 
-        // Position the context menu near the mouse click
-        contextMenuRef.current.style.display = 'block';
-        contextMenuRef.current.style.left = `${event.pageX}px`;
-        contextMenuRef.current.style.top = `${event.pageY}px`;
+        if (username === loggedInUsername) {
+            // Position the context menu near the mouse click
+            contextMenuRef.current.style.display = 'block';
+            contextMenuRef.current.style.left = `${event.pageX}px`;
+            contextMenuRef.current.style.top = `${event.pageY}px`;
 
-        // Store the selected game and shelf in state
-        setSelectedGame(game);
-        setSelectedShelf(shelf);
+            // Store the selected game and shelf in state
+            setSelectedGame(game);
+            setSelectedShelf(shelf);
+        }
     };
 
     useEffect(() => {
-        axios.get(`http://localhost:4567/shelf/get/user/${username}/100`, {}, {
+        axios.get(`http://localhost:4567/shelf/get/user/${username}/100`, {
             headers: {
                 'Content-Type': 'application/json',
                 'token': localStorage.getItem('token')
             }
         })
-            .then(r => setShelves(r.data))
+            .then(r => {
+                setShelves(r.data)
+            })
             .catch(error => console.error("Error fetching shelves:", error));
     }, [username]);
 
@@ -48,17 +53,22 @@ function Shelves({ username }) {
     const handleRemoveGame = () => {
         if (selectedGame && selectedShelf) {
             console.log("Remove game:", selectedGame, "from shelf:", selectedShelf);
-            axios.post(`http://localhost:4567/shelf/remove/${selectedGame.shelf_id}/${selectedGame.id}/`, {}, {
+            axios.put(`http://localhost:4567/shelf/remove/${selectedShelf.id}/${selectedGame.id}`, {}, {
                 headers: {
                     'Content-Type': 'application/json',
                     'token': localStorage.getItem('token')
                 }
-            }
-            ).then(r => {
-
+            }).then(r => {
+                // Actualizar la lista de juegos después de eliminar uno
+                setShelves(prevShelves => prevShelves.map(shelf => {
+                    if (shelf.id === selectedShelf.id) {
+                        return { ...shelf, games: shelf.games.filter(game => game.id !== selectedGame.id) };
+                    }
+                    return shelf;
+                }));
             }).catch(
                 error => console.error("Error removing game from shelf:", error)
-            )
+            );
         }
         contextMenuRef.current.style.display = 'none';
     };
