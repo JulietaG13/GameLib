@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import gameLibLogoRework from '../Assets/gamelibLogoReRework.png';
 import user_icon from "../Assets/user-icon.png";
-import bell_icon from '../Assets/notifbell.png'; // Asegúrate de tener un icono de campana en tus assets
+import bell_icon from '../Assets/notifbell.png';
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
