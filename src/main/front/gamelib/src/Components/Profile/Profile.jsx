@@ -13,13 +13,83 @@ function Profile() {
     const [description, setDescription] = useState('DefaultDescription');
     const [notFound, setNotFound] = useState(false);
     const [isFriend, setIsFriend] = useState(false);
-
+    const [isFollowing, setIsFollowing] = useState(false); // State to track follow status
+    const [isBanned, setIsBanned] = useState(false); // State to track if the user is banned
     const loggedInUsername = localStorage.getItem('username');
+
+    const handleAdminAction = () => {
+        axios.put('http://localhost:4567/admin/ban/' + localStorage.getItem("currentProfileId"), {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        }).then(() => {
+            console.log("User banned successfully");
+            setIsBanned(true); // Update state to indicate the user is banned
+        }).catch(e => {
+            console.error('Error:', e);
+        })
+    };
+
+    const handleUnbanUser = () => {
+        axios.put('http://localhost:4567/admin/unban/' + localStorage.getItem("currentProfileId"), {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        }).then(() => {
+            console.log("User unbanned successfully");
+            setIsBanned(false); // Update state to indicate the user is unbanned
+        }).catch(e => {
+            console.error('Error:', e);
+        })
+    };
+
+    const handleFollow = () => {
+        // Logic to send follow/unfollow request to the backend
+        const endpoint = isFollowing ? 'unfollow' : 'follow';
+        axios.post(`http://localhost:4567/dev/subs/subscribe/${localStorage.getItem("currentProfileId")}`, {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        })
+            .then(response => {
+                console.log(response.data.message);
+                setIsFollowing(!isFollowing); // Toggle the follow status
+            })
+            .catch(error => {
+                console.error("Error following/unfollowing developer:", error);
+            });
+    };
+
+    useEffect(() => {
+        if (loggedInUsername !== username && localStorage.getItem('currentProfileRol') === 'developer') {
+            // Check if the logged-in user is already following the developer
+            axios.get(`http://localhost:4567/dev/subs/subscribe/${localStorage.getItem("currentProfileId")}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': localStorage.getItem('token')
+                }
+            })
+                .then(response => {
+                    setIsFollowing(response.data.isFollowing);
+                })
+                .catch(error => {
+                    console.error("Error checking follow status:", error);
+                });
+        }
+    }, [username, loggedInUsername]);
 
     useEffect(() => {
         axios.get(`http://localhost:4567/getprofile/${username}`)
             .then(response => {
-                localStorage.setItem('id', response.data.id);
+                console.log(response.data);
+
+                setIsBanned(response.data.is_banned);
+
+                localStorage.setItem('currentProfileRol', response.data.rol);
+                localStorage.setItem('currentProfileId', response.data.id);
                 setUsernameResponse(response.data.username);
                 setDescription(response.data.biography);
             })
@@ -30,8 +100,9 @@ function Profile() {
 
     useEffect(() => {
         if (loggedInUsername !== username) {
-            axios.post('http://localhost:4567/user/isFriend', { username })
+            axios.get('http://localhost:4567/user/friends/get/' + localStorage.getItem("currentProfileId"), {})
                 .then(response => {
+                    console.log(response.data);
                     setIsFriend(response.data.isFriend);
                 })
                 .catch(error => {
@@ -46,22 +117,20 @@ function Profile() {
 
     const navigateToEditProfile = () => {
         axios.post('http://localhost:4567/tokenvalidation', {}, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'token': localStorage.getItem('token')
-                }
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
             }
-        ).then(() => {
-                navigate(`/profile/${localStorage.getItem("username")}/edit`);
-            }
-        ).catch(e => {
+        }).then(() => {
+            navigate(`/profile/${localStorage.getItem("username")}/edit`);
+        }).catch(e => {
             console.error('Error:', e);
         });
     };
 
     const handleAddFriend = () => {
-        console.log("Adding friend:", localStorage.getItem("id"));
-        axios.put(`http://localhost:4567/user/friends/send/${localStorage.getItem("id")}`, {},{
+        console.log("Adding friend:", localStorage.getItem("currentProfileId"));
+        axios.put(`http://localhost:4567/user/friends/send/${localStorage.getItem("currentProfileId")}`, {}, {
             headers: {
                 'Content-Type': 'application/json',
                 'token': localStorage.getItem('token')
@@ -77,7 +146,12 @@ function Profile() {
     };
 
     const handleDeleteFriend = () => {
-        axios.post('http://localhost:4567/user/removeFriend', { username })
+        axios.post('http://localhost:4567/user/friends/remove/' + username, {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        })
             .then(response => {
                 setIsFriend(false);
             })
@@ -93,44 +167,55 @@ function Profile() {
                 <div className='flex flex-col md:flex-row'>
                     <div className='flex-grow'>
                         {/* Banner */}
-                        <div className='bg-white relative'>
+                        <div className='bg-white relative pt-1 '>
                             <img src={gamelib_logo} className="w-full h-[250px] object-cover" alt="GameLib Logo"/>
-                            {/* Add/Remove Friend*/}
+                            {/* Buttons */}
                             {loggedInUsername === username ? (
-                                <button onClick={navigateToEditProfile}
-                                        className="absolute top-4 right-4 bg-blue-600 text-white py-2 px-4 rounded">
+                                // Edit Profile button for the user's own profile
+                                <button onClick={navigateToEditProfile} className="absolute top-4 right-4 text-white py-2 px-4 rounded">
                                     Edit Profile
                                 </button>
                             ) : (
-                                isFriend ? (
-                                    <button onClick={handleDeleteFriend}
-                                            className="absolute top-4 right-4 bg-red-600 text-white py-2 px-4 rounded">
-                                        Remove Friend
-                                    </button>
-                                ) : (
-                                    <button onClick={handleAddFriend}
-                                            className="absolute top-4 right-4 bg-green-600 text-white py-2 px-4 rounded">
-                                        Add Friend
-                                    </button>
-                                )
+                                // Add/Remove Friend and Follow/Unfollow buttons for other profiles
+                                <div className="absolute top-4 right-4 flex space-x-2">
+                                    {isFriend ? (
+                                        <button onClick={handleDeleteFriend} className="bg-red-600 text-white py-2 px-4 rounded">
+                                            Remove Friend
+                                        </button>
+                                    ) : (
+                                        <button onClick={handleAddFriend} className="bg-green-600 text-white py-2 px-4 rounded">
+                                            Add Friend
+                                        </button>
+                                    )}
+
+                                    {localStorage.getItem('currentProfileRol') === 'DEVELOPER' && (
+                                        <button onClick={handleFollow} className="bg-yellow-500 text-white py-2 px-4 rounded">
+                                            {isFollowing ? 'Unfollow' : 'Follow'}
+                                        </button>
+                                    )}
+
+                                    {/* Admin Action Button (only visible to admins) */}
+                                    {localStorage.getItem('rol') === 'ADMIN' && (
+                                        <button onClick={isBanned ? handleUnbanUser : handleAdminAction} className="bg-purple-600 text-white py-2 px-4 rounded">
+                                            {isBanned ? 'Unban' : 'Ban'}
+                                        </button>
+                                    )}
+                                </div>
                             )}
                             {/* Profile Information */}
-                            <div
-                                className="bg-blue-500 w-3/5 md:w-1/3 lg:w-2/12 flex flex-col h-3/5 items-center mx-auto md:mx-16 z-40 -mt-32  rounded-lg">
-                                <img src={userProfile}
-                                     className="h-48 w-full md:h-56 md:w-full bg-amber-200 object-cover"
-                                     alt="User Profile"/>
-                                <div className="text-center mt-4">
+                            <div className="flex  w-4/5 md:w-3/4 lg:w-1/2 h-auto items-center mx-auto md:mx-16 z-40 -mt-32 rounded-lg p-4">
+                                <img src={userProfile} className="h-48 w-48 md:h-56 md:w-56 bg-amber-200 object-cover" alt="User Profile"/>
+                                <div className="ml-4 pt-20 ">
                                     <h1 className="font-bold text-xl md:text-2xl">{usernameResponse}</h1>
                                     <h2 className="font-semibold text-lg md:text-xl pt-2 pb-1">About me</h2>
-                                    <p className="font-normal px-2 md:px-4">{description}</p>
+                                    <p className="font-normal">{description}</p>
                                 </div>
                             </div>
                         </div>
                         {/* Shelves */}
                         <div className="bg-white mt-8">
                             <h1 className="pl-4 md:pl-16 font-bold text-2xl pt-5">All Shelves</h1>
-                            <Shelves username={username}/>
+                            <Shelves username={username} />
                         </div>
                     </div>
                 </div>

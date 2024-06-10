@@ -51,6 +51,8 @@ const Login = () => {
 
             const { token, refreshToken } = response.data;
 
+            localStorage.setItem('rol', response.data.rol);
+            localStorage.setItem('id', response.data.id);
             localStorage.setItem('token', token);
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('username', username);
