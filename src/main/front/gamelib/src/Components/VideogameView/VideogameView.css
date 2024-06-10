@@ -111,6 +111,7 @@
     display: flex;
     align-items: center;
     flex-direction: row;
+    margin-top: 1em;
     background-color: #d1d1d1;
 }
 
