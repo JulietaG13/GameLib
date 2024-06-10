@@ -25,7 +25,7 @@ function Header() {
     }
 
     function handleDeleteUser() {
-        axios.post(`http://localhost:4567/deleteuser/${localStorage.getItem('username')}`, {}, {
+        axios.post(`http://localhost:4567/user/delete/${localStorage.getItem('id')}`, {}, {
             headers: {
                 'Content-Type': 'application/json',
                 'token': localStorage.getItem('token')
@@ -34,6 +34,7 @@ function Header() {
             .then(response => {
                 localStorage.removeItem('token');
                 localStorage.removeItem('username');
+                window.location.reload();
             }).catch(error => {
             console.error('Error:', error);
         });

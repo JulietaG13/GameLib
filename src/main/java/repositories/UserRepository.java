@@ -48,24 +48,78 @@ public class UserRepository {
         return entityManager.createQuery("SELECT u FROM User u", User.class).getResultList();
     }
 
-    public void deleteAll() {
-        new ShelfRepository(entityManager).deleteAll(); // delete child
-        entityManager.createQuery("DELETE FROM User").executeUpdate();
-    }
-
     public void deleteUserByID(Long id) {
         Optional<User> user = findById(id);
         // if (user.isEmpty())
         EntityTransaction tx = entityManager.getTransaction();
 
         tx.begin();
-        entityManager.createQuery("DELETE FROM Review R WHERE R.author = :user")
-                .setParameter("user", user.get())
-                .executeUpdate();
-
-        entityManager.createQuery("DELETE FROM User U WHERE U.id = :id")
-                .setParameter("id", id)
-                .executeUpdate();
+    
+        // Remove user from friends
+        entityManager.createNativeQuery("DELETE FROM user_friends WHERE user_id = :id OR friend_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+    
+        // Remove user from friend requests sent
+        entityManager.createNativeQuery("DELETE FROM friend_requests_sent WHERE user_id = :id OR request_sent_to_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+    
+        // Remove user from friend requests pending
+        entityManager.createNativeQuery("DELETE FROM friend_requests_pending WHERE user_id = :id OR request_pending_from_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+    
+        // Remove user's liked reviews
+        entityManager.createNativeQuery("DELETE FROM liked_by WHERE user_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+    
+        // Remove user's disliked reviews
+        entityManager.createNativeQuery("DELETE FROM disliked_by WHERE user_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+    
+        // Remove user's upvoted games
+        entityManager.createNativeQuery("DELETE FROM upvoted_by WHERE user_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+    
+        // Remove user from subscribed games
+        entityManager.createNativeQuery("DELETE FROM game_subscriptions WHERE user_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+    
+        // Remove user from subscribed developers
+        entityManager.createNativeQuery("DELETE FROM developer_subscriptions WHERE user_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+    
+        // Delete notifications owned by user
+        entityManager.createNativeQuery("DELETE FROM notification WHERE owner_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+    
+        // Delete reviews authored by user
+        entityManager.createNativeQuery("DELETE FROM review WHERE author_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+    
+        // Delete games developed by user
+        entityManager.createNativeQuery("DELETE FROM game WHERE owner_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+    
+        // Delete developer
+        entityManager.createNativeQuery("DELETE FROM developer WHERE user_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+    
+        // Delete the user itself
+        entityManager.createNativeQuery("DELETE FROM user WHERE id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+        
         tx.commit();
     }
 

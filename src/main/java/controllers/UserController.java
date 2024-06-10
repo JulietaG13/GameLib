@@ -21,11 +21,11 @@ import java.util.Optional;
 
 public class UserController implements Controller {
     private static final String ROUTE_GET_ALL = "/user/all";
-    private static final String ROUTE_GET_USER = "/user/:username";
+    private static final String ROUTE_GET_USER = "/user/get/username/:username";
     private static final String ROUTE_GET_USER_BY_ID = "/user/get/:id";
     private static final String ROUTE_GET_PROFILE = "/user/profile/:username";
-    private static final String ROUTE_DELETE = "/user/delete/:username";
-    private static final String ROUTE_CREATE = "/user/create";
+    private static final String ROUTE_DELETE_USER = "/user/delete/:id";                                 // header: token
+    private static final String ROUTE_CREATE_USER = "/user/create";
     private static final String ROUTE_LOGIN = "/user/login";
     private static final String ROUTE_PROFILE_EDIT = "/user/profile/:username/edit";
     private static final String ROUTE_PROFILE_EDIT_PFP = "/user/profile/:username/edit/pfp";
@@ -56,6 +56,7 @@ public class UserController implements Controller {
     public void run() {
         setRouteGetAll();
         setRouteGetUserById();
+        setRouteDeleteUser();
         setRouteEditProfile();
         setRouteEditPfp();
         setRouteEditBanner();
@@ -113,6 +114,48 @@ public class UserController implements Controller {
         
             em.close();
             return user.get().asJsonProfile();
+        });
+    }
+    
+    private void setRouteDeleteUser() {
+        Spark.post(ROUTE_DELETE_USER, "application/json", (req, resp) -> {
+            EntityManager em = factory.createEntityManager();
+    
+            String token = req.headers(Token.PROPERTY_NAME);
+            if (token == null || !AccessControlService.isTokenValid(token)) {
+                resp.status(401);
+                return ErrorMessages.userMustBeLoggedIn();
+            }
+            String username = AccessControlService.getUsernameFromToken(token);
+            Optional<User> user = new UserRepository(em).findByUsername(username);
+    
+            if (user.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.usernameNotFound(username);
+            }
+            
+            long userId;
+            try {
+                userId = Long.parseLong(req.params(":id"));
+            } catch (NumberFormatException e) {
+                resp.status(403);
+                return ErrorMessages.informationNotNumber("User ID");
+            }
+            
+            UserRepository userRepository = new UserRepository(em);
+            Optional<User> userToBeDeleted = userRepository.findById(userId);
+            if (userToBeDeleted.isEmpty()) {
+                resp.status(404);
+                return ErrorMessages.informationNotFound("User To Be Deleted");
+            }
+            
+            resp.type("application/json");
+            resp.status(204);
+            
+            userRepository.deleteUserByID(userId);
+            
+            em.close();
+            return "";
         });
     }
     
