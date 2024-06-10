@@ -5,6 +5,7 @@ import { useParams, useNavigate, Navigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../Header/Header";
 import Shelves from "./Shelves";
+import AlertMessage from "./AlertMessage";
 
 function Profile() {
     const navigate = useNavigate();
@@ -13,9 +14,13 @@ function Profile() {
     const [description, setDescription] = useState('DefaultDescription');
     const [notFound, setNotFound] = useState(false);
     const [isFriend, setIsFriend] = useState(false);
+    const [isPending, setIsPending] = useState(false); // State to track if the friend request is pending
     const [isFollowing, setIsFollowing] = useState(false); // State to track follow status
     const [isBanned, setIsBanned] = useState(false); // State to track if the user is banned
     const loggedInUsername = localStorage.getItem('username');
+    const [alert, setAlert] = useState({ message: '', visible: false, position: { top: 0, left: 0 } }); // State for alert
+
+
 
     const handleAdminAction = () => {
         axios.put('http://localhost:4567/admin/ban/' + localStorage.getItem("currentProfileId"), {}, {
@@ -29,6 +34,21 @@ function Profile() {
         }).catch(e => {
             console.error('Error:', e);
         })
+    };
+
+    const validateLogin = async () => {
+        try {
+            await axios.post('http://localhost:4567/tokenvalidation', {}, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': localStorage.getItem('token')
+                }
+            });
+            return true;
+        } catch (error) {
+            console.error('Error validating login:', error);
+            return false;
+        }
     };
 
     const handleUnbanUser = () => {
@@ -45,41 +65,83 @@ function Profile() {
         })
     };
 
-    const handleFollow = () => {
-        // Logic to send follow/unfollow request to the backend
-        const endpoint = isFollowing ? 'unfollow' : 'follow';
-        axios.post(`http://localhost:4567/dev/subs/subscribe/${localStorage.getItem("currentProfileId")}`, {}, {
+    const handleFollow = async (event) => {
+        const isLoggedIn = await validateLogin();
+        if (!isLoggedIn) {
+            showAlert("You need to be logged in to perform this action.", event);
+            return;
+        }
+
+        const endpoint = isFollowing ? 'unsubscribe' : 'subscribe';
+        axios.post(`http://localhost:4567/dev/subs/${endpoint}/${localStorage.getItem("currentProfileId")}`, {}, {
             headers: {
                 'Content-Type': 'application/json',
                 'token': localStorage.getItem('token')
             }
         })
-            .then(response => {
-                console.log(response.data.message);
+            .then(() => {
                 setIsFollowing(!isFollowing); // Toggle the follow status
             })
             .catch(error => {
-                console.error("Error following/unfollowing developer:", error);
+                console.error(`Error ${isFollowing ? 'unfollowing' : 'following'} developer:`, error);
             });
     };
 
+    const showAlert = (message, event) => {
+        const rect = event.target.getBoundingClientRect();
+        let leftPosition = rect.left;
+        if (leftPosition + 300 > window.innerWidth) {
+            leftPosition = window.innerWidth - 320; // Ajuste para que el popup no se salga de la pantalla
+        }
+        setAlert({
+            message,
+            visible: true,
+            position: { top: rect.top + rect.height - 70, left: leftPosition }
+        });
+        setTimeout(() => setAlert({ ...alert, visible: false }), 6000);
+    };
+
+
     useEffect(() => {
-        if (loggedInUsername !== username && localStorage.getItem('currentProfileRol') === 'developer') {
-            // Check if the logged-in user is already following the developer
-            axios.get(`http://localhost:4567/dev/subs/subscribe/${localStorage.getItem("currentProfileId")}`, {
+        if (loggedInUsername !== username) {
+            axios.get(`http://localhost:4567/user/friends/status/${localStorage.getItem("currentProfileId")}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'token': localStorage.getItem('token')
                 }
             })
                 .then(response => {
-                    setIsFollowing(response.data.isFollowing);
+                    console.log(response.data);
+                    setIsFriend(response.data.is_friend);
+                    setIsPending(response.data.is_sent);
                 })
                 .catch(error => {
-                    console.error("Error checking follow status:", error);
+                    console.error("Error checking friendship status:", error);
                 });
         }
     }, [username, loggedInUsername]);
+
+    useEffect(() => {
+        if (loggedInUsername !== username) {
+            axios.get(`http://localhost:4567/dev/subs/is/${localStorage.getItem("currentProfileId")}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': localStorage.getItem('token')
+                }
+            })
+                .then(response => {
+                    console.log(response.data);
+                    setIsFollowing(response.data.is_subscribed);
+                })
+                .catch(error => {
+                    console.error("Error checking following status:", error);
+                });
+        }
+    }, [username, loggedInUsername]);
+
+
+
+
 
     useEffect(() => {
         axios.get(`http://localhost:4567/getprofile/${username}`)
@@ -98,22 +160,10 @@ function Profile() {
             });
     }, [username]);
 
-    useEffect(() => {
-        if (loggedInUsername !== username) {
-            axios.get('http://localhost:4567/user/friends/get/' + localStorage.getItem("currentProfileId"), {})
-                .then(response => {
-                    console.log(response.data);
-                    setIsFriend(response.data.isFriend);
-                })
-                .catch(error => {
-                    console.error("Error checking friendship status:", error);
-                });
-        }
-    }, [username, loggedInUsername]);
-
     if (notFound) {
         return <Navigate to="/error" />;
     }
+
 
     const navigateToEditProfile = () => {
         axios.post('http://localhost:4567/tokenvalidation', {}, {
@@ -128,8 +178,15 @@ function Profile() {
         });
     };
 
-    const handleAddFriend = () => {
-        console.log("Adding friend:", localStorage.getItem("currentProfileId"));
+
+
+    const handleAddFriend = async (event) => {
+        const isLoggedIn = await validateLogin();
+        if (!isLoggedIn) {
+            showAlert("You need to be logged in to perform this action.", event);
+            return;
+        }
+
         axios.put(`http://localhost:4567/user/friends/send/${localStorage.getItem("currentProfileId")}`, {}, {
             headers: {
                 'Content-Type': 'application/json',
@@ -138,22 +195,29 @@ function Profile() {
         })
             .then(response => {
                 console.log("Friend request sent:", response);
-                setIsFriend(true);
+                setIsPending(true);
             })
             .catch(error => {
                 console.error("Error adding friend:", error);
             });
     };
 
-    const handleDeleteFriend = () => {
-        axios.post('http://localhost:4567/user/friends/remove/' + username, {}, {
+    const handleDeleteFriend = async (event) => {
+        const isLoggedIn = await validateLogin();
+        if (!isLoggedIn) {
+            showAlert("You need to be logged in to perform this action.", event);
+            return;
+        }
+
+        axios.put('http://localhost:4567/user/friends/remove/' + localStorage.getItem("currentProfileId"), {}, {
             headers: {
                 'Content-Type': 'application/json',
                 'token': localStorage.getItem('token')
             }
         })
-            .then(response => {
+            .then(() => {
                 setIsFriend(false);
+                setIsPending(false);
             })
             .catch(error => {
                 console.error("Error removing friend:", error);
@@ -183,9 +247,15 @@ function Profile() {
                                             Remove Friend
                                         </button>
                                     ) : (
-                                        <button onClick={handleAddFriend} className="bg-green-600 text-white py-2 px-4 rounded">
-                                            Add Friend
-                                        </button>
+                                        isPending ? (
+                                            <button className="bg-gray-600 text-white py-2 px-4 rounded">
+                                                Request Sent
+                                            </button>
+                                        ) : (
+                                            <button onClick={handleAddFriend} className="bg-green-600 text-white py-2 px-4 rounded">
+                                                Add Friend
+                                            </button>
+                                        )
                                     )}
 
                                     {localStorage.getItem('currentProfileRol') === 'DEVELOPER' && (
@@ -200,6 +270,11 @@ function Profile() {
                                             {isBanned ? 'Unban' : 'Ban'}
                                         </button>
                                     )}
+                                </div>
+                            )}
+                            {alert.visible && (
+                                <div style={{ position: 'absolute', top: alert.position.top, left: alert.position.left }}>
+                                    <AlertMessage message={alert.message} onClose={() => setAlert({ ...alert, visible: false })} />
                                 </div>
                             )}
                             {/* Profile Information */}
