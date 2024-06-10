@@ -131,16 +131,23 @@ function Header() {
                     <div className="relative" ref={notificationsRef}>
                         <img src={bell_icon} alt="notifications icon" className="cursor-pointer w-6 h-6 mr-6" onClick={toggleNotifications} />
                         {showNotifications && (
-                            <div className="dropdown-content absolute bg-gray-100 w-60 py-2 shadow-md z-10 top-full right-0 flex flex-col pl-2 rounded-s">
+                            <div className="dropdown-content absolute bg-gray-100 w-80 py-2 shadow-md z-10 top-full right-0 flex flex-col pl-2 rounded-s">
                                 <h3 className="font-bold mb-2 text-black">Notifications</h3>
                                 {notifications.length === 0 ? (
                                     <p>No notifications found</p>
                                 ) : (
                                     <ul>
                                         {notifications.map((notification, index) => (
-                                            <li key={index} className="mb-2">
-                                                {notification.message}
-                                            </li>
+                                            <a key={index} href={notification.is_game_related ? `http://localhost:3000/videogame/${notification.game_id}` : '#'} onClick={(e) => {
+                                                if (!notification.is_game_related) {
+                                                    e.preventDefault(); // Prevent default behavior of anchor tag
+                                                } else {
+                                                    window.location.href = `http://localhost:3000/videogame/${notification.game_id}`;
+                                                }
+                                            }} className={`block mb-2 relative border-t border-gray-300 pt-2 pb-2 flex items-center`}>
+                                                <span className="absolute h-2 w-2 bg-gray-500 rounded-full left-2 top-1/2 transform -translate-y-1/2"></span>
+                                                <span className="ml-8 mr-2 flex-grow whitespace-pre-line">{notification.description}</span>
+                                            </a>
                                         ))}
                                     </ul>
                                 )}
