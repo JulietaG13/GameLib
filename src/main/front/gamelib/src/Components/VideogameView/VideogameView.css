@@ -38,6 +38,7 @@
 .coverDiv img {
     width: 100%;
     height: 100%;
+    padding-left: 40px;
 }
 
 .newsDiv {
@@ -110,7 +111,6 @@
     display: flex;
     align-items: center;
     flex-direction: row;
-    margin: 0.7em;
     background-color: #d1d1d1;
 }
 
@@ -138,11 +138,13 @@
 .newsDiv div {
     padding: 1%;
     width: 100%;
+
 }
 .newsDiv li {
     background-color: #fd8240;
     padding: 1em;
     margin-bottom: 0.5em;
+    border-radius: 1em;
 }
 .newsDiv h3 {
     text-wrap: wrap;

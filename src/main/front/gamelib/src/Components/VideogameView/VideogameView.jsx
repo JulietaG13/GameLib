@@ -142,9 +142,11 @@ function VideogameView() {
 
     return (
         <main className={"gameView"}>
-            <Header></Header>
-            <img id={"backImg"} src={videogame.background_image} alt={"Game Background"}/>
-            <div className={"titleDiv"}>
+            <Header/>
+            <div className={"pb-40"}>
+                <img id={"backImg"} src={videogame.background_image} alt={"Game Background"}/>
+            </div>
+            <div className={"titleDiv "}>
                 <h1>{videogame.name}</h1>
             </div>
 
@@ -195,7 +197,7 @@ function VideogameView() {
                     </div>
 
                     <div className={"reviewsDiv"}>
-                        <h2>Reviews section</h2>
+                        <h2 className={"pb-5"}>Reviews section</h2>
                         <form className={'publishReviewDiv'} onSubmit={publishReview}>
                             <textarea id={'1'}
                                       placeholder={'Add your review'}
@@ -214,7 +216,7 @@ function VideogameView() {
                         }
 
                         {reviews.length === 0 ?
-                            <div className={"reviewDiv"}>
+                            <div className={"reviewDiv w-full mt-5 rounded-xl"}>
                                 <img id={"special"} src={user_icon} alt={"user_icon"}/>
                                 <p>Be the first one to review!</p>
                             </div>
