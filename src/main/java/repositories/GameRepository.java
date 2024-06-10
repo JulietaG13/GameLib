@@ -72,9 +72,9 @@ public class GameRepository {
             .setParameter("id", id)
             .executeUpdate();
     
-        entityManager.createNativeQuery("DELETE FROM upvoted_by ub WHERE ub.game_id = :id")
-            .setParameter("id", id)
-            .executeUpdate();
+//        entityManager.createNativeQuery("DELETE FROM upvoted_by ub WHERE ub.game_id = :id")
+//            .setParameter("id", id)
+//            .executeUpdate();
     
         entityManager.createNativeQuery("DELETE FROM News n WHERE n.game_id = :id")
             .setParameter("id", id)
