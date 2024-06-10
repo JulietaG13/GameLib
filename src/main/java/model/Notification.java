@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 @Entity
 public class Notification implements interfaces.Notification, Comparable<Notification> {
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   
   @ManyToOne

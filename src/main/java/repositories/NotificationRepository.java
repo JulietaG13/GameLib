@@ -23,7 +23,7 @@ public class NotificationRepository {
     return entityManager.createQuery("SELECT n FROM Notification n", Notification.class).getResultList();
   }
   
-  public Notification persist(Notification notification) {
+  public interfaces.Notification persist(interfaces.Notification notification) {
     EntityTransaction tx = entityManager.getTransaction();
     tx.begin();
     entityManager.persist(notification);
