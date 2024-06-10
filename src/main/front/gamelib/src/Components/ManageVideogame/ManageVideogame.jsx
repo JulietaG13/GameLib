@@ -19,7 +19,6 @@ function ManageVideogame({type}) {
 
     const [errorMessage, setErrorMessage] = useState('');
 
-    // const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [navigate, setNavigate] = useState(false);
     const [toView, setToView] = useState(false);
@@ -148,7 +147,7 @@ function ManageVideogame({type}) {
     function manageFailure(error) {
         console.log(error.response)
         if (error.response.status) {
-            if (error.response.data === "<html><body><h2>404 Not found</h2></body></html>") {
+            if (error.response.data === <html><body><h2>404 Not found</h2></body></html>) {
                 setErrorMessage("Something went wrong")
             } else {
                 setErrorMessage(error.response.data)
@@ -167,9 +166,6 @@ function ManageVideogame({type}) {
         }
     }
 
-    // if (isSaving) {
-    //     return standByScreen("Saving videogame...");
-    // }
     if (navigate) {
         return <Navigate to={"/"}/>;
     }
