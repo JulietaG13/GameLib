@@ -622,6 +622,21 @@ public class Application {
 
     newsRepository.persist(awesomeNews1);
     newsRepository.persist(awesomeNews2);
+
+    User gl = new User(
+            "bot",
+            "gamelib.bot@gmail.com",
+            "bot",
+            Rol.USER
+    );
+
+    userRepository.persist(gl);
+    userRepository.subscribe(gl, game1);
+    userRepository.subscribe(gl, game2);
+
+    ReviewRepository reviewRepository = new ReviewRepository(entityManager);
+    Review awesomeReview = new Review("love this game");
+    reviewRepository.addReview(awesomeReview, gl, game1);
   }
   
   private static void storeTags1(EntityManager entityManager) {
