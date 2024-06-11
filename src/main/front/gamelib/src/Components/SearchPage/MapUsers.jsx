@@ -1,60 +1,85 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import user_icon from '../Assets/user-icon.png';
 
 const Container = styled.div`
-    background-color: #e5e7eb;
-    position: relative;
-    padding: 1.25rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #e5e7eb;
+  position: relative;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
 const ScrollContainer = styled.div`
-    display: flex;
-    overflow-x: auto;
-    overflow-y: hidden;
-    gap: 1.5rem;
-    padding-bottom: 1rem; /* Espacio entre los elementos y la barra de desplazamiento */
-    scrollbar-width: thin; /* Firefox */
-    scrollbar-color: #ff8341 transparent; /* Firefox */
-    &::-webkit-scrollbar {
-        height: 16px; /* Altura de la barra de desplazamiento (aumentada) */
-    }
-    &::-webkit-scrollbar-track {
-        background: transparent; /* Fondo de la pista transparente */
-    }
-    &::-webkit-scrollbar-thumb {
-        background: #ff8341; /* Color de la barra de desplazamiento */
-        border-radius: 10px; /* Bordes redondeados */
-        border: none; /* Sin borde para que solo se vea la barra */
-    }
-    &::-webkit-scrollbar-thumb:hover {
-        background: #ff6a00; /* Color de la barra al pasar el ratón */
-    }
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 1.5rem;
+  padding-bottom: 1rem; /* Espacio entre los elementos y la barra de desplazamiento */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #ff8341 transparent; /* Firefox */
+  &::-webkit-scrollbar {
+    height: 16px; /* Altura de la barra de desplazamiento (aumentada) */
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent; /* Fondo de la pista transparente */
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ff8341; /* Color de la barra de desplazamiento */
+    border-radius: 10px; /* Bordes redondeados */
+    border: none; /* Sin borde para que solo se vea la barra */
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #ff6a00; /* Color de la barra al pasar el ratón */
+  }
 `;
 
+const ProfileImage = styled.img`
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
 
-function MapUsers({users}) {
+`;
+
+const UserName = styled.p`
+  text-align: center;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: black;
+
+`;
+
+// Adjusted UserCard for better layout
+const UserCard = styled(Link)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  width: 120px;   // Added width to prevent wrapping
+`;
+
+function MapUsers({ users }) {
     const scrollRef = useRef(null);
 
+    console.log(users);
     return (
         <Container>
             <h2 className="font-schibsted text-[30px] text-black pt-10 pb-5">Users</h2>
             <ScrollContainer ref={scrollRef}>
                 {users.map((user) => (
-                    <Link key={user.id} to={'/profile/' + user.username}>
-                        <div className="flex-shrink-0 w-[250px] bg-black p-1.5  rounded-lg hover:scale-105 ease-in-out duration-300 cursor-pointer shadow-md">
-                            <img src={user.pfp} className="w-full h-[400px]  object-cover" alt={user.name} />
-                            <h2 className="text-white pt-5 text-lg font-bold truncate">
-                                {user.name}
-                            </h2>
+                    <UserCard key={user.id} to={`/profile/${user.username}`}>
+                        <div className={"border-black border-2 rounded-full bg-[#bfbfbf]"}>
+                            <ProfileImage src={user.pfp || user_icon} alt={user.name} />
                         </div>
-                    </Link>
+                        <UserName>{user.username}</UserName>
+                    </UserCard>
                 ))}
             </ScrollContainer>
         </Container>
     );
 }
+
 
 export default MapUsers;

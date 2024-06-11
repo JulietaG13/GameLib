@@ -14,6 +14,8 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import java.util.Collection;
 import java.util.Properties;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class EmailService {
   
@@ -26,6 +28,10 @@ public class EmailService {
   private static Session session;
   
   private final static String subject = "News from your subscriptions on GameLib!";
+
+  // VALIDATOR
+  private static final String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+  private static final Pattern pattern = Pattern.compile(EMAIL_PATTERN);
   
   static {
     Properties prop = new Properties();
@@ -205,6 +211,14 @@ public class EmailService {
         "    </div>" +
         "</body>" +
         "</html>";
+  }
+
+  public static boolean isValidEmail(String email) {
+    if (email == null) {
+      return false;
+    }
+    Matcher matcher = pattern.matcher(email);
+    return matcher.matches();
   }
 }
 
