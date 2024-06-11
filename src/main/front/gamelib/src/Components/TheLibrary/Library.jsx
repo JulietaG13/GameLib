@@ -58,7 +58,7 @@ function Library() {
     useEffect(() => {
         getGamesFromDB();
         getTrendingGames();
-        getGamesByGenreId(109, 'Indie').then(() => { }); // Default genre
+        getGamesByGenreId(108, 'Indie').then(() => { }); // Default genre
     }, []);
 
     const getGamesFromDB = () => {
