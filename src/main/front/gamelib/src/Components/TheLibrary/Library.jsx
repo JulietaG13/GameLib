@@ -16,7 +16,7 @@ function Library() {
     const [genreList, setGenreList] = useState([]);
     const [activeIndex, setActivateIndex] = useState(0);
     const [gamesByGenreId, setGamesByGenreId] = useState([]);
-    const [activeGenreName, setActiveGenreName] = useState('Action');
+    const [activeGenreName, setActiveGenreName] = useState('Indie');
 
     const [isDeveloper, setIsDeveloper] = useState(false);
 
@@ -47,6 +47,7 @@ function Library() {
     const getGamesByGenreId = async (genreId, genreName) => {
         try {
             const response = await axios.get(`http://localhost:4567/game/get/tag/${genreId}`);
+            console.log("Indie games: " + response.data);
             setGamesByGenreId(response.data);
             setActiveGenreName(genreName);
         } catch (error) {
@@ -58,7 +59,7 @@ function Library() {
     useEffect(() => {
         getGamesFromDB();
         getTrendingGames();
-        getGamesByGenreId(108, 'Indie').then(() => { }); // Default genre
+        getGamesByGenreId(9999, 'Indie').then(() => { }); // Default genre
     }, []);
 
     const getGamesFromDB = () => {
