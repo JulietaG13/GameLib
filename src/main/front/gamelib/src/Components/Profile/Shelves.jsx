@@ -129,7 +129,7 @@ function Shelves({ username }) {
                                     </button>
                                 )}
                             </div>
-                            <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6'}>
+                            <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8'}> {/* Adjusted grid columns and gap */}
                                 {shelf.games.map((game) => (
                                     <div
                                         onContextMenu={(event) => handleContextMenu(event, game, shelf)}
