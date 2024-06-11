@@ -57,6 +57,13 @@ public class GameRepository {
             .getResultList();
     }
 
+    public List<Game> listByMostReviews(int max) {
+        return entityManager.createQuery(
+                        "SELECT g FROM Game g LEFT JOIN g.reviews r GROUP BY g ORDER BY COUNT(r) DESC", Game.class)
+                .setMaxResults(max)
+                .getResultList();
+    }
+
     public void delete(Long id) {
         EntityTransaction tx = entityManager.getTransaction();
         tx.begin();
