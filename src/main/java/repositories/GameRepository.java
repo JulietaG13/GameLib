@@ -79,6 +79,18 @@ public class GameRepository {
         entityManager.createNativeQuery("DELETE FROM News n WHERE n.game_id = :id")
             .setParameter("id", id)
             .executeUpdate();
+
+        entityManager.createNativeQuery("DELETE FROM Notification n WHERE n.game_id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+
+        entityManager.createNativeQuery("DELETE FROM disliked_by db WHERE db.review_id IN (SELECT r.id FROM Review r WHERE r.game_id = :id)")
+            .setParameter("id", id)
+            .executeUpdate();
+
+        entityManager.createNativeQuery("DELETE FROM liked_by lb WHERE lb.review_id IN (SELECT r.id FROM Review r WHERE r.game_id = :id)")
+            .setParameter("id", id)
+            .executeUpdate();
     
         entityManager.createNativeQuery("DELETE FROM Review r WHERE r.game_id = :id")
             .setParameter("id", id)
