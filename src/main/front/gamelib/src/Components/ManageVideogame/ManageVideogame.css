@@ -74,6 +74,11 @@
     width: 8em;
     height: 3em;
 }
+.disabled {
+    background-color: #9c9897;
+    color: #ffffff;
+    cursor: not-allowed;
+}
 
 input{
     margin: 1em;

@@ -19,6 +19,8 @@ function ManageVideogame({type}) {
 
     const [errorMessage, setErrorMessage] = useState('');
 
+    const [disableButton, setDisableButton] = useState(false);
+
     const [isLoading, setIsLoading] = useState(true);
     const [navigate, setNavigate] = useState(false);
     const [toView, setToView] = useState(false);
@@ -148,6 +150,7 @@ function ManageVideogame({type}) {
     }
 
     function manageFailure(error) {
+        setDisableButton(false);
         console.log(error.response)
         if (error.response.status) {
             if (error.response.data === <html><body><h2>404 Not found</h2></body></html>) {
@@ -286,18 +289,21 @@ function ManageVideogame({type}) {
 
             <div className={"font-bold flex justify-center"}>
                 <input type={"button"}
+                       disabled={disableButton}
                        className={'submit cursor-pointer mr-2'}
                        value={"Cancel"}
                        onClick={cancel}
                 />
 
                 {type === "Edit" ? <input type={"button"}
-                                          className={'submit cursor-pointer mr-2'}
+                                          disabled={disableButton}
+                                          className={`cursor-pointer mr-2 ${disableButton ? 'disabled' : 'submit'}`}
                                           value={"Delete"}
                                           onClick={deleteGame}/> : null}
 
                 <input type={"button"}
                        value={type}
+                       disabled={disableButton}
                        className={'submit cursor-pointer'}
                        onClick={type === "Edit" ? editVideogame : addVideogame}
                 />
