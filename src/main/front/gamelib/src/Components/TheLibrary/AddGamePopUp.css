@@ -1,0 +1,17 @@
+.addVideogameButton {
+    position: fixed;
+    z-index: 1000;
+    bottom: 1em;
+    right: 1em;
+    background-color: #dd5538;
+    padding: 0.4em;
+    border-radius: 5em;
+    width: 4em;
+    height: 4em;
+    transition: 0.2s ease;
+}
+.addVideogameButton:hover {
+    background-color: #3fbf45;
+    width: 5em;
+    height: 5em;
+}
