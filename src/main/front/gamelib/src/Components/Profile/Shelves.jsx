@@ -93,7 +93,7 @@ function Shelves({ username }) {
 
     const handleDeleteShelf = async (shelfId) => {
         if (await validateLogin()) {
-            axios.put(`http://localhost:4567/shelf/delete/${shelfId}`, {
+            axios.put(`http://localhost:4567/shelf/delete/${shelfId}`, {}, {
                 headers: {
                     'Content-Type': 'application/json',
                     'token': localStorage.getItem('token')
