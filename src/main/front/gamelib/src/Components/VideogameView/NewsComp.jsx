@@ -55,16 +55,14 @@ function NewsComp(props) {
                         <ul className={'particularNewDiv'}>
                             {news.map((news, index) => {
                                 return (
-                                    <li key={index}>
-                                        <h3>{news.title}</h3>
-                                        <p>{news.description}</p>
-                                        {props.owner ?
-                                            <button className={'deletionButton'}
-                                                    onClick={() => handleNewDeletion(news.id)}
-                                            >Delete</button>
-                                            :
-                                            null
-                                        }
+                                    <li key={index} style={{ overflow: 'hidden', textOverflow: 'ellipsis', wordBreak: 'keep-all' }}>
+                                        <h3 style={{ overflow: 'hidden', textOverflow: 'ellipsis', wordBreak: 'keep-all' }}>{news.title}</h3>
+                                        <p style={{ overflow: 'hidden', textOverflow: 'ellipsis', wordBreak: 'keep-all' }}>{news.description}</p>
+                                        {props.owner ? (
+                                            <button className={'deletionButton'} onClick={() => handleNewDeletion(news.id)}>
+                                                Delete
+                                            </button>
+                                        ) : null}
                                     </li>
                                 );
                             })}

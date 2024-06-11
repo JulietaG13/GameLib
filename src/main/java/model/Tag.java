@@ -99,6 +99,6 @@ public class Tag {
   }
 
   private Long generateId() {
-    return UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+    return UUID.randomUUID().getMostSignificantBits() & Integer.MAX_VALUE;
   }
 }

@@ -16,7 +16,7 @@ function Library() {
     const [genreList, setGenreList] = useState([]);
     const [activeIndex, setActivateIndex] = useState(0);
     const [gamesByGenreId, setGamesByGenreId] = useState([]);
-    const [activeGenreName, setActiveGenreName] = useState('Action');
+    const [activeGenreName, setActiveGenreName] = useState('Indie');
 
     const [isDeveloper, setIsDeveloper] = useState(false);
 
@@ -58,7 +58,7 @@ function Library() {
     useEffect(() => {
         getGamesFromDB();
         getTrendingGames();
-        getGamesByGenreId(108, 'Indie').then(() => { }); // Default genre
+        getGamesByGenreId(9999, 'Indie').then(() => { }); // Default genre
     }, []);
 
     const getGamesFromDB = () => {
@@ -75,7 +75,6 @@ function Library() {
     const getTrendingGames = () => {
         setIsLoading(true);
         axios.get('http://localhost:4567/latestupdated/4').then((response) => {
-            console.log(response.data)
             setTrendingGames(response.data);
             setIsLoading(false);
         }).catch((error) => {
