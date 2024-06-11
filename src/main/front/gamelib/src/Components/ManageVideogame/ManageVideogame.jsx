@@ -124,13 +124,13 @@ function ManageVideogame({type}) {
             .then(() => {
                 console.log("Game deleted");
                 manageSuccess();
+                setNavigate(true);
             })
             .catch((e) => {
                 console.log("Error deleting game");
                 console.log(e);
                 manageFailure(e);
             })
-        setNavigate(true);
     }
 
     function manageSuccess() {
