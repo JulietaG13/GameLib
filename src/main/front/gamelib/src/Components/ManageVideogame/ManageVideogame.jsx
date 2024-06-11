@@ -71,15 +71,6 @@ function ManageVideogame({type}) {
             });
     }, []);
 
-    const ErrorMessage = ({ message }) => {
-        return (
-            <div className={message ? 'formErrorHandling' : ''}>
-                {message}
-            </div>
-        );
-
-    }
-
     const addVideogame = e => {
         e.preventDefault()
         setDisableButton(true);
@@ -150,7 +141,6 @@ function ManageVideogame({type}) {
             cover: '',
             background_image: ''
         });
-        // setIsSaving(true);
         setToView(true);
     }
 
