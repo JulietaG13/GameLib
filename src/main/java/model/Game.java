@@ -28,7 +28,8 @@ public class Game {
     @ManyToOne
     private User owner;
 
-    @Column(nullable = false)
+    @Lob
+    @Column(nullable = false, columnDefinition = "CLOB")
     private String description;
     
     @Column(nullable = false)

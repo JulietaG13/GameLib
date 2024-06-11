@@ -7,19 +7,15 @@ function NewsComp(props) {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        axios.get(`http://localhost:4567//news/get/game/${props.videogameID}`)
+        axios.get(`http://localhost:4567/news/get/game/${props.videogameID}`)
             .then(response => {
                 setNews(response.data);
                 console.log(response.data);
+                console.log(response.data.length);
                 setIsLoading(false);
             })
             .catch(error => {
                 console.error('Error:', error);
-                return (
-                    <div>
-                        <h2>No News to load.</h2>
-                    </div>
-                );
             });
     }, [props.videogameID]);
 
@@ -54,7 +50,7 @@ function NewsComp(props) {
                 <div>
                     <h2>News</h2>
                     {news.length === 0 ?
-                        <h3>Nothing new to see here!</h3>
+                        <h3 id={'noNews'}>Nothing new to see here!</h3>
                         :
                         <ul className={'particularNewDiv'}>
                             {news.map((news, index) => {
