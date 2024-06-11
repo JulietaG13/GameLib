@@ -85,27 +85,35 @@ function EditProfile() {
                 </Link>
                 {/* Banner */}
                 <div className='bg-white relative'>
-                    <img src={gamelib_logo} className={"md:w-full h-[250px] object-cover"} alt={""} />
+                    <img src={gamelib_logo} className={"md:w-full h-[250px] object-cover"} alt={""}/>
                     {/* Botón de edición */}
                     {loggedInUsername === username && (
-                        <button onClick={handleSave} className="absolute top-4 right-4 bg-blue-600 text-white py-2 px-4 rounded">
+                        <button onClick={handleSave}
+                                className="absolute top-4 right-4 bg-blue-600 text-white py-2 px-4 rounded">
                             Save
                         </button>
                     )}
                     {/* Profile Information */}
-                    <div className={"bg-blue-500 w-1/5 flex flex-col justify-between ml-16 z-40 -mt-40"}>
-                        <img src={userProfile} className={"h-96 bg-amber-200"} alt={""} />
-                        <div className={"pl-4"}>
-                            <input type={'text'} value={newUsername} onChange={(event) => setNewUsername(event.target.value)} className={"flex font-bold items-center text-2xl"}></input>
+                    <div
+                        className="flex  w-4/5 md:w-3/4 lg:w-1/2 h-auto items-center mx-auto md:mx-16 z-40 -mt-32 rounded-lg p-4">
+                        <img src={userProfile}
+                             className="h-52 w-52 md:h-56 md:w-56 bg-gray-400 object-cover rounded-full"
+                             alt="User Profile"/>
+                        <div className={"pl-4 pt-28"}>
+                            <input type={'text'} value={newUsername}
+                                   onChange={(event) => setNewUsername(event.target.value)}
+                                   className={"flex font-bold items-center text-2xl border-2 border-black rounded-s"}></input>
                             <h2 className={"font-semibold text-xl pt-4 pb-1"}>About me</h2>
-                            <input type='text' value={newDescription} onChange={event => setNewDescription(event.target.value)} className={"font-normal pl-5 pr-1"}></input>
+                            <input type='text' value={newDescription}
+                                   onChange={event => setNewDescription(event.target.value)}
+                                   className={"font-normal pl-5 pr-1 border-2 border-black rounded-s"}></input>
                         </div>
                     </div>
                 </div>
                 {/* Shelves */}
                 <div className={"bg-white"}>
                     <h1 className={"pl-16 font-bold text-[35px] pt-5"}>All Shelves</h1>
-                    <Shelves username={username} />
+                    <Shelves username={username}/>
                 </div>
             </div>
         </div>

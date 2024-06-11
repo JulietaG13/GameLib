@@ -56,7 +56,7 @@ function Library() {
                 <div className="grid grid-cols-4 p-5 bg-gray-200">
                     <div className="col-span-4 md:col-span-1">
                         <div className="pr-10 sticky top-0">
-                            <h2 className="text-[30px] font-bold text-black mb-4">Genres</h2>
+                            <h2 className="text-[30px] font-bold mb-1">Genres</h2>
                             {genreList.map((genre, index) => (
                                 <div
                                     key={index}
@@ -64,13 +64,13 @@ function Library() {
                                         setActivateIndex(index);
                                         getGamesByGenreId(genre.id, genre.name).then(() => { });
                                     }}
-                                    className={`text-black flex gap-4 items-center mb-3 cursor-pointer hover:bg-gray-800 hover:text-white hover:rounded-xl p-3 rounded-lg group ${activeIndex === index ? "bg-gray-950 text-white rounded-xl" : ""}`}
+                                    className={`border-2 border-black  hover:text-xl text-black flex gap-1 items-center mb-3 cursor-pointer hover:bg-gray-800  hover:rounded-xl p-5 rounded-lg group ${activeIndex === index ? "bg-gray-950 text-white rounded-xl" : ""}`}
                                 >
+                                    {/*}
                                     <img src={genre.background_image}
                                          className={`w-[50px] h-[50px] object-cover rounded-lg group-hover:scale-110 transition-all ease-out duration-300 ${activeIndex === index ? "scale-110" : ""}`}
-                                         alt="genre_image" />
-                                    <h3 className={`transition-all ease-out duration-300 ${activeIndex === index ? "font-bold text-white" : "text-black"}`}>
-                                        {genre.name}
+                                         alt="genre_image" />*/}
+                                    <h3 className={`transition-all ease-out duration-300 ${activeIndex === index ? "font-bold text-white" : "text-black group-hover:text-white"}`}>                                        {genre.name}
                                     </h3>
                                 </div>
                             ))}
