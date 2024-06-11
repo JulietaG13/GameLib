@@ -641,8 +641,12 @@ public class Application {
     userRepository.subscribe(gl, game2);
 
     ReviewRepository reviewRepository = new ReviewRepository(entityManager);
-    Review awesomeReview = new Review("love this game");
-    reviewRepository.addReview(awesomeReview, gl, game1);
+    Review awesomeReview1 = new Review("love this game");
+    Review awesomeReview2 = new Review("totally recommend");
+    Review awesomeReview3 = new Review("played this for over 30 hours :)");
+    reviewRepository.addReview(awesomeReview1, gl, game1);
+    reviewRepository.addReview(awesomeReview2, gl, game1);
+    reviewRepository.addReview(awesomeReview3, user, game1);
   }
   
   private static void storeTags1(EntityManager entityManager) {

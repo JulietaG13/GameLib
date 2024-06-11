@@ -47,7 +47,6 @@ public class BDExample {
                 desc.append(tag.getName()).append(", ");
             }
             desc.append(". ");
-            desc.append("And it has ").append(reviews.size()).append(" reviews.");
 
             game.setDescription(desc.toString(), LocalDate.now());
             games.add(game);
@@ -204,12 +203,12 @@ public class BDExample {
         List<Review> reviews = new ArrayList<>();
 
         for (User user : allUsers) {
-            if (Math.random() < 0.5) {
+            if (Math.random() < 0.4) {
                 Review r = new Review("I, " + user.getUsername() + ", think that this game is very game :)");
                 r.setAuthor(user);
                 reviews.add(r);
             }
-            if (Math.random() < 0.5) {
+            if (Math.random() < 0.4) {
                 Review r = new Review("I, " + user.getUsername() + ", think that this game is kinda trash >:(");
                 r.setAuthor(user);
                 reviews.add(r);

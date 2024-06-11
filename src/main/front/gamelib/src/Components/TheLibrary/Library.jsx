@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Link} from "react-router-dom";
 import axios from "axios";
 import './AddGamePopUp.css'
 import plus_icon from "../Assets/plus-icon.png";
 import Banner from './Banner';
-import TrendingGames from './TrendingGames';
+import LatestUpdated from './LatestUpdated';
 import GamesFromDB from './GamesFromDB';
 import Header from "../Header/Header";
 import SkeletonLoader from "./SkeletonLoader";
 
 function Library() {
     const [gamesFromDB, setGamesFromDB] = useState([]);
-    const [trendingGames, setTrendingGames] = useState([]);
+    const [latestUpdated, setLatestUpdated] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [genreList, setGenreList] = useState([]);
     const [activeIndex, setActivateIndex] = useState(0);
     const [gamesByGenreId, setGamesByGenreId] = useState([]);
     const [activeGenreName, setActiveGenreName] = useState('Indie');
-
+    const gamesByGenreRef = useRef(null); // Add a ref for the game list section
     const [isDeveloper, setIsDeveloper] = useState(false);
 
     useEffect(() => {
@@ -49,6 +49,9 @@ function Library() {
             const response = await axios.get(`http://localhost:4567/game/get/tag/${genreId}`);
             setGamesByGenreId(response.data);
             setActiveGenreName(genreName);
+            if (gamesByGenreRef.current) {
+                gamesByGenreRef.current.scrollIntoView({ behavior: 'smooth' });
+            }
         } catch (error) {
             console.error("Error fetching games by genre ID:", error);
             return [];
@@ -57,7 +60,7 @@ function Library() {
 
     useEffect(() => {
         getGamesFromDB();
-        getTrendingGames();
+        getLatestUpdated();
         getGamesByGenreId(9999, 'Indie').then(() => { }); // Default genre
     }, []);
 
@@ -72,10 +75,10 @@ function Library() {
         });
     };
 
-    const getTrendingGames = () => {
+    const getLatestUpdated = () => {
         setIsLoading(true);
         axios.get('http://localhost:4567/latestupdated/4').then((response) => {
-            setTrendingGames(response.data);
+            setLatestUpdated(response.data);
             setIsLoading(false);
         }).catch((error) => {
             console.error("Error fetching games:", error);
@@ -121,11 +124,11 @@ function Library() {
                         {gamesFromDB.length > 0 ? (
                             <div>
                                 <Banner gameBanner={gamesFromDB[0]}/>
-                                <TrendingGames gameList={trendingGames}/>
+                                <LatestUpdated gameList={latestUpdated}/>
                                 <div className="mt-10">
                                     <GamesFromDB gamesFromDB={gamesFromDB} title="Popular Games"/>
                                 </div>
-                                <div className="mt-10">
+                                <div ref={gamesByGenreRef} className="mt-10">
                                     <GamesFromDB gamesFromDB={gamesByGenreId} title={activeGenreName}/>
                                 </div>
                             </div>
