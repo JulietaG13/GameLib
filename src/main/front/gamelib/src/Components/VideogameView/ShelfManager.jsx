@@ -127,34 +127,38 @@ function ShelfManager({props}) {
                         ))
                 }
             </div>
-            <form className={'shelfCreator'} onSubmit={handleShelfSubmit}>
-                <div className={'shelfAttributes'}>
-                    <input type={'text'}
-                           placeholder={'Shelf name'}
-                           required
-                           value={shelfToUpload.name}
-                           onChange={(e) => {
-                               setShelfToUpload({
-                                   ...shelfToUpload,
-                                   name: e.target.value
-                               });
-                           }}
-                    />
-                    <label>
-                        <input type={"checkbox"}
-                               checked={shelfToUpload.is_private}
-                               onClick={() => {
+            {waitingForShelves ?
+                null
+                :
+                <form className={'shelfCreator'} onSubmit={handleShelfSubmit}>
+                    <div className={'shelfAttributes'}>
+                        <input type={'text'}
+                               placeholder={'Shelf name'}
+                               required
+                               value={shelfToUpload.name}
+                               onChange={(e) => {
                                    setShelfToUpload({
                                        ...shelfToUpload,
-                                       is_private: !shelfToUpload.is_private
+                                       name: e.target.value
                                    });
-                               }}/>
-                        <p>Private shelf</p>
-                    </label>
-                </div>
-                <button type={'submit'}>Create shelf</button>
-            </form>
-            <ErrorView message={shelfErrorMessage}/>
+                               }}
+                        />
+                        <label>
+                            <input type={"checkbox"}
+                                   checked={shelfToUpload.is_private}
+                                   onClick={() => {
+                                       setShelfToUpload({
+                                           ...shelfToUpload,
+                                           is_private: !shelfToUpload.is_private
+                                       });
+                                   }}/>
+                            <p>Private shelf</p>
+                        </label>
+                    </div>
+                    <button type={'submit'}>Create shelf</button>
+                    <ErrorView message={shelfErrorMessage}/>
+                </form>
+            }
         </div>
     );
 }
