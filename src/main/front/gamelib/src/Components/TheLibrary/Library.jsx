@@ -117,7 +117,7 @@ function Library() {
                     </div>
                     {isDeveloper ?
                         <Link className={"addVideogameButton"} to={"/addvideogame"}>
-                            <img alt={'Add videogame'}
+                            <img alt={'Add videogame'} className={"p-1"}
                                  title={'Add a game to the library!'}
                                  src={plus_icon}/>
                         </Link>
