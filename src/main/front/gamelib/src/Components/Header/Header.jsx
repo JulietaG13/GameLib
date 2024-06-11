@@ -14,6 +14,7 @@ function Header() {
     const [searchQuery, setSearchQuery] = useState('');
     const [notifications, setNotifications] = useState([]);
     const navigate = useNavigate();
+    const pfp = localStorage.getItem('pfp') === "" ? localStorage.getItem('pfp') : user_icon ;
 
     function handleLogout() {
         if (!isLoggedIn) {
@@ -109,13 +110,13 @@ function Header() {
     }
 
     return (
-        <div className="flex items-center bg-[#ff8341] h-20 px-4 justify-between border-[0.5px] border-black">
+        <div className="flex items-center bg-[#ff8341] h-20 px-4 justify-between">
             <div className="flex items-center">
                 <a href="http://localhost:3000/">
                     <img src={gameLibLogoRework} width={80} height={80} className="ml-3 min-w-[50px]" alt="" />
                 </a>
                 <div
-                    className=" border-[0.5px] border-black flex bg-slate-300 p-2 w-full h-12 items-center mx-4 rounded-full max-w-[600px] flex-grow">
+                    className=" flex bg-slate-300 p-2 w-full h-12 items-center mx-4 rounded-full max-w-[600px] flex-grow">
                     <input
                         type="text"
                         placeholder="Search Games"
@@ -158,7 +159,7 @@ function Header() {
                 {isLoggedIn ? (
                     <div className="flex flex-row justify-end p-1 items-center relative mr-8 " ref={dropdownRef}>
                         <h2 className="mr-2 font-helvetica">{localStorage.getItem('username') || 'Name'}</h2>
-                        <img src={user_icon} alt="user icon" className="rounded-full cursor-pointer w-[3em] h-[3em] border-black border-2" onClick={toggleDropdown} />
+                        <img src={pfp} className="rounded-full cursor-pointer w-[3em] h-[3em] border-black border-2" onClick={toggleDropdown} />
                         {showDropdown && (
                             <div className="border-2 border-black dropdown-content absolute bg-gray-100 w-40 py-2 shadow-md z-10 top-full right-0 flex flex-col pl-2 rounded-xl">
                                 <Link to={`/profile/${localStorage.getItem("username")}`}>Profile</Link>

@@ -11,6 +11,7 @@ import SkeletonLoader from "./SkeletonLoader";
 
 function Library() {
     const [gamesFromDB, setGamesFromDB] = useState([]);
+    const [trendingGames, setTrendingGames] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [genreList, setGenreList] = useState([]);
     const [activeIndex, setActivateIndex] = useState(0);
@@ -56,7 +57,8 @@ function Library() {
 
     useEffect(() => {
         getGamesFromDB();
-        getGamesByGenreId(26, 'Action').then(() => { }); // Default genre
+        getTrendingGames();
+        getGamesByGenreId(109, 'Indie').then(() => { }); // Default genre
     }, []);
 
     const getGamesFromDB = () => {
@@ -69,6 +71,21 @@ function Library() {
             setIsLoading(false);
         });
     };
+
+    const getTrendingGames = () => {
+        setIsLoading(true);
+        axios.get('http://localhost:4567/latestupdated/4').then((response) => {
+            console.log(response.data)
+            setTrendingGames(response.data);
+            setIsLoading(false);
+        }).catch((error) => {
+            console.error("Error fetching games:", error);
+            setIsLoading(false);
+        });
+    };
+
+
+
 
     return (
         <div>
@@ -105,7 +122,7 @@ function Library() {
                         {gamesFromDB.length > 0 ? (
                             <div>
                                 <Banner gameBanner={gamesFromDB[0]}/>
-                                <TrendingGames gameList={gamesFromDB}/>
+                                <TrendingGames gameList={trendingGames}/>
                                 <div className="mt-10">
                                     <GamesFromDB gamesFromDB={gamesFromDB} title="Popular Games"/>
                                 </div>

@@ -9,7 +9,7 @@ function TrendingGames({ gameList }) {
                 {gameList.map((game, index) => index < 4 && (
                     <div key={game.id} className={' border-2 border-black bg-black rounded-xl overflow-hidden shadow-lg hover:scale-105 transition-all duration-300 ease-in-out cursor-pointer'}>
                         <Link to={'/videogame/' + game.id}>
-                            <img src={game.cover} className={'h-[450px] w-full object-cover'} alt={game.name} />
+                             <img src={game.cover} className={'h-[450px] w-full object-cover'} alt={game.name} />
                             <div className='p-3'>
                                 <h2 className={'text-white text-[23px] font-bold'}>{game.name}</h2>
                             </div>

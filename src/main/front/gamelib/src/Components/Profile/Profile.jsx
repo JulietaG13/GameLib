@@ -6,6 +6,7 @@ import axios from "axios";
 import Header from "../Header/Header";
 import Shelves from "./Shelves";
 import AlertMessage from "./AlertMessage";
+import ProfileSkeleton from "./ProfileSkeleton"; // Import the skeleton component
 
 function Profile() {
     const navigate = useNavigate();
@@ -13,6 +14,7 @@ function Profile() {
     const [usernameResponse, setUsernameResponse] = useState('');
     const [description, setDescription] = useState('');
     const [notFound, setNotFound] = useState(false);
+    const [isLoading, setIsLoading] = useState(true); // State to track loading
     const [isFriend, setIsFriend] = useState(false);
     const [isPending, setIsPending] = useState(false); // State to track if the friend request is pending
     const [isFollowing, setIsFollowing] = useState(false); // State to track follow status
@@ -151,6 +153,7 @@ function Profile() {
                 setDescription(response.data.biography);
                 setProfilePicture(response.data.pfp || userProfile);
                 setBannerImage(response.data.banner || gamelib_logo);
+                setIsLoading(false); // Set loading to false once data is fetched
             })
             .catch(() => {
                 setNotFound(true);
@@ -159,6 +162,10 @@ function Profile() {
 
     if (notFound) {
         return <Navigate to="/error" />;
+    }
+
+    if (isLoading) {
+        return <ProfileSkeleton />;
     }
 
     const navigateToEditProfile = () => {
@@ -225,7 +232,7 @@ function Profile() {
                 <div className='flex flex-col md:flex-row'>
                     <div className='flex-grow'>
                         {/* Banner */}
-                        <div className='bg-white relative  '>
+                        <div className='bg-white relative'>
                             <img src={bannerImage} className="w-full h-[250px] object-cover border-2 border-black" alt="Banner"/>
                             {/* Buttons */}
                             {loggedInUsername === username ? (
@@ -272,10 +279,10 @@ function Profile() {
                                 </div>
                             )}
                             {/* Profile Information */}
-                            <div className="flex  w-4/5 md:w-3/4 lg:w-1/2 h-auto items-center mx-auto md:mx-16 z-40 -mt-32 rounded-lg p-4">
+                            <div className="flex w-4/5 md:w-3/4 lg:w-1/2 h-auto items-center mx-auto md:mx-16 z-40 -mt-32 rounded-lg p-4">
                                 <img src={profilePicture} className="h-52 w-52 md:h-56 md:w-56 bg-gray-400 object-cover rounded-full border-2 border-black" alt="User Profile"/>
-                                <div className="ml-4 pt-20 ">
-                                    <h1 className="font-bold text-2xl md:text-3xl pt-10  pl-10  ">{usernameResponse}</h1>
+                                <div className="ml-4 pt-20">
+                                    <h1 className="font-bold text-2xl md:text-3xl pt-10 pl-10">{usernameResponse}</h1>
                                     <h2 className="font-semibold text-lg md:text-xl pt-2 pb-1 pl-20">About me</h2>
                                     <p className="font-normal pl-20">{description}</p>
                                 </div>
