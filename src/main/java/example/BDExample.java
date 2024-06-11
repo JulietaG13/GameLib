@@ -96,7 +96,7 @@ public class BDExample {
     }
 
     public void indies() {
-        Tag indie = new Tag("indie");
+        Tag indie = new Tag("Indie");
         TagRepository tagRepository = new TagRepository(entityManager);
         tagRepository.persist(indie);
 
