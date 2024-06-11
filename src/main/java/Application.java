@@ -398,7 +398,6 @@ public class Application {
       }
       
       List<Game> latestUpdated = gameRepository.listByLatest(max);
-      em.close();
       resp.type("application/json");
       resp.status(201);
       
@@ -412,7 +411,7 @@ public class Application {
       }
       
       jsonObj.add("games", jsonArray);
-      
+      em.close();
       return jsonObj.toString();
     });
     
