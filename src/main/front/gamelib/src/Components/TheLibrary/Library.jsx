@@ -4,14 +4,14 @@ import axios from "axios";
 import './AddGamePopUp.css'
 import plus_icon from "../Assets/plus-icon.png";
 import Banner from './Banner';
-import TrendingGames from './TrendingGames';
+import LatestUpdated from './LatestUpdated';
 import GamesFromDB from './GamesFromDB';
 import Header from "../Header/Header";
 import SkeletonLoader from "./SkeletonLoader";
 
 function Library() {
     const [gamesFromDB, setGamesFromDB] = useState([]);
-    const [trendingGames, setTrendingGames] = useState([]);
+    const [latestUpdated, setLatestUpdated] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [genreList, setGenreList] = useState([]);
     const [activeIndex, setActivateIndex] = useState(0);
@@ -60,7 +60,7 @@ function Library() {
 
     useEffect(() => {
         getGamesFromDB();
-        getTrendingGames();
+        getLatestUpdated();
         getGamesByGenreId(9999, 'Indie').then(() => { }); // Default genre
     }, []);
 
@@ -75,10 +75,10 @@ function Library() {
         });
     };
 
-    const getTrendingGames = () => {
+    const getLatestUpdated = () => {
         setIsLoading(true);
         axios.get('http://localhost:4567/latestupdated/4').then((response) => {
-            setTrendingGames(response.data);
+            setLatestUpdated(response.data);
             setIsLoading(false);
         }).catch((error) => {
             console.error("Error fetching games:", error);
@@ -124,7 +124,7 @@ function Library() {
                         {gamesFromDB.length > 0 ? (
                             <div>
                                 <Banner gameBanner={gamesFromDB[0]}/>
-                                <TrendingGames gameList={trendingGames}/>
+                                <LatestUpdated gameList={latestUpdated}/>
                                 <div className="mt-10">
                                     <GamesFromDB gamesFromDB={gamesFromDB} title="Popular Games"/>
                                 </div>
