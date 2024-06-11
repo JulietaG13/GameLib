@@ -82,6 +82,7 @@ function VideogameView() {
     useEffect(() => {
         axios.get(`http://localhost:4567/getreviews/${videogameID.videogameID}/2`)
             .then(response => {
+                console.log(response.data);
                 setReviews(response.data.reverse());
             })
             .catch(error => {
@@ -240,7 +241,8 @@ function VideogameView() {
                             :
                             reviews.map((review) => (
                                 <div key={review.id} className={"reviewDiv"}>
-                                    <img src={user_icon} alt={"user_icon"}/>
+                                    <img src={review.author.pfp !== null ? review.author.pfp : user_icon}
+                                         alt={"user_icon"}/>
                                     <p>{review.text}</p>
                                 </div>
                             ))
