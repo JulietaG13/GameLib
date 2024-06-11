@@ -78,9 +78,9 @@ const Login = () => {
 
     return (
         //Main container
-        <div className={"w-full h-screen flex items-start"}>
+        <div className={"w-full h-screen flex items-start "}>
             {/*Left side*/}
-            <div className={"relative w-1/2 h-full flex flex-col"}>
+            <div className={"relative w-1/2 h-full flex flex-col border-2 border-black "}>
                 <Link to="/">
                     <img src={gamelib_logo} className={"w-full h-full object-cover brightness-50 cursor-pointer"} alt="GameLib Logo" />
                 </Link>

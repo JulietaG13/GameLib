@@ -74,12 +74,12 @@ function GamesFromDB({ gamesFromDB, title }) {
 
     return (
         <Container>
-            <h2 className="font-schibsted text-[30px] text-black pt-10 pb-5">{title}</h2>
+            <h2 className="font-schibsted text-[30px] text-black pt-10 pb-5 ">{title}</h2>
             <ScrollContainer ref={scrollRef}>
                 {gamesFromDB.map((game) => (
                     <Link key={game.id} to={'/videogame/' + game.id}>
                         <GameItem> {/* Use the styled GameItem component */}
-                            <img
+                            <img className={""}
                                 src={game.background_image}
                                 alt={game.name}
                             />

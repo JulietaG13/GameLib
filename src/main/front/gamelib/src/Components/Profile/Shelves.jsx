@@ -112,7 +112,7 @@ function Shelves({ username }) {
         <div>
             {shelves.length === 0 ? (
                 <div className="pl-16">
-                    <h2 className="font-bold text-[25px] text-black pt-3 pb-5 pl-5">You have no shelves</h2>
+                    <h2 className="font-bold text-[25px] text-black pt-3 pb-5 pl-5">No shelves to display!</h2>
                 </div>
             ) : (
                 shelves.map((shelf) => (

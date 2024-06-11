@@ -231,12 +231,12 @@ function Profile() {
                 <div className='flex flex-col md:flex-row'>
                     <div className='flex-grow'>
                         {/* Banner */}
-                        <div className='bg-white relative pt-1 '>
-                            <img src={gamelib_logo} className="w-full h-[250px] object-cover" alt="GameLib Logo"/>
+                        <div className='bg-white relative  '>
+                            <img src={gamelib_logo} className="w-full h-[250px] object-cover border-2 border-black" alt="GameLib Logo"/>
                             {/* Buttons */}
                             {loggedInUsername === username ? (
                                 // Edit Profile button for the user's own profile
-                                <button onClick={navigateToEditProfile} className="absolute top-4 right-4 text-white py-2 px-4 rounded">
+                                <button onClick={navigateToEditProfile} className="absolute top-4 right-4 text-white py-2 px-4 rounded bg-black">
                                     Edit Profile
                                 </button>
                             ) : (
@@ -279,17 +279,17 @@ function Profile() {
                             )}
                             {/* Profile Information */}
                             <div className="flex  w-4/5 md:w-3/4 lg:w-1/2 h-auto items-center mx-auto md:mx-16 z-40 -mt-32 rounded-lg p-4">
-                                <img src={userProfile} className="h-48 w-48 md:h-56 md:w-56 bg-amber-200 object-cover" alt="User Profile"/>
+                                <img src={userProfile} className="h-52 w-52 md:h-56 md:w-56 bg-gray-400 object-cover rounded-full border-2 border-black" alt="User Profile"/>
                                 <div className="ml-4 pt-20 ">
-                                    <h1 className="font-bold text-xl md:text-2xl">{usernameResponse}</h1>
-                                    <h2 className="font-semibold text-lg md:text-xl pt-2 pb-1">About me</h2>
+                                    <h1 className="font-bold text-2xl md:text-3xl pt-10  pl-10  ">{usernameResponse}</h1>
+                                    <h2 className="font-semibold text-lg md:text-xl pt-2 pb-1 pl-20">About me</h2>
                                     <p className="font-normal">{description}</p>
                                 </div>
                             </div>
                         </div>
                         {/* Shelves */}
                         <div className="bg-white mt-8">
-                            <h1 className="pl-4 md:pl-16 font-bold text-2xl pt-5">All Shelves</h1>
+                            <h1 className="pl-4 md:pl-16 font-bold text-4xl pt-5">All Shelves</h1>
                             <Shelves username={username} />
                         </div>
                     </div>

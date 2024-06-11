@@ -45,7 +45,7 @@ function MapUsers({users}) {
                 {users.map((user) => (
                     <Link key={user.id} to={'/profile/' + user.username}>
                         <div className="flex-shrink-0 w-[250px] bg-black p-1.5  rounded-lg hover:scale-105 ease-in-out duration-300 cursor-pointer shadow-md">
-                            <img src={user.pfp} className="w-full h-[400px] rounded-xl object-cover" alt={user.name} />
+                            <img src={user.pfp} className="w-full h-[400px]  object-cover" alt={user.name} />
                             <h2 className="text-white pt-5 text-lg font-bold truncate">
                                 {user.name}
                             </h2>

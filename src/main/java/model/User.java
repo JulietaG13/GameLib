@@ -40,7 +40,7 @@ public class User {
   @OneToMany(mappedBy = "owner")
   private final Set<Notification> notifications = new HashSet<>();
 
-  @OneToMany(mappedBy = "owner")  // TODO(deleteuser)
+  @OneToMany(mappedBy = "owner")
   private final Set<Game> developed = new HashSet<>();
   
   @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)

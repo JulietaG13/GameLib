@@ -109,17 +109,17 @@ function Header() {
     }
 
     return (
-        <div className="flex items-center bg-[#ff8341] h-20 px-4 justify-between">
+        <div className="flex items-center bg-[#ff8341] h-20 px-4 justify-between border-[0.5px] border-black">
             <div className="flex items-center">
                 <a href="http://localhost:3000/">
                     <img src={gameLibLogoRework} width={80} height={80} className="ml-3 min-w-[50px]" alt="" />
                 </a>
                 <div
-                    className="flex bg-slate-300 p-2 w-full h-12 items-center mx-4 rounded-full max-w-[600px] flex-grow">
+                    className=" border-[0.5px] border-black flex bg-slate-300 p-2 w-full h-12 items-center mx-4 rounded-full max-w-[600px] flex-grow">
                     <input
                         type="text"
                         placeholder="Search Games"
-                        className="bg-transparent outline-none w-full"
+                        className="bg-transparent outline-none w-full ] "
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={handleSearch}
@@ -131,16 +131,23 @@ function Header() {
                     <div className="relative" ref={notificationsRef}>
                         <img src={bell_icon} alt="notifications icon" className="cursor-pointer w-6 h-6 mr-6" onClick={toggleNotifications} />
                         {showNotifications && (
-                            <div className="dropdown-content absolute bg-gray-100 w-60 py-2 shadow-md z-10 top-full right-0 flex flex-col pl-2 rounded-s">
+                            <div className="dropdown-content absolute bg-gray-100 w-80 py-2 shadow-md z-10 top-full right-0 flex flex-col pl-2 rounded-xl border-2 border-black">
                                 <h3 className="font-bold mb-2 text-black">Notifications</h3>
                                 {notifications.length === 0 ? (
                                     <p>No notifications found</p>
                                 ) : (
                                     <ul>
                                         {notifications.map((notification, index) => (
-                                            <li key={index} className="mb-2">
-                                                {notification.message}
-                                            </li>
+                                            <a key={index} href={notification.is_game_related ? `http://localhost:3000/videogame/${notification.game_id}` : '#'} onClick={(e) => {
+                                                if (!notification.is_game_related) {
+                                                    e.preventDefault(); // Prevent default behavior of anchor tag
+                                                } else {
+                                                    window.location.href = `http://localhost:3000/videogame/${notification.game_id}`;
+                                                }
+                                            }} className={`block mb-2 relative border-t border-gray-300 pt-2 pb-2 flex items-center`}>
+                                                <span className="absolute h-2 w-2 bg-gray-500 rounded-full left-2 top-1/2 transform -translate-y-1/2"></span>
+                                                <span className="ml-8 mr-2 flex-grow whitespace-pre-line">{notification.description}</span>
+                                            </a>
                                         ))}
                                     </ul>
                                 )}
@@ -149,11 +156,11 @@ function Header() {
                     </div>
                 )}
                 {isLoggedIn ? (
-                    <div className="flex flex-row justify-end p-1 items-center relative" ref={dropdownRef}>
+                    <div className="flex flex-row justify-end p-1 items-center relative mr-8 " ref={dropdownRef}>
                         <h2 className="mr-2 font-helvetica">{localStorage.getItem('username') || 'Name'}</h2>
-                        <img src={user_icon} alt="user icon" className="cursor-pointer w-[3em] h-[3em]" onClick={toggleDropdown} />
+                        <img src={user_icon} alt="user icon" className="rounded-full cursor-pointer w-[3em] h-[3em] border-black border-2" onClick={toggleDropdown} />
                         {showDropdown && (
-                            <div className="dropdown-content absolute bg-gray-100 w-40 py-2 shadow-md z-10 top-full right-0 flex flex-col pl-2 rounded-s">
+                            <div className="border-2 border-black dropdown-content absolute bg-gray-100 w-40 py-2 shadow-md z-10 top-full right-0 flex flex-col pl-2 rounded-xl">
                                 <Link to={`/profile/${localStorage.getItem("username")}`}>Profile</Link>
                                 <a href="#" onClick={handleLogout}>Logout</a>
                                 <a onClick={handleDeleteUser}>Delete account</a>
