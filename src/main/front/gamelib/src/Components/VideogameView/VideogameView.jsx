@@ -241,8 +241,11 @@ function VideogameView() {
                             :
                             reviews.map((review) => (
                                 <div key={review.id} className={"reviewDiv"}>
-                                    <img src={review.author.pfp !== null ? review.author.pfp : user_icon}
-                                         alt={"user_icon"}/>
+                                    <Link className={'toProfileLink'} to={'/profile/' + review.author.username}>
+                                        <img src={review.author.pfp !== null ? review.author.pfp : user_icon}
+                                             alt={"user_icon"}/>
+                                    </Link>
+                                    {/*<img src={review.author.pfp !== null ? review.author.pfp : user_icon} alt={"user_icon"}/>*/}
                                     <p>{review.text}</p>
                                 </div>
                             ))

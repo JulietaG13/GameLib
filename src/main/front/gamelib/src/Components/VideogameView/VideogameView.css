@@ -100,22 +100,26 @@
     border: 1px solid black;
     margin-right: 1em;
 }
-.reviewsDiv img {
-    width: 4.5em;
-    height: 4.5em;
-    margin-right: 0.5em;
-}
+
 .publishReviewDiv {
     display: flex;
     align-items: center;
 }
 
+.toProfileLink {
+    width: 4.5em;
+    height: 4.5em;
+    margin-right: 0.5em;
+}
 .reviewDiv {
     display: flex;
     align-items: center;
     flex-direction: row;
     margin-top: 1em;
     background-color: #d1d1d1;
+}
+.reviewDiv p {
+    width: 90%;
 }
 
 .errorMessageDiv {
