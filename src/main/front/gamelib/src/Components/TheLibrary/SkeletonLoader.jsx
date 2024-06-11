@@ -4,6 +4,7 @@ import './SkeletonLoader.css';
 const SkeletonLoader = () => {
     return (
         <div className="skeleton-library">
+            <div className="skeleton-genre-title"></div>
             <div className="skeleton-content">
                 <div className="skeleton-genres">
                     <div className="skeleton-genre-title"></div>

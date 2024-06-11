@@ -72,10 +72,12 @@ function Library() {
 
     return (
         <div>
-            <Header />
             {isLoading ? (
                 <SkeletonLoader />
             ) : (
+
+                <div>
+                    <Header />
                 <div className="grid grid-cols-4 p-5 bg-gray-200">
                     <div className="col-span-4 md:col-span-1">
                         <div className="pr-10 sticky top-0">
@@ -122,6 +124,7 @@ function Library() {
                         :
                         null
                     }
+                </div>
                 </div>
             )}
         </div>
