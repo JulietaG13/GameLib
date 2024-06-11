@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Navigate, useParams} from "react-router-dom";
 import './ManageVideogame.css';
 import axios from "axios";
+import ErrorView from "../ErrorView/ErrorView";
 
 function ManageVideogame({type}) {
     const videogameID = useParams();
@@ -81,6 +82,7 @@ function ManageVideogame({type}) {
 
     const addVideogame = e => {
         e.preventDefault()
+        setDisableButton(true);
         setTheVideogame({...theVideogame, last_update: formatDate(new Date())});
 
         axios.post("http://localhost:4567/game/create", theVideogame, {
@@ -99,6 +101,7 @@ function ManageVideogame({type}) {
 
     const editVideogame = e => {
         e.preventDefault()
+        setDisableButton(true);
         setTheVideogame({...theVideogame, last_update: formatDate(new Date())});
 
         axios.put(`http://localhost:4567/game/edit/${videogameID.videogameID}`, theVideogame, {
@@ -117,6 +120,7 @@ function ManageVideogame({type}) {
 
     const deleteGame = () => {
         console.log("About to delete game");
+        setDisableButton(true);
         axios.post(`http://localhost:4567/game/delete/${videogameID.videogameID}`, {}, {
             headers: {
                 'Content-Type': 'application/json',
@@ -136,6 +140,7 @@ function ManageVideogame({type}) {
     }
 
     function manageSuccess() {
+        setDisableButton(false);
         setTheVideogame({
             name: '',
             description: '',
@@ -283,28 +288,30 @@ function ManageVideogame({type}) {
                 </div>
             </div>
 
-            <div>
-                <ErrorMessage message={errorMessage}/>
-            </div>
+            {errorMessage !== '' ?
+                <ErrorView message={errorMessage}/>
+                :
+                null
+            }
 
             <div className={"font-bold flex justify-center"}>
                 <input type={"button"}
                        disabled={disableButton}
-                       className={'submit cursor-pointer mr-2'}
+                       className={`${disableButton ? 'disabled' : 'submit'} cursor-pointer mr-2`}
                        value={"Cancel"}
                        onClick={cancel}
                 />
 
                 {type === "Edit" ? <input type={"button"}
                                           disabled={disableButton}
-                                          className={`cursor-pointer mr-2 ${disableButton ? 'disabled' : 'submit'}`}
+                                          className={`cursor-pointer ${disableButton ? 'disabled' : 'submit'}`}
                                           value={"Delete"}
                                           onClick={deleteGame}/> : null}
 
                 <input type={"button"}
                        value={type}
                        disabled={disableButton}
-                       className={'submit cursor-pointer'}
+                       className={`${disableButton ? 'disabled' : 'submit'} ml-2 cursor-pointer`}
                        onClick={type === "Edit" ? editVideogame : addVideogame}
                 />
             </div>

@@ -156,7 +156,11 @@ function ShelfManager({props}) {
                         </label>
                     </div>
                     <button type={'submit'}>Create shelf</button>
-                    <ErrorView message={shelfErrorMessage}/>
+                    {shelfErrorMessage !== '' ?
+                        <ErrorView message={shelfErrorMessage}/>
+                        :
+                        null
+                    }
                 </form>
             }
         </div>

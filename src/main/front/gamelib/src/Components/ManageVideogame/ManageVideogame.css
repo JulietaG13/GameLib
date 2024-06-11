@@ -75,9 +75,17 @@
     height: 3em;
 }
 .disabled {
-    background-color: #9c9897;
-    color: #ffffff;
+    background-color: #afafaf;
+    color: #404040;
     cursor: not-allowed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 220px;
+    height: 59px;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
 }
 
 input{

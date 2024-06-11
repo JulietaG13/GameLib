@@ -120,6 +120,7 @@
 .errorMessageDiv {
     background-color: #ffa6a6;
     color: #c30101;
+    padding: 1em;
     margin: 1em 0;
     border-radius: 0.5em;
 }
