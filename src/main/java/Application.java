@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import example.ImageExample;
 import values.ErrorMessages;
 import values.Rol;
 import values.Token;
@@ -397,7 +398,6 @@ public class Application {
       }
       
       List<Game> latestUpdated = gameRepository.listByLatest(max);
-      em.close();
       resp.type("application/json");
       resp.status(201);
       
@@ -411,7 +411,7 @@ public class Application {
       }
       
       jsonObj.add("games", jsonArray);
-      
+      em.close();
       return jsonObj.toString();
     });
     
@@ -573,6 +573,8 @@ public class Application {
         .releaseDate(LocalDate.now())
         .lastUpdate(LocalDate.now())
         .build();
+    game1.setBackgroundImage(ImageExample.getLambBkgd());
+    game1.setCover(ImageExample.getLambCover());
     Game game2 = Game
         .create("another awesome game")
         .description("just another awesome game")
@@ -601,11 +603,25 @@ public class Application {
     shelfRepository.addGame(shelf, user, game1);
     shelfRepository.addGame(shelf, user, game3);
     
-    News news1 = new News("first news", "this is this game's first news!!!", game1, developer);
-    News news2 = new News("second news", "another news", game1, developer);
+    News news1 = new News("first news", "this is this game's first news!!!", game2, developer);
+    News news2 = new News("second news", "another news", game2, developer);
     NewsRepository newsRepository = new NewsRepository(entityManager);
     newsRepository.persist(news1);
     newsRepository.persist(news2);
+
+    News awesomeNews1 = new News(
+            "SACRED SEDUCTION. You will never be alone again.",
+            "Remember that when humanity fails you, the Massive Monster developers are there. In your heart, in the deepest, darkest parts of your mind...",
+            game1,
+            developer);
+    News awesomeNews2 = new News(
+            "ANNOUNCING UNHOLY ALLIANCE.",
+            "Summoned by blood and born in corruption, a wicked new ally can join the holy Lamb in LOCAL CO-OP! Crusade through dungeons, slay heretics, build your cult, and seek new powers together...",
+            game1,
+            developer);
+
+    newsRepository.persist(awesomeNews1);
+    newsRepository.persist(awesomeNews2);
   }
   
   private static void storeTags1(EntityManager entityManager) {

@@ -74,6 +74,8 @@ function EditProfile() {
                 localStorage.setItem('username', newUsername);
                 localStorage.setItem('description', newDescription);
                 localStorage.setItem('token', response.data.token);
+                localStorage.setItem('pfp', newProfilePicture);
+
                 // Redirects to the new profile
                 if (newUsername !== username) {
                     navigate(`/profile/${newUsername}`);

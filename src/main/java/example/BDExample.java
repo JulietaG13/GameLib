@@ -7,6 +7,7 @@ import repositories.*;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.*;
 
 public class BDExample {
@@ -33,9 +34,7 @@ public class BDExample {
             }
 
             StringBuilder name = new StringBuilder();
-            for (Tag tag : tagsForGame) {
-                name.append(tag.getName());
-            }
+            name.append("Game #" + (games.size() + 100));
             Game game = Game.create(name.toString()).build();
             tagsForGame.forEach(game::addTag);
 
@@ -88,14 +87,80 @@ public class BDExample {
                 shelfRepository.addGame(shelf, shelf.getOwner(), games.get(i));
             }
         }
+
+        indies();
     }
 
     static {
         allUsers.addAll(getExampleUsers(Rol.USER, 700, 900));
     }
 
+    public void indies() {
+        Tag indie = new Tag("Indie");
+        TagRepository tagRepository = new TagRepository(entityManager);
+        tagRepository.persist(indie);
+
+        Developer dev = new Developer(new User(
+                "AwesomeDev",
+                "",
+                "password",
+                Rol.DEVELOPER
+        ));
+        UserRepository userRepository = new UserRepository(entityManager);
+        userRepository.persist(dev.getUser());
+        DeveloperRepository developerRepository = new DeveloperRepository(entityManager);
+        developerRepository.persist(dev);
+
+        Optional<Tag> multi = tagRepository.findByName("Multiplayer");
+
+        GameRepository gameRepository = new GameRepository(entityManager);
+
+
+        Game stardew = new Game(
+                "Stardew Valley",
+                dev.getUser(),
+                "You've inherited your grandfather's old farm plot in Stardew Valley. Armed with hand-me-down tools and a few coins, you set out to begin your new life. Can you learn to live off the land and turn these overgrown fields into a thriving home?",
+                LocalDate.of(2016, Month.FEBRUARY, 26),
+                ImageExample.getStardewCover(),
+                ImageExample.getStardewBkgd()
+        );
+        gameRepository.persist(stardew);
+
+        Optional<Tag> cozy = tagRepository.findByName("Cozy game");
+        cozy.ifPresent(tag -> gameRepository.addTag(dev.getUser(), stardew, tag));
+        multi.ifPresent(tag -> gameRepository.addTag(dev.getUser(), stardew, tag));
+        gameRepository.addTag(dev.getUser(), stardew, indie);
+
+        Game cuphead = new Game(
+                "Cuphead",
+                dev.getUser(),
+                "Cuphead is a classic run and gun action game heavily focused on boss battles. Inspired by cartoons of the 1930s, the visuals and audio are painstakingly created with the same techniques of the era, i.e. traditional hand drawn cel animation, watercolor backgrounds, and original jazz recordings.",
+                LocalDate.of(2017, Month.SEPTEMBER, 7),
+                ImageExample.getCupheadCover(),
+                ImageExample.getCupheadBkgd()
+        );
+        gameRepository.persist(cuphead);
+        multi.ifPresent(tag -> gameRepository.addTag(dev.getUser(), cuphead, tag));
+        gameRepository.addTag(dev.getUser(), cuphead, indie);
+
+
+        Game pz = new Game(
+                "Project Zomboid",
+                dev.getUser(),
+                "Project Zomboid is the ultimate in zombie survival. Alone or in MP: you loot, build, craft, fight, farm and fish in a struggle to survive. A hardcore RPG skillset, a vast map, massively customisable sandbox and a cute tutorial raccoon await the unwary. So how will you die? All it takes is a bite..",
+                LocalDate.of(2013, Month.NOVEMBER, 8),
+                ImageExample.getPzCover(),
+                ImageExample.getPzBkgd()
+        );
+        gameRepository.persist(pz);
+        Optional<Tag> survival = tagRepository.findByName("Survival");
+        survival.ifPresent(tag -> gameRepository.addTag(dev.getUser(), pz, tag));
+        multi.ifPresent(tag -> gameRepository.addTag(dev.getUser(), pz, tag));
+        gameRepository.addTag(dev.getUser(), pz, indie);
+    }
+
     public static List<Tag> getExampleTags() {
-        List<String> platforms = List.of("Steam", "Riot", "PlayStation", "Xbox", "EpicGames", "Mobile", "Friv");
+        List<String> platforms = List.of("Steam", "Riot", "PlayStation", "Xbox", "EpicGames", "Mobile");
         List<String> genres = List.of(
                 "Action",
                 "Fighting",
@@ -104,10 +169,8 @@ public class BDExample {
                 "Battle Royale",
                 "Adventure",
                 "Horror",
-                "MMO",
-                "Role-playing",
-                "Strategy",
-                "Cozy game");
+                "Cozy game",
+                "Multiplayer");
 
         List<Tag> tags = new ArrayList<>(platforms.size() + genres.size());
 

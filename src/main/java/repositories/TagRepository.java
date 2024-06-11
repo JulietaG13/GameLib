@@ -33,9 +33,15 @@ public class TagRepository {
   }
   
   public List<Tag> listAllType(TagType tagType) {
-    return entityManager.createQuery("SELECT t FROM Tag t WHERE t.tagType = :tagType", Tag.class)
+    List<Tag> tags = entityManager.createQuery("SELECT t FROM Tag t WHERE t.tagType = :tagType", Tag.class)
         .setParameter("tagType", tagType)
         .getResultList();
+    Optional<Tag> indie = findByName("Indie");
+    if (indie.isPresent()) {
+      tags.remove(indie.get());
+      tags.set(0, indie.get());
+    }
+    return tags;
   }
   
   public Tag persist(Tag tag) {

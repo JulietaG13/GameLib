@@ -53,6 +53,10 @@ public class Developer {
         return id;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public Set<User> getSubscribers() {
         return subscribers;
     }

@@ -56,6 +56,8 @@ const Login = () => {
             localStorage.setItem('token', token);
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('username', username);
+            localStorage.setItem('pfp', response.data.pfp);
+
 
             setNavigate(true);
         }
