@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Link} from "react-router-dom";
 import axios from "axios";
 import './AddGamePopUp.css'
@@ -17,7 +17,7 @@ function Library() {
     const [activeIndex, setActivateIndex] = useState(0);
     const [gamesByGenreId, setGamesByGenreId] = useState([]);
     const [activeGenreName, setActiveGenreName] = useState('Indie');
-
+    const gamesByGenreRef = useRef(null); // Add a ref for the game list section
     const [isDeveloper, setIsDeveloper] = useState(false);
 
     useEffect(() => {
@@ -49,6 +49,9 @@ function Library() {
             const response = await axios.get(`http://localhost:4567/game/get/tag/${genreId}`);
             setGamesByGenreId(response.data);
             setActiveGenreName(genreName);
+            if (gamesByGenreRef.current) {
+                gamesByGenreRef.current.scrollIntoView({ behavior: 'smooth' });
+            }
         } catch (error) {
             console.error("Error fetching games by genre ID:", error);
             return [];
@@ -125,7 +128,7 @@ function Library() {
                                 <div className="mt-10">
                                     <GamesFromDB gamesFromDB={gamesFromDB} title="Popular Games"/>
                                 </div>
-                                <div className="mt-10">
+                                <div ref={gamesByGenreRef} className="mt-10">
                                     <GamesFromDB gamesFromDB={gamesByGenreId} title={activeGenreName}/>
                                 </div>
                             </div>
