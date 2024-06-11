@@ -2,6 +2,7 @@ package model;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import services.EmailService;
 import values.Rol;
 import values.responses.ErrorResponse;
 import values.responses.StatusResponse;
@@ -178,6 +179,7 @@ public class User {
     if (username == null) {
       return new ErrorResponse(404, "Username cannot be null!");
     }
+    username = username.trim();
     if (username.isEmpty()) {
       return new ErrorResponse(404, "Username cannot be empty!");
     }
@@ -198,8 +200,9 @@ public class User {
     if (email == null) {
       return new ErrorResponse(404, "Email cannot be null!");
     }
-    if (email.isEmpty()) {
-      return new ErrorResponse(404, "Email cannot be empty!");
+    email = email.trim();
+    if (!EmailService.isValidEmail(email)) {
+      return new ErrorResponse(404, "Email format invalid!");
     }
     return new StatusResponse(200);
   }
