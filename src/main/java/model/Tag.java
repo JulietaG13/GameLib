@@ -7,11 +7,12 @@ import values.TagType;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 public class Tag {
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  //@GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long id;
   
   @Column(nullable = false, unique = true)
@@ -85,5 +86,19 @@ public class Tag {
   
   public Set<Game> getTaggedGames() {
     return taggedGames;
+  }
+
+  // OTHER
+
+
+  @PrePersist
+  protected void onPrePersist() {
+    if (this.id == null) {
+      this.id = generateId();
+    }
+  }
+
+  private Long generateId() {
+    return UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
   }
 }
