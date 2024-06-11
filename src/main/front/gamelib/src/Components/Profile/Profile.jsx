@@ -283,8 +283,8 @@ function Profile() {
                                 <img src={profilePicture} className="h-52 w-52 md:h-56 md:w-56 bg-gray-400 object-cover rounded-full border-2 border-black" alt="User Profile"/>
                                 <div className="ml-4 pt-20">
                                     <h1 className="font-bold text-2xl md:text-3xl pt-10 pl-10">{usernameResponse}</h1>
-                                    <h2 className="font-semibold text-lg md:text-xl pt-2 pb-1 pl-20">About me</h2>
-                                    <p className="font-normal pl-20">{description}</p>
+                                    <h2 className="font-semibold text-lg md:text-xl pt-2 pb-1 pl-14">About me</h2>
+                                    <p className="font-normal pl-14">{description}</p>
                                 </div>
                             </div>
                         </div>

@@ -102,7 +102,7 @@ function EditProfile() {
                 {/* Banner */}
                 <div className='bg-white relative'>
                     <div className="relative md:w-full h-[250px]">
-                        <img src={newBackgroundImage} className={"md:w-full h-[250px] object-cover"} alt={""} onClick={() => document.getElementById('banner-upload').click()}/>
+                        <img src={newBackgroundImage} className={"md:w-full h-[250px] object-cover border-2 border-black" } alt={""} onClick={() => document.getElementById('banner-upload').click()}/>
                         <input
                             type="file"
                             accept="image/*"
@@ -110,7 +110,7 @@ function EditProfile() {
                             id="banner-upload"
                             onChange={(event) => handleImageChange(event, setNewBackgroundImage)}
                         />
-                        <img src={pencil_icon} className="absolute inset-0 m-auto h-16 w-16 cursor-pointer" alt="Edit" onClick={() => document.getElementById('banner-upload').click()} />
+                        <img src={pencil_icon} className="absolute inset-0 m-auto h-16 w-16 cursor-pointer " alt="Edit" onClick={() => document.getElementById('banner-upload').click()} />
                     </div>
                     {/* Botón de edición */}
                     {loggedInUsername === username && (
@@ -124,7 +124,7 @@ function EditProfile() {
                         className="flex  w-4/5 md:w-3/4 lg:w-1/2 h-auto items-center mx-auto md:mx-16 z-40 -mt-32 rounded-lg p-4">
                         <div className="relative h-52 w-52 md:h-56 md:w-56">
                             <img src={newProfilePicture}
-                                 className="h-full w-full bg-gray-400 object-cover rounded-full"
+                                 className="h-full w-full bg-gray-400 object-cover rounded-full border-2 border-black"
                                  alt="User Profile" onClick={() => document.getElementById('profile-upload').click()}/>
                             <input
                                 type="file"
@@ -135,14 +135,16 @@ function EditProfile() {
                             />
                             <img src={pencil_icon} className="absolute inset-0 m-auto h-16 w-16 cursor-pointer" alt="Edit" onClick={() => document.getElementById('profile-upload').click()} />
                         </div>
-                        <div className={"pl-4 pt-28"}>
+                        <div className={"pl-4 pt-24"}>
                             <input type={'text'} value={newUsername}
                                    onChange={(event) => setNewUsername(event.target.value)}
                                    className={"flex font-bold items-center text-2xl border-2 border-black rounded-s"}></input>
-                            <h2 className={"font-semibold text-xl pt-4 pb-1"}>About me</h2>
+                            <div className={"pl-14"}>
+                            <h2 className={"font-semibold text-xl  pb-1 -mt-4"}>About me</h2>
                             <input type='text' value={newDescription}
                                    onChange={event => setNewDescription(event.target.value)}
-                                   className={"font-normal pl-5 pr-1 border-2 border-black rounded-s"}></input>
+                                   className={"font-normal  pr-1 border-2 border-black rounded-s -mt-2 "}></input>
+                            </div>
                         </div>
                     </div>
                 </div>
