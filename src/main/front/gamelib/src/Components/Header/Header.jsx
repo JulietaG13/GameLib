@@ -33,8 +33,7 @@ function Header() {
             }
         })
             .then(response => {
-                localStorage.removeItem('token');
-                localStorage.removeItem('username');
+                localStorage.clear()
                 window.location.reload();
             }).catch(error => {
             console.error('Error:', error);
@@ -164,7 +163,7 @@ function Header() {
                             <div className="border-2 border-black dropdown-content absolute bg-gray-100 w-40 py-2 shadow-md z-10 top-full right-0 flex flex-col pl-2 rounded-xl">
                                 <Link to={`/profile/${localStorage.getItem("username")}`}>Profile</Link>
                                 <a href="#" onClick={handleLogout}>Logout</a>
-                                <a onClick={handleDeleteUser}>Delete account</a>
+                                <a href="#" onClick={handleDeleteUser}>Delete account</a>
                             </div>
                         )}
                     </div>
