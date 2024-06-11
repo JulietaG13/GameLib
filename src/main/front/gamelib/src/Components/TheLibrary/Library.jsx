@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import {Link} from "react-router-dom";
+import axios from "axios";
+import './AddGamePopUp.css'
+import plus_icon from "../Assets/plus-icon.png";
 import Banner from './Banner';
 import TrendingGames from './TrendingGames';
 import GamesFromDB from './GamesFromDB';
-import axios from "axios";
 import Header from "../Header/Header";
 import SkeletonLoader from "./SkeletonLoader";
 
@@ -13,6 +16,26 @@ function Library() {
     const [activeIndex, setActivateIndex] = useState(0);
     const [gamesByGenreId, setGamesByGenreId] = useState([]);
     const [activeGenreName, setActiveGenreName] = useState('Action');
+
+    const [isDeveloper, setIsDeveloper] = useState(false);
+
+    useEffect(() => {
+        getIsDeveloper().then(r => {});
+    }, []);
+
+    const getIsDeveloper = async () => {
+        axios.get(`http://localhost:4567/user/get/${localStorage.getItem('id')}`)
+            .then((response) => {
+                if (response.data.rol === "DEVELOPER" || response.data.rol === "ADMIN") {
+                    setIsDeveloper(true);
+                } else {
+                    setIsDeveloper(false);
+                }
+            })
+            .catch(() => {
+                setIsDeveloper(false);
+            })
+    }
 
     useEffect(() => {
         axios.get('http://localhost:4567/tag/get/genres').then((response) => {
@@ -49,10 +72,12 @@ function Library() {
 
     return (
         <div>
-            <Header />
             {isLoading ? (
                 <SkeletonLoader />
             ) : (
+
+                <div>
+                    <Header />
                 <div className="grid grid-cols-4 p-5 bg-gray-200">
                     <div className="col-span-4 md:col-span-1">
                         <div className="pr-10 sticky top-0">
@@ -79,17 +104,27 @@ function Library() {
                     <div className="col-span-4 md:col-span-3">
                         {gamesFromDB.length > 0 ? (
                             <div>
-                                <Banner gameBanner={gamesFromDB[0]} />
-                                <TrendingGames gameList={gamesFromDB} />
+                                <Banner gameBanner={gamesFromDB[0]}/>
+                                <TrendingGames gameList={gamesFromDB}/>
                                 <div className="mt-10">
-                                    <GamesFromDB gamesFromDB={gamesFromDB} title="Popular Games" />
+                                    <GamesFromDB gamesFromDB={gamesFromDB} title="Popular Games"/>
                                 </div>
                                 <div className="mt-10">
-                                    <GamesFromDB gamesFromDB={gamesByGenreId} title={activeGenreName} />
+                                    <GamesFromDB gamesFromDB={gamesByGenreId} title={activeGenreName}/>
                                 </div>
                             </div>
                         ) : null}
                     </div>
+                    {isDeveloper ?
+                        <Link className={"addVideogameButton"} to={"/addvideogame"}>
+                            <img alt={'Add videogame'} className={"p-1"}
+                                 title={'Add a game to the library!'}
+                                 src={plus_icon}/>
+                        </Link>
+                        :
+                        null
+                    }
+                </div>
                 </div>
             )}
         </div>

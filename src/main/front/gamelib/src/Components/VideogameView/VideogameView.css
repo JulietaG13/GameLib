@@ -155,10 +155,15 @@
     overflow-wrap: break-word;
 }
 
+#noNews {
+    color: black;
+}
+
 .deletionButton {
     background-color: #ff3b3b;
     color: white;
-    padding: 0.25em;
+    border-radius: 2em;
+    padding: 0.5em;
     margin-top: 0.5em;
     transition: background-color 0.2s ease;
 }

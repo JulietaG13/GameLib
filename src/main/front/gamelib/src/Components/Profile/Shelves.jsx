@@ -140,7 +140,7 @@ function Shelves({ username }) {
                                             <div
                                                 className={'bg-[#ff8341] p-1.5 rounded-lg hover:scale-110 ease-in-out duration-300 cursor-pointer w-[280px] h-[350px]'}
                                             >
-                                                <img src={game.background_image}
+                                                <img src={game.cover}
                                                      className={'w-full h-[260px] rounded-xl object-cover'} alt={""} />
                                                 <h2 className={'text-white pt-1 text-lg font-bold truncate'}>
                                                     {game.name}

@@ -10,17 +10,17 @@ import AlertMessage from "./AlertMessage";
 function Profile() {
     const navigate = useNavigate();
     const { username } = useParams();
-    const [usernameResponse, setUsernameResponse] = useState('DefaultName');
-    const [description, setDescription] = useState('DefaultDescription');
+    const [usernameResponse, setUsernameResponse] = useState('');
+    const [description, setDescription] = useState('');
     const [notFound, setNotFound] = useState(false);
     const [isFriend, setIsFriend] = useState(false);
     const [isPending, setIsPending] = useState(false); // State to track if the friend request is pending
     const [isFollowing, setIsFollowing] = useState(false); // State to track follow status
     const [isBanned, setIsBanned] = useState(false); // State to track if the user is banned
+    const [profilePicture, setProfilePicture] = useState(userProfile); // State for profile picture
+    const [bannerImage, setBannerImage] = useState(gamelib_logo); // State for banner image
     const loggedInUsername = localStorage.getItem('username');
     const [alert, setAlert] = useState({ message: '', visible: false, position: { top: 0, left: 0 } }); // State for alert
-
-
 
     const handleAdminAction = () => {
         axios.put('http://localhost:4567/admin/ban/' + localStorage.getItem("currentProfileId"), {}, {
@@ -101,7 +101,6 @@ function Profile() {
         setTimeout(() => setAlert({ ...alert, visible: false }), 6000);
     };
 
-
     useEffect(() => {
         if (loggedInUsername !== username) {
             axios.get(`http://localhost:4567/user/friends/status/${localStorage.getItem("currentProfileId")}`, {
@@ -139,10 +138,6 @@ function Profile() {
         }
     }, [username, loggedInUsername]);
 
-
-
-
-
     useEffect(() => {
         axios.get(`http://localhost:4567/getprofile/${username}`)
             .then(response => {
@@ -154,6 +149,8 @@ function Profile() {
                 localStorage.setItem('currentProfileId', response.data.id);
                 setUsernameResponse(response.data.username);
                 setDescription(response.data.biography);
+                setProfilePicture(response.data.pfp || userProfile);
+                setBannerImage(response.data.banner || gamelib_logo);
             })
             .catch(() => {
                 setNotFound(true);
@@ -163,7 +160,6 @@ function Profile() {
     if (notFound) {
         return <Navigate to="/error" />;
     }
-
 
     const navigateToEditProfile = () => {
         axios.post('http://localhost:4567/tokenvalidation', {}, {
@@ -177,8 +173,6 @@ function Profile() {
             console.error('Error:', e);
         });
     };
-
-
 
     const handleAddFriend = async (event) => {
         const isLoggedIn = await validateLogin();
@@ -232,7 +226,7 @@ function Profile() {
                     <div className='flex-grow'>
                         {/* Banner */}
                         <div className='bg-white relative  '>
-                            <img src={gamelib_logo} className="w-full h-[250px] object-cover border-2 border-black" alt="GameLib Logo"/>
+                            <img src={bannerImage} className="w-full h-[250px] object-cover border-2 border-black" alt="Banner"/>
                             {/* Buttons */}
                             {loggedInUsername === username ? (
                                 // Edit Profile button for the user's own profile
@@ -279,11 +273,11 @@ function Profile() {
                             )}
                             {/* Profile Information */}
                             <div className="flex  w-4/5 md:w-3/4 lg:w-1/2 h-auto items-center mx-auto md:mx-16 z-40 -mt-32 rounded-lg p-4">
-                                <img src={userProfile} className="h-52 w-52 md:h-56 md:w-56 bg-gray-400 object-cover rounded-full border-2 border-black" alt="User Profile"/>
+                                <img src={profilePicture} className="h-52 w-52 md:h-56 md:w-56 bg-gray-400 object-cover rounded-full border-2 border-black" alt="User Profile"/>
                                 <div className="ml-4 pt-20 ">
                                     <h1 className="font-bold text-2xl md:text-3xl pt-10  pl-10  ">{usernameResponse}</h1>
                                     <h2 className="font-semibold text-lg md:text-xl pt-2 pb-1 pl-20">About me</h2>
-                                    <p className="font-normal">{description}</p>
+                                    <p className="font-normal pl-20">{description}</p>
                                 </div>
                             </div>
                         </div>
