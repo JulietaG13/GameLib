@@ -47,7 +47,6 @@ function Library() {
     const getGamesByGenreId = async (genreId, genreName) => {
         try {
             const response = await axios.get(`http://localhost:4567/game/get/tag/${genreId}`);
-            console.log("Indie games: " + response.data);
             setGamesByGenreId(response.data);
             setActiveGenreName(genreName);
         } catch (error) {
@@ -76,7 +75,6 @@ function Library() {
     const getTrendingGames = () => {
         setIsLoading(true);
         axios.get('http://localhost:4567/latestupdated/4').then((response) => {
-            console.log(response.data)
             setTrendingGames(response.data);
             setIsLoading(false);
         }).catch((error) => {
