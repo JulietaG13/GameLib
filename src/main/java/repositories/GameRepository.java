@@ -44,6 +44,12 @@ public class GameRepository {
     public List<Game> listAll() {
         return entityManager.createQuery("SELECT g FROM Game g", Game.class).getResultList();
     }
+
+    public List<Game> listByOwner(User owner) {
+        return entityManager.createQuery("SELECT g FROM Game g WHERE g.owner = :owner", Game.class)
+                .setParameter("owner", owner)
+                .getResultList();
+    }
     
     public List<Game> listByLatest(int max) {
         return entityManager.createQuery("SELECT g FROM Game g ORDER BY g.lastUpdate ASC", Game.class)
