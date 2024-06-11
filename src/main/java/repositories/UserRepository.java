@@ -1,5 +1,6 @@
 package repositories;
 
+import model.Shelf;
 import values.Rol;
 import model.Developer;
 import model.Game;
@@ -53,6 +54,22 @@ public class UserRepository {
         // if (user.isEmpty())
         EntityTransaction tx = entityManager.getTransaction();
 
+        if (user.isEmpty()) {
+            return;
+        }
+
+        ShelfRepository shelfRepository = new ShelfRepository(entityManager);
+        List<Shelf> shelves = shelfRepository.listByUser(user.get());
+        for (Shelf shelf : shelves) {
+            shelfRepository.deleteShelf(shelf, user.get());
+        }
+
+        GameRepository gameRepository = new GameRepository(entityManager);
+        List<Game> games = gameRepository.listByOwner(user.get());
+        for (Game game : games) {
+            gameRepository.delete(game.getId());
+        }
+
         tx.begin();
     
         // Remove user from friends
@@ -104,12 +121,7 @@ public class UserRepository {
         entityManager.createNativeQuery("DELETE FROM review WHERE author_id = :id")
             .setParameter("id", id)
             .executeUpdate();
-    
-        // Delete games developed by user
-        entityManager.createNativeQuery("DELETE FROM game WHERE owner_id = :id")
-            .setParameter("id", id)
-            .executeUpdate();
-    
+
         // Delete developer
         entityManager.createNativeQuery("DELETE FROM developer WHERE user_id = :id")
             .setParameter("id", id)
