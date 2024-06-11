@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import gamelib_logo from "../Assets/Designer(3).jpeg";
 import userProfile from "../Assets/user-icon.png";
+import pencil_icon from "../Assets/pencil-icon.png"; // Import the overlay image
 import { Navigate, useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../Header/Header";
@@ -11,11 +12,11 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 function EditProfile() {
     const { username } = useParams();
     const navigate = useNavigate(); // Hook para redirigir
-    const [usernameResponse, setUsernameResponse] = useState('DefaultName');
-    const [description, setDescription] = useState('DefaultDescription');
+    const [usernameResponse, setUsernameResponse] = useState('');
+    const [description, setDescription] = useState('');
     const [notFound, setNotFound] = useState(false);
 
-    //save the new data to be changed
+    // Save the new data to be changed
     const [newBackgroundImage, setNewBackgroundImage] = useState(null);
     const [newProfilePicture, setNewProfilePicture] = useState(null);
     const [newDescription, setNewDescription] = useState(description);
@@ -29,6 +30,8 @@ function EditProfile() {
                 localStorage.setItem('id', response.data.id);
                 setUsernameResponse(response.data.username);
                 setDescription(response.data.description);
+                setNewBackgroundImage(response.data.banner || gamelib_logo);
+                setNewProfilePicture(response.data.pfp || userProfile);
             })
             .catch(() => {
                 setNotFound(true);
@@ -38,6 +41,17 @@ function EditProfile() {
     if (notFound) {
         return <Navigate to="/error" />;
     }
+
+    const handleImageChange = (event, setImage) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImage(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     function handleSave() {
         axios.post('http://localhost:4567/tokenvalidation', {}, {
@@ -49,8 +63,8 @@ function EditProfile() {
             axios.post(`http://localhost:4567/user/profile/${username}/edit`, {
                 username: newUsername,
                 biography: newDescription,
-                //banner: newBackgroundImage,
-                //pfp: newProfilePicture
+                banner: newBackgroundImage,
+                pfp: newProfilePicture
             }, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -85,7 +99,17 @@ function EditProfile() {
                 </Link>
                 {/* Banner */}
                 <div className='bg-white relative'>
-                    <img src={gamelib_logo} className={"md:w-full h-[250px] object-cover"} alt={""}/>
+                    <div className="relative md:w-full h-[250px]">
+                        <img src={newBackgroundImage} className={"md:w-full h-[250px] object-cover"} alt={""} onClick={() => document.getElementById('banner-upload').click()}/>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            id="banner-upload"
+                            onChange={(event) => handleImageChange(event, setNewBackgroundImage)}
+                        />
+                        <img src={pencil_icon} className="absolute inset-0 m-auto h-16 w-16 cursor-pointer" alt="Edit" onClick={() => document.getElementById('banner-upload').click()} />
+                    </div>
                     {/* Botón de edición */}
                     {loggedInUsername === username && (
                         <button onClick={handleSave}
@@ -96,9 +120,19 @@ function EditProfile() {
                     {/* Profile Information */}
                     <div
                         className="flex  w-4/5 md:w-3/4 lg:w-1/2 h-auto items-center mx-auto md:mx-16 z-40 -mt-32 rounded-lg p-4">
-                        <img src={userProfile}
-                             className="h-52 w-52 md:h-56 md:w-56 bg-gray-400 object-cover rounded-full"
-                             alt="User Profile"/>
+                        <div className="relative h-52 w-52 md:h-56 md:w-56">
+                            <img src={newProfilePicture}
+                                 className="h-full w-full bg-gray-400 object-cover rounded-full"
+                                 alt="User Profile" onClick={() => document.getElementById('profile-upload').click()}/>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                                id="profile-upload"
+                                onChange={(event) => handleImageChange(event, setNewProfilePicture)}
+                            />
+                            <img src={pencil_icon} className="absolute inset-0 m-auto h-16 w-16 cursor-pointer" alt="Edit" onClick={() => document.getElementById('profile-upload').click()} />
+                        </div>
                         <div className={"pl-4 pt-28"}>
                             <input type={'text'} value={newUsername}
                                    onChange={(event) => setNewUsername(event.target.value)}
