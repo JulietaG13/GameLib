@@ -490,9 +490,15 @@ public class Application {
       
       JsonObject jsonObj = new JsonObject();
       jsonObj.addProperty("actual", reviews.size());
-    
+
+      UserRepository userRepository = new UserRepository(em);
+
       JsonArray jsonArray = new JsonArray();
-      reviews.forEach(r -> jsonArray.add(r.asJson()));
+      reviews.forEach(r -> {
+        JsonObject json = r.asJson();
+        json.add("author", r.getAuthor().asJsonProfile());
+        jsonArray.add(json);
+      });
     
       jsonObj.add("reviews", jsonArray);
       

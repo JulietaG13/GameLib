@@ -36,6 +36,7 @@ public class GameController implements Controller {
   private static final String ROUTE_IS_SUBSCRIBED = "/game/subs/is/:game_id";         // header: token
   private static final String ROUTE_SUBSCRIBE = "/game/subs/subscribe/:game_id";      // header: token
   private static final String ROUTE_UNSUBSCRIBE = "/game/subs/unsubscribe/:game_id";  // header: token
+  private static final String ROUTE_LIST_BY_MOST_REVIEWS = "/game/get/list/reviews/:max";
   
   private EntityManagerFactory factory;
   private static Controller instance;
@@ -60,6 +61,7 @@ public class GameController implements Controller {
     setRouteIsSubscribed();
     setRouteSubscribe();
     setRouteUnsubscribe();
+    setRouteListByMostReviews();
   }
 
   private void setRouteCreateGame() {
@@ -511,6 +513,38 @@ public class GameController implements Controller {
 
       em.close();
       return "";
+    });
+  }
+
+  public void setRouteListByMostReviews() {
+    Spark.get(ROUTE_LIST_BY_MOST_REVIEWS, "application/json", (req, resp) -> {
+      EntityManager em = factory.createEntityManager();
+      final GameRepository gameRepository = new GameRepository(em);
+
+      int max;
+      try {
+        max = Integer.parseInt(req.params("max"));
+      } catch (NumberFormatException e) {
+        resp.status(403);
+        return "Max number of games must be a number!";
+      }
+
+      List<Game> mostReviews = gameRepository.listByMostReviews(max);
+      resp.type("application/json");
+      resp.status(201);
+
+      JsonObject jsonObj = new JsonObject();
+      jsonObj.addProperty("actual", mostReviews.size());
+
+      JsonArray jsonArray = new JsonArray(mostReviews.size());
+      for(Game game : mostReviews) {
+        JsonObject jsonGame = game.asJson();
+        jsonArray.add(jsonGame);
+      }
+
+      jsonObj.add("games", jsonArray);
+      em.close();
+      return jsonObj.toString();
     });
   }
 }
