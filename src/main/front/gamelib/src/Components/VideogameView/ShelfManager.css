@@ -4,9 +4,10 @@
     margin: 1em 0;
 }
 .shelvesPopUp button {
-    background-color: #AEADF0;
+    background-color: #fb813f;
     padding: 0.4em;
     border-radius: 2em;
+    color: white;
     width: auto;
 }
 
@@ -14,7 +15,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #8E7DBE;
+    background-color: #ffffff;
     padding: 2%;
     margin-bottom: 0.8em;
 }
@@ -22,7 +23,7 @@
 .shelfCreator {
     display: flex;
     flex-direction: column;
-    background-color: #2a1b41;
+    background-color: #ffffff;
     padding: 2%;
 }
 
@@ -32,10 +33,11 @@
     margin-bottom: 0.7em;
 }
 .shelfAttributes input {
+    border: 1px solid black;
     margin: 0;
 }
 .shelfAttributes label {
     display: flex;
     align-items: center;
-    color: white;
+    /*color: white;*/
 }
