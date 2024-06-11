@@ -81,7 +81,7 @@ public class UserRepository {
             .executeUpdate();
     
         // Remove user's upvoted games
-        entityManager.createNativeQuery("DELETE FROM upvoted_by WHERE user_id = :id")
+        entityManager.createNativeQuery("DELETE FROM games_upvoted WHERE user_id = :id")
             .setParameter("id", id)
             .executeUpdate();
     
@@ -91,7 +91,7 @@ public class UserRepository {
             .executeUpdate();
     
         // Remove user from subscribed developers
-        entityManager.createNativeQuery("DELETE FROM developer_subscriptions WHERE user_id = :id")
+        entityManager.createNativeQuery("DELETE FROM developer_subscriptions WHERE user_id = :id OR developer_id = :id")
             .setParameter("id", id)
             .executeUpdate();
     
