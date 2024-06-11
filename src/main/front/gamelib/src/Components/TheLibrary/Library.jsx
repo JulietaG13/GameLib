@@ -126,7 +126,7 @@ function Library() {
                                 <Banner gameBanner={gamesFromDB[0]}/>
                                 <LatestUpdated gameList={latestUpdated}/>
                                 <div className="mt-10">
-                                    <GamesFromDB gamesFromDB={gamesFromDB} title="Popular Games"/>
+                                    <GamesFromDB gamesFromDB={gamesFromDB} title="Games"/>
                                 </div>
                                 <div ref={gamesByGenreRef} className="mt-10">
                                     <GamesFromDB gamesFromDB={gamesByGenreId} title={activeGenreName}/>
