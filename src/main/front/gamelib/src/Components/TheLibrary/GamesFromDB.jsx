@@ -80,7 +80,7 @@ function GamesFromDB({ gamesFromDB, title }) {
                     <Link key={game.id} to={'/videogame/' + game.id}>
                         <GameItem> {/* Use the styled GameItem component */}
                             <img className={""}
-                                src={game.background_image}
+                                src={game.cover}
                                 alt={game.name}
                             />
                             <h2 className={"p-1 flex justify-center"}>{game.name}</h2>
