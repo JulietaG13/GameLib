@@ -6,8 +6,8 @@ import Library from "./Components/TheLibrary/Library";
 import Profile from "./Components/Profile/Profile";
 import Login from "./Components/LoginSignup/Login";
 import RegisterRework from "./Components/LoginSignup/Register";
-import EditProfile from "./Components/Profile/EditProfile";
-import FriendMenu from "./Components/Profile/FriendMenu";
+import EditProfile from "./Components/Profile/edit/EditProfile";
+import FriendMenu from "./Components/Profile/friends/FriendMenu";
 import SearchResults from "./Components/SearchPage/SearchResults";
 
 import React from "react";

@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
-import gamelib_logo from "../Assets/Designer(3).jpeg";
-import userProfile from "../Assets/user-icon.png";
-import pencil_icon from "../Assets/pencil-icon.png"; // Import the overlay image
+import gamelib_logo from "../../Assets/Designer(3).jpeg";
+import userProfile from "../../Assets/user-icon.png";
+import pencil_icon from "../../Assets/pencil-icon.png"; // Import the overlay image
 import { Navigate, useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Header from "../Header/Header";
-import Shelves from "./Shelves";
+import Header from "../../Header/Header";
+import Shelves from "../Shelves";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import Alert from "../../alert/Alert";
 
 function EditProfile() {
     const { username } = useParams();
-    const navigate = useNavigate(); // Hook para redirigir
+    const navigate = useNavigate();
     const [usernameResponse, setUsernameResponse] = useState('');
     const [description, setDescription] = useState('');
     const [notFound, setNotFound] = useState(false);
@@ -21,6 +22,7 @@ function EditProfile() {
     const [newProfilePicture, setNewProfilePicture] = useState(null);
     const [newDescription, setNewDescription] = useState(description);
     const [newUsername, setNewUsername] = useState(username);
+    const [alert, setAlert] = useState({ message: '', visible: false, position: { top: 0, left: 0 } });
 
     const loggedInUsername = localStorage.getItem('username');
 
@@ -53,7 +55,13 @@ function EditProfile() {
         }
     };
 
-    function handleSave() {
+    function handleSave(event) {
+        const rect = event.target.getBoundingClientRect();
+        let leftPosition = rect.left;
+        if (leftPosition + 300 > window.innerWidth) {
+            leftPosition = window.innerWidth - 320;
+        }
+
         axios.post('http://localhost:4567/tokenvalidation', {}, {
             headers: {
                 'Content-Type': 'application/json',
@@ -84,9 +92,19 @@ function EditProfile() {
                 }
             }).catch(e => {
                 console.error('Error:', e);
+                setAlert({
+                    message: 'Failed to save changes. Please try again.',
+                    visible: true,
+                    position: { top: rect.top + rect.height - 50, left: leftPosition - 150 }
+                });
             })
         }).catch(e => {
             console.error('Error:', e);
+            setAlert({
+                message: 'Failed to validate token. Please try again.',
+                visible: true,
+                position: { top: rect.top + rect.height - 50, left: leftPosition - 150 }
+            });
         })
     }
 
@@ -94,6 +112,7 @@ function EditProfile() {
         /* Main container */
         <div>
             <Header />
+
             <div className='relative'>
                 {/* Botón de cerrar */}
                 <Link to={`/profile/${username}`} className="absolute top-10 left-4 bg-gray-600 text-white py-2 px-4 rounded-full z-50">
@@ -140,10 +159,10 @@ function EditProfile() {
                                    onChange={(event) => setNewUsername(event.target.value)}
                                    className={"flex font-bold items-center text-2xl border-2 border-black rounded-s"}></input>
                             <div className={"pl-14"}>
-                            <h2 className={"font-semibold text-xl  pb-1 -mt-4"}>About me</h2>
-                            <input type='text' value={newDescription}
-                                   onChange={event => setNewDescription(event.target.value)}
-                                   className={"font-normal  pr-1 border-2 border-black rounded-s -mt-2 "}></input>
+                                <h2 className={"font-semibold text-xl  pb-1 -mt-4"}>About me</h2>
+                                <input type='text' value={newDescription}
+                                       onChange={event => setNewDescription(event.target.value)}
+                                       className={"font-normal  pr-1 border-2 border-black rounded-s -mt-2 "}></input>
                             </div>
                         </div>
                     </div>
@@ -154,6 +173,7 @@ function EditProfile() {
                     <Shelves username={username}/>
                 </div>
             </div>
+            <Alert alert={alert} setAlert={setAlert} />
         </div>
     );
 }

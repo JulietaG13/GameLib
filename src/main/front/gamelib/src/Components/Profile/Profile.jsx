@@ -5,8 +5,8 @@ import { useParams, useNavigate, Navigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../Header/Header";
 import Shelves from "./Shelves";
-import AlertMessage from "./AlertMessage";
 import ProfileSkeleton from "./ProfileSkeleton"; // Import the skeleton component
+import Alert from "../alert/Alert"; // Import the new Alert component
 
 function Profile() {
     const navigate = useNavigate();
@@ -35,6 +35,7 @@ function Profile() {
             setIsBanned(true); // Update state to indicate the user is banned
         }).catch(e => {
             console.error('Error:', e);
+            showAlert('Failed to ban user. Please try again.');
         })
     };
 
@@ -64,13 +65,14 @@ function Profile() {
             setIsBanned(false); // Update state to indicate the user is unbanned
         }).catch(e => {
             console.error('Error:', e);
+            showAlert('Failed to unban user. Please try again.');
         })
     };
 
-    const handleFollow = async (event) => {
+    const handleFollow = async () => {
         const isLoggedIn = await validateLogin();
         if (!isLoggedIn) {
-            showAlert("You need to be logged in to perform this action.", event);
+            showAlert("You need to be logged in to perform this action.");
             return;
         }
 
@@ -86,19 +88,15 @@ function Profile() {
             })
             .catch(error => {
                 console.error(`Error ${isFollowing ? 'unfollowing' : 'following'} developer:`, error);
+                showAlert(`Failed to ${isFollowing ? 'unfollow' : 'follow'} developer. Please try again.`);
             });
     };
 
-    const showAlert = (message, event) => {
-        const rect = event.target.getBoundingClientRect();
-        let leftPosition = rect.left;
-        if (leftPosition + 300 > window.innerWidth) {
-            leftPosition = window.innerWidth - 320; // Ajuste para que el popup no se salga de la pantalla
-        }
+    const showAlert = (message) => {
         setAlert({
             message,
             visible: true,
-            position: { top: rect.top + rect.height - 70, left: leftPosition }
+            position: { top: window.innerHeight / 2 - 50, left: window.innerWidth / 2 - 150 }
         });
         setTimeout(() => setAlert({ ...alert, visible: false }), 6000);
     };
@@ -178,13 +176,14 @@ function Profile() {
             navigate(`/profile/${localStorage.getItem("username")}/edit`);
         }).catch(e => {
             console.error('Error:', e);
+            showAlert('Failed to validate token. Please try again.');
         });
     };
 
-    const handleAddFriend = async (event) => {
+    const handleAddFriend = async () => {
         const isLoggedIn = await validateLogin();
         if (!isLoggedIn) {
-            showAlert("You need to be logged in to perform this action.", event);
+            showAlert("You need to be logged in to perform this action.");
             return;
         }
 
@@ -200,13 +199,14 @@ function Profile() {
             })
             .catch(error => {
                 console.error("Error adding friend:", error);
+                showAlert('Failed to send friend request. Please try again.');
             });
     };
 
-    const handleDeleteFriend = async (event) => {
+    const handleDeleteFriend = async () => {
         const isLoggedIn = await validateLogin();
         if (!isLoggedIn) {
-            showAlert("You need to be logged in to perform this action.", event);
+            showAlert("You need to be logged in to perform this action.");
             return;
         }
 
@@ -222,6 +222,7 @@ function Profile() {
             })
             .catch(error => {
                 console.error("Error removing friend:", error);
+                showAlert('Failed to remove friend. Please try again.');
             });
     };
 
@@ -273,11 +274,7 @@ function Profile() {
                                     )}
                                 </div>
                             )}
-                            {alert.visible && (
-                                <div style={{ position: 'absolute', top: alert.position.top, left: alert.position.left }}>
-                                    <AlertMessage message={alert.message} onClose={() => setAlert({ ...alert, visible: false })} />
-                                </div>
-                            )}
+                            <Alert alert={alert} setAlert={setAlert} />
                             {/* Profile Information */}
                             <div className="flex w-4/5 md:w-3/4 lg:w-1/2 h-auto items-center mx-auto md:mx-16 z-40 -mt-32 rounded-lg p-4">
                                 <img src={profilePicture} className="h-52 w-52 md:h-56 md:w-56 bg-gray-400 object-cover rounded-full border-2 border-black" alt="User Profile"/>
