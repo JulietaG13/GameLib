@@ -49,6 +49,8 @@ function Header() {
     };
 
     useEffect(() => {
+        validateLogin();
+        fetchNotifications();
         function handleClickOutside(event) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setShowDropdown(false);
@@ -65,10 +67,6 @@ function Header() {
         };
     }, []);
 
-    useEffect(() => {
-        validateLogin();
-        fetchNotifications();
-    }, []);
 
     function validateLogin() {
         // Check if user is logged in using token

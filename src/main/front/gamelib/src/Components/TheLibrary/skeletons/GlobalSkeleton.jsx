@@ -1,7 +1,7 @@
 import React from 'react';
 import './SkeletonLoader.css';
 
-const SkeletonLoader = () => {
+const GlobalSkeleton = () => {
     return (
         <div className="skeleton-library">
             <div className="skeleton-genre-title"></div>
@@ -26,4 +26,4 @@ const SkeletonLoader = () => {
     );
 };
 
-export default SkeletonLoader;
+export default GlobalSkeleton;
