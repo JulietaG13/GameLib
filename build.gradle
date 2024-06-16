@@ -32,8 +32,13 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
 
     // email service
+    implementation 'org.json:json:20231013'
     implementation 'com.sun.mail:javax.mail:1.6.2'
     implementation 'javax.activation:activation:1.1.1'
+
+    // http client
+    implementation 'com.konghq:unirest-java:3.11.09'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
 
     testImplementation 'junit:junit:4.13.2'
 }

@@ -3,6 +3,11 @@ package controllers;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import interfaces.Controller;
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
+import kong.unirest.json.JSONArray;
+import kong.unirest.json.JSONObject;
 import model.Game;
 import model.Tag;
 import model.User;
@@ -14,15 +19,21 @@ import values.ErrorMessages;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class CommonController implements Controller {
+
   private static final String ROUTE_SEARCH_ALL = "/common/search/all/:str";
   
   private final EntityManagerFactory factory;
   private static Controller instance;
+
+
+  //Get from API: IGDB
+  private static final String ROUTE_SEARCH_API = "/common/search/api/:str";
+  private static final String API_URL = "https://api.igdb.com/v4/";
+  private static final String CLIENT_ID = "bdcmejstsbgrhw51oazx55vgdc74cf";
+  private static final String ACCESS_TOKEN = "Bearer vhy09lphz5sfo6kr6fwczn9cd23ren";
   
   public static Controller getInstance(EntityManagerFactory factory) {
     if (instance == null) {
@@ -38,6 +49,7 @@ public class CommonController implements Controller {
   @Override
   public void run() {
     setRouteSearchAll();
+    setRouteSearchAllFromApi();
   }
   
   private void setRouteSearchAll() {
@@ -80,6 +92,74 @@ public class CommonController implements Controller {
       
       em.close();
       return jsonObject;
+    });
+  }
+
+
+  private void setRouteSearchAllFromApi() {
+    Spark.get(ROUTE_SEARCH_API, "application/json", (req, resp) -> {
+      String searching = req.params("str");
+
+      //Search games
+      HttpResponse<JsonNode> searchResponse = Unirest.post(API_URL + "search")
+              .header("Client-ID", CLIENT_ID)
+              .header("Authorization", ACCESS_TOKEN)
+              .header("Accept", "application/json")
+              .body("search \"" + searching + "\"; fields alternative_name,character,checksum,collection,company,description,game,name,platform,published_at,test_dummy,theme;")
+              .asJson();
+
+      if (searchResponse.getStatus() != 200) {
+        resp.status(searchResponse.getStatus());
+        return searchResponse.getStatusText();
+      }
+
+
+      JSONArray gamesArray = searchResponse.getBody().getArray();
+      StringBuilder idsQuery = new StringBuilder();
+      for (int i = 0; i < gamesArray.length(); i++) {
+        if (i > 0) {
+          idsQuery.append(",");
+        }
+        idsQuery.append(gamesArray.getJSONObject(i).getInt("game"));
+      }
+
+
+      String coversQuery = "where game = (" + idsQuery + "); fields game,url;";
+
+      //Get Covers from previous search
+      HttpResponse<JsonNode> coversResponse = Unirest.post(API_URL + "covers")
+              .header("Client-ID", CLIENT_ID)
+              .header("Authorization", ACCESS_TOKEN)
+              .header("Accept", "application/json")
+              .body(coversQuery)
+              .asJson();
+
+      if (coversResponse.getStatus() != 200) {
+        resp.status(coversResponse.getStatus());
+        return coversResponse.getStatusText();
+      }
+
+      JSONArray coversArray = coversResponse.getBody().getArray();
+
+      //Create map with covers
+      Map<Integer, String> coversMap = new HashMap<>();
+      for (int i = 0; i < coversArray.length(); i++) {
+        JSONObject cover = coversArray.getJSONObject(i);
+        String coverUrl = cover.getString("url").replace("t_thumb", "t_1080p"); // Get better quality cover
+        coversMap.put(cover.getInt("game"), coverUrl);
+      }
+
+      //Add cover url to games
+      for (int i = 0; i < gamesArray.length(); i++) {
+        JSONObject game = gamesArray.getJSONObject(i);
+        int gameId = game.getInt("game");
+        if (coversMap.containsKey(gameId)) {
+          game.put("cover_url", coversMap.get(gameId));
+        }
+      }
+
+      resp.type("application/json");
+      return gamesArray.toString();
     });
   }
   

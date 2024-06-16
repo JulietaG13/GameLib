@@ -5,8 +5,7 @@ import example.ImageExample;
 import values.ErrorMessages;
 import values.Rol;
 import values.Token;
-import values.responses.ErrorResponse;
-import values.responses.UserResponse;
+
 import example.BDExample;
 import interfaces.Controller;
 import interfaces.Responses;
