@@ -100,67 +100,82 @@ public class CommonController implements Controller {
     Spark.get(ROUTE_SEARCH_API, "application/json", (req, resp) -> {
       String searching = req.params("str");
 
-      //Search games
-      HttpResponse<JsonNode> searchResponse = Unirest.post(API_URL + "search")
-              .header("Client-ID", CLIENT_ID)
-              .header("Authorization", ACCESS_TOKEN)
-              .header("Accept", "application/json")
-              .body("search \"" + searching + "\"; fields alternative_name,character,checksum,collection,company,description,game,name,platform,published_at,test_dummy,theme;")
-              .asJson();
-
+      // Search games
+      HttpResponse<JsonNode> searchResponse = makeApiRequest("search", "search \"" + searching + "\"; fields *;");
       if (searchResponse.getStatus() != 200) {
         resp.status(searchResponse.getStatus());
         return searchResponse.getStatusText();
       }
 
-
+      // Get game IDs
       JSONArray gamesArray = searchResponse.getBody().getArray();
-      StringBuilder idsQuery = new StringBuilder();
-      for (int i = 0; i < gamesArray.length(); i++) {
-        if (i > 0) {
-          idsQuery.append(",");
-        }
-        idsQuery.append(gamesArray.getJSONObject(i).getInt("game"));
-      }
+      String gamesId = getCommaSeparatedIds(gamesArray);
 
-
-      String coversQuery = "where game = (" + idsQuery + "); fields game,url;";
-
-      //Get Covers from previous search
-      HttpResponse<JsonNode> coversResponse = Unirest.post(API_URL + "covers")
-              .header("Client-ID", CLIENT_ID)
-              .header("Authorization", ACCESS_TOKEN)
-              .header("Accept", "application/json")
-              .body(coversQuery)
-              .asJson();
-
+      // Get covers
+      HttpResponse<JsonNode> coversResponse = makeApiRequest("covers", "where game = (" + gamesId + "); fields game,url;");
       if (coversResponse.getStatus() != 200) {
         resp.status(coversResponse.getStatus());
         return coversResponse.getStatusText();
       }
 
-      JSONArray coversArray = coversResponse.getBody().getArray();
+      // Create a map of game ID to cover URL
+      Map<Integer, String> coverMap = createCoverMap(coversResponse.getBody().getArray());
 
-      //Create map with covers
-      Map<Integer, String> coversMap = new HashMap<>();
-      for (int i = 0; i < coversArray.length(); i++) {
-        JSONObject cover = coversArray.getJSONObject(i);
-        String coverUrl = cover.getString("url").replace("t_thumb", "t_1080p"); // Get better quality cover
-        coversMap.put(cover.getInt("game"), coverUrl);
+      // Get games data
+      HttpResponse<JsonNode> gamesResponse = makeApiRequest("games", "where id = (" + gamesId + "); fields id,name,url;");
+      if (gamesResponse.getStatus() != 200) {
+        resp.status(gamesResponse.getStatus());
+        return gamesResponse.getStatusText();
       }
 
-      //Add cover url to games
-      for (int i = 0; i < gamesArray.length(); i++) {
-        JSONObject game = gamesArray.getJSONObject(i);
-        int gameId = game.getInt("game");
-        if (coversMap.containsKey(gameId)) {
-          game.put("cover_url", coversMap.get(gameId));
-        }
-      }
+      // Add cover URLs to games
+      JSONArray gamesResultArray = gamesResponse.getBody().getArray();
+      addCoversToGames(gamesResultArray, coverMap);
 
+      resp.status(200);
       resp.type("application/json");
-      return gamesArray.toString();
+      return gamesResultArray.toString();
     });
   }
-  
+
+  private HttpResponse<JsonNode> makeApiRequest(String endpoint, String query) {
+    return Unirest.post(API_URL + endpoint)
+            .header("Client-ID", CLIENT_ID)
+            .header("Authorization", ACCESS_TOKEN)
+            .header("Accept", "application/json")
+            .body(query)
+            .asJson();
+  }
+
+  private String getCommaSeparatedIds(JSONArray jsonArray) {
+    StringBuilder ids = new StringBuilder();
+    for (int i = 0; i < jsonArray.length(); i++) {
+      if (i > 0) {
+        ids.append(",");
+      }
+      ids.append(jsonArray.getJSONObject(i).getInt("game"));
+    }
+    return ids.toString();
+  }
+
+  private Map<Integer, String> createCoverMap(JSONArray coversArray) {
+    Map<Integer, String> coverMap = new HashMap<>();
+    for (int i = 0; i < coversArray.length(); i++) {
+      JSONObject coverObject = coversArray.getJSONObject(i);
+      coverMap.put(coverObject.getInt("game"), coverObject.getString("url"));
+    }
+    return coverMap;
+  }
+
+  private void addCoversToGames(JSONArray gamesArray, Map<Integer, String> coverMap) {
+    for (int i = 0; i < gamesArray.length(); i++) {
+      JSONObject gameObject = gamesArray.getJSONObject(i);
+      int gameId = gameObject.getInt("id");
+      if (coverMap.containsKey(gameId)) {
+        String coverUrl = coverMap.get(gameId).replace("t_thumb", "t_1080p"); // Get better quality cover
+        gameObject.put("cover_url", coverUrl);
+      }
+    }
+  }
+
 }

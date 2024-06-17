@@ -110,15 +110,12 @@ function MapApiGames({ gamesFromDB, title }) {
                     ))
                 ) : (
                     gamesFromDB.map((game) => (
-                        <Link key={game.id} to={'/videogame/' + game.id}>
-                            <GameItem>
-                                <img
-                                    src={game.cover_url}
-                                    alt={game.name}
-                                />
+                        <GameItem>
+                            <a href={game.url}>
+                                <img src={game.cover_url} alt={game.name}/>
                                 <h2 className="p-1 flex justify-center">{game.name}</h2>
-                            </GameItem>
-                        </Link>
+                            </a>
+                        </GameItem>
                     ))
                 )}
             </ScrollContainer>
