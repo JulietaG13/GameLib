@@ -38,15 +38,21 @@ const SearchResults = () => {
     const fetchSearchResults = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`http://localhost:4567/common/search/all/${searchQuery}`, {}, {});
             const apiResponse = await axios.get(`http://localhost:4567/common/search/api/${searchQuery}`, {}, {});
+            setApiGames(apiResponse.data);
+        } catch (error) {
+            setApiGames([])
+        }
+        try {
+            const response = await axios.get(`http://localhost:4567/common/search/all/${searchQuery}`, {}, {});
+            setError('')
             setGames(response.data.games);
             setUsers(response.data.users);
-            setApiGames(apiResponse.data);
-            console.log(apiResponse.data);
         } catch (error) {
-            console.error('Error fetching search results:', error);
+            console.error('Error fetching from gamelib:', error);
             setError('Failed to fetch search results');
+            setGames([])
+            setUsers([])
         } finally {
             setIsLoading(false);
         }
@@ -56,7 +62,7 @@ const SearchResults = () => {
         <div>
             <Header />
             <div className="container mx-auto p-4">
-                <h1 className="text-3xl font-bold mb-4">Search Results for "{searchQuery}"</h1>
+                <h1 className="text-4xl font-bold font-exo mb-4">Search Results for "{searchQuery}"</h1>
 
                 {error && <div className="bg-red-500 text-white p-4 rounded-md mb-4">{error}</div>}
 
@@ -64,7 +70,7 @@ const SearchResults = () => {
                     {isLoading ? (
                         <Skeleton />
                     ) : games.length === 0 ? (
-                        <p>No games found inside GameLib</p>
+                        <p className={"text-2xl font-bold "}>No games found inside GameLib</p>
                     ) : (
                         <GamesFromDB gamesFromDB={games} title="Games" />
                     )}
@@ -74,7 +80,7 @@ const SearchResults = () => {
                     {isLoading ? (
                         <Skeleton />
                     ) : users.length === 0 ? (
-                        <p>No users found</p>
+                        <p className={"text-2xl font-bold "}>No users found</p>
                     ) : (
                         <MapUsers users={users} />
                     )}
@@ -84,7 +90,7 @@ const SearchResults = () => {
                     {isLoading ? (
                         <Skeleton />
                     ) : apiGames.length === 0 ? (
-                        <p>No games found</p>
+                        <p className={"text-2xl font-bold "}>No games found outside GameLib</p>
                     ) : (
                         <MapApiGames gamesFromDB={apiGames} title="You may be looking for" />
                     )}
