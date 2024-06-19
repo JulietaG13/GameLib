@@ -82,7 +82,7 @@ const Login = () => {
         //Main container
         <div className={"w-full h-screen flex items-start "}>
             {/*Left side*/}
-            <div className={"relative w-1/2 h-full flex flex-col border-2 border-black "}>
+            <div className={"relative  h-full flex flex-col border-2 border-black "}>
                 <Link to="/">
                     <img src={gamelib_logo} className={"w-full h-full object-cover brightness-50 cursor-pointer"} alt="GameLib Logo" />
                 </Link>
@@ -101,8 +101,8 @@ const Login = () => {
                 </h1>
                 {/*Subtitle*/}
                 <div className={"flex flex-col w-[500px] mx-auto"}>
-                    <h3 className={"text-2xl font-semi bold mb-4 text-black text-center"}>Log in</h3>
-                    <p className={"text-base mb-2 text-center"}>Welcome back! Please enter your credentials.</p>
+                    <h3 className={"text-2xl font-semi bold mb-4 text-black text-left"}>Log in</h3>
+                    <p className={"text-base mb-2 text-left"}>Welcome back! Please enter your credentials.</p>
 
                     {/* Inputs and Error Message */}
                     <div className={"w-full flex flex-col items-center"}>
