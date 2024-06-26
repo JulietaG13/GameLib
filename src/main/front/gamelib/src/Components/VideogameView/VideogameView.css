@@ -88,6 +88,9 @@
     border-bottom: 0.2em solid #000000;
 }
 
+.reviewsDiv {
+    width: 100%;
+}
 .reviewsDiv button {
     background-color: #fd8240;
     color: white;
@@ -106,20 +109,24 @@
     align-items: center;
 }
 
-.toProfileLink {
+/*pensar*/
+.reviewsDiv img {
     width: 4.5em;
     height: 4.5em;
     margin-right: 0.5em;
 }
+/*pensar*/
+
 .reviewDiv {
     display: flex;
     align-items: center;
     flex-direction: row;
+    width: 100%;
     margin-top: 1em;
     background-color: #d1d1d1;
 }
 .reviewDiv p {
-    width: 90%;
+    width: 100%;
 }
 
 .errorMessageDiv {
@@ -140,6 +147,9 @@
 
 #special {
     opacity: 0;
+    width: 4.5em;
+    height: 4.5em;
+    margin-right: 0.5em;
 }
 
 .newsDiv {

@@ -220,6 +220,7 @@ function VideogameView() {
                             <textarea id={'1'}
                                       placeholder={'Add your review'}
                                       value={review}
+                                      maxLength={200}
                                       onChange={e =>
                                           setReview(e.target.value)
                                       }
@@ -240,13 +241,13 @@ function VideogameView() {
                             </div>
                             :
                             reviews.map((review) => (
-                                <div key={review.id} className={"reviewDiv"}>
-                                    <Link className={'toProfileLink'} to={'/profile/' + review.author.username}>
+                                <div key={review.id} className={"reviewDiv mt-5 rounded-xl"}>
+                                    <Link className={"mr-2"} to={'/profile/' + review.author.username}>
                                         <img src={review.author.pfp !== null ? review.author.pfp : user_icon}
                                              alt={"user_icon"}/>
                                     </Link>
                                     {/*<img src={review.author.pfp !== null ? review.author.pfp : user_icon} alt={"user_icon"}/>*/}
-                                    <p>{review.text}</p>
+                                    <p>{review.author.username}<br/>{review.text}</p>
                                 </div>
                             ))
                         }
