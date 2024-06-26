@@ -242,7 +242,9 @@ function VideogameView() {
                             :
                             reviews.map((review) => (
                                 <div key={review.id} className={"reviewDiv mt-5 rounded-xl"}>
-                                    <Link className={"mr-2"} to={'/profile/' + review.author.username}>
+                                    <Link className={"mr-2"}
+                                          to={'/profile/' + review.author.username}
+                                    title={`Visit ${review.author.username} page!`}>
                                         <img src={review.author.pfp !== null ? review.author.pfp : user_icon}
                                              alt={"user_icon"}/>
                                     </Link>
