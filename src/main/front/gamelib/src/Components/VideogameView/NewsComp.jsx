@@ -45,7 +45,7 @@ function NewsComp(props) {
             }
 
             {isLoading ?
-                <div>Loading...</div>
+                <div className={"newsExtraSkeleton"}></div>
                 :
                 <div>
                     <h2>News</h2>

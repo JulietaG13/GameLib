@@ -10,6 +10,7 @@ import NewsComp from "./NewsComp";
 import ShelfManager from "./ShelfManager";
 import Header from "../Header/Header";
 import ErrorView from "../ErrorView/ErrorView";
+import SkeletonView from "./skeleton/SkeletonView";
 
 function VideogameView() {
     const videogameID = useParams();
@@ -244,7 +245,7 @@ function VideogameView() {
                                 <div key={review.id} className={"reviewDiv mt-5 rounded-xl"}>
                                     <Link className={"mr-2"}
                                           to={'/profile/' + review.author.username}
-                                    title={`Visit ${review.author.username} page!`}>
+                                          title={`Visit ${review.author.username} page!`}>
                                         <img src={review.author.pfp !== null ? review.author.pfp : user_icon}
                                              alt={"user_icon"}/>
                                     </Link>
@@ -286,9 +287,10 @@ function formatDate(date) {
 
 function loadingScreen() {
     return (
-        <div className={"loadingScreen"}>
-            <h1>Loading...</h1>
-        </div>
+        <main>
+            <Header/>
+            <SkeletonView/>
+        </main>
     )
 }
 
