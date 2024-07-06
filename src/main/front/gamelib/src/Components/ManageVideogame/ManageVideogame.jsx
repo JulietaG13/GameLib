@@ -185,39 +185,52 @@ function ManageVideogame({type}) {
             <h1 className={'font-bold text-[30px] mb-2 text-center'}>{type} Videogame</h1>
 
             <div className={'cover'}>
-                <input type={'File'}
-                       accept={'image/*'}
-                       onChange={e => {
-                           formatBase64Image(e.target.files[0])
-                               .then(result => setTheVideogame({...theVideogame, cover: result}))
-                               .catch(error => console.error(error));
-                       }}
-                />
+                <div className={"imageOption"}>
+                    <h2>Select the cover for your game:</h2>
 
-                {
-                    theVideogame.cover === '' ?
-                        null
-                        :
-                        <img src={theVideogame.cover} alt={"cover1"}/>
-                }
+                </div>
+
+                <div>
+                    <input type={'File'}
+                           accept={'image/*'}
+                           onChange={e => {
+                               formatBase64Image(e.target.files[0])
+                                   .then(result => setTheVideogame({...theVideogame, cover: result}))
+                                   .catch(error => console.error(error));
+                           }}
+                    />
+
+                    {
+                        theVideogame.cover === '' ?
+                            null
+                            :
+                            <img src={theVideogame.cover} alt={"cover1"}/>
+                    }
+                </div>
             </div>
 
             <div className={'cover'}>
-                <input type={'File'}
-                       accept={'image/*'}
-                       onChange={e => {
-                           formatBase64Image(e.target.files[0])
-                               .then(result => setTheVideogame({...theVideogame, background_image: result}))
-                               .catch(error => console.error(error));
-                       }}
-                />
+                <div className={"imageOption"}>
+                    <h2>Select the background image to display:</h2>
+                </div>
 
-                {
-                    theVideogame.background_image === '' ?
-                        null
-                        :
-                        <img src={theVideogame.background_image} alt={"cover1"}/>
-                }
+                <div>
+                    <input type={'File'}
+                           accept={'image/*'}
+                           onChange={e => {
+                               formatBase64Image(e.target.files[0])
+                                   .then(result => setTheVideogame({...theVideogame, background_image: result}))
+                                   .catch(error => console.error(error));
+                           }}
+                    />
+
+                    {
+                        theVideogame.background_image === '' ?
+                            null
+                            :
+                            <img src={theVideogame.background_image} alt={"cover1"}/>
+                    }
+                </div>
             </div>
 
             <div className={"titleDesc flex justify-center items-center"}>
