@@ -1,7 +1,9 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import cronjob.CronJobInitializer;
 import example.ImageExample;
+import org.quartz.SchedulerException;
 import values.ErrorMessages;
 import values.Rol;
 import values.Token;
@@ -58,6 +60,7 @@ public class Application {
     entityManager.close();
 
     controllers(factory);
+    cronJobs(factory);
 
     Spark.get("/users", "application/json", (req, resp) -> {
       
@@ -741,6 +744,11 @@ public class Application {
         NotificationController.getInstance(factory)
     );
     controllers.forEach(Controller::run);
+  }
+
+  private static void cronJobs(EntityManagerFactory factory) {
+    CronJobInitializer scheduler = CronJobInitializer.getInstance(factory);
+    scheduler.initializeJobs();
   }
 }
 
