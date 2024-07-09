@@ -18,8 +18,6 @@ import java.util.Optional;
 public class NotifyReleasingGames implements Job {
     @Override
     public void execute(JobExecutionContext context) {
-        System.out.println("Executing NotifyReleasingGames job at " + LocalDate.now());
-
         EntityManagerFactory factory = (EntityManagerFactory) context.getJobDetail().getJobDataMap().get("entityManagerFactory");
         EntityManager entityManager = factory.createEntityManager();
 
@@ -42,7 +40,6 @@ public class NotifyReleasingGames implements Job {
         });
 
         entityManager.close();
-        System.out.println("Finishing NotifyReleasingGames job at " + LocalDate.now());
     }
 
     private List<Game> getTodayGames(EntityManager entityManager, LocalDate today) {
