@@ -41,6 +41,12 @@ public class GameRepository {
             .setParameter("like", name.toLowerCase() + "%").getResultList();
     }
 
+    public List<Game> findByDate(LocalDate date) {
+        return entityManager
+            .createQuery("SELECT g FROM Game g WHERE g.releaseDate = :date", Game.class)
+            .setParameter("date", date).getResultList();
+    }
+
     public List<Game> listAll() {
         return entityManager.createQuery("SELECT g FROM Game g", Game.class).getResultList();
     }
