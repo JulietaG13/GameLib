@@ -10,7 +10,8 @@ import NewsComp from "./NewsComp";
 import ShelfManager from "./ShelfManager";
 import Header from "../Header/Header";
 import ErrorView from "../ErrorView/ErrorView";
-import SkeletonView from "./skeleton/SkeletonView";
+import SkeletonComp from "./skeleton/SkeletonComp";
+import SmallerSkeletonComp from "./skeleton/SmallerSkeletonComp";
 
 function VideogameView() {
     const videogameID = useParams();
@@ -25,7 +26,7 @@ function VideogameView() {
 
     const [navigateHome, setNavigateHome] = useState(false);
     const [navigateEdit, setNavigateEdit] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+    const [reviewsRetrieved, setReviewsRetrieved] = useState(false);
 
     useEffect(() => {
         axios.post(`http://localhost:4567/tokenvalidation`, {}, {
@@ -51,7 +52,6 @@ function VideogameView() {
             })
             .catch(() => {
                 localStorage.clear();
-                setUser(-1);
             })
     }, []);
 
@@ -59,7 +59,6 @@ function VideogameView() {
         axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
             .then(response => {
                 setVideogame(response.data);
-                setIsLoading(false);
                 axios.get('http://localhost:4567/user/get/' + response.data.owner_id,{
                     headers: {
                         'Content-Type': 'application/json',
@@ -85,6 +84,7 @@ function VideogameView() {
             .then(response => {
                 console.log(response.data);
                 setReviews(response.data.reverse());
+                setReviewsRetrieved(true);
             })
             .catch(error => {
                 console.log(error);
@@ -152,72 +152,85 @@ function VideogameView() {
 
     if(navigateHome) {return <Navigate to={`/`}/>;}
     if(navigateEdit) {return <Navigate to={`/editVideogame/${videogameID.videogameID}`}/>;}
-    if (isLoading) {return loadingScreen();}
 
     return (
         <main className={"gameView"}>
             <Header/>
             <img id={"backImg"} src={videogame.background_image} alt={"Game Background"}/>
             <div className={"titleDiv "}>
-                <h1>{videogame.name}</h1>
+                <h1>{Object.keys(videogame).length !== 0 ? videogame.name : "Loading game..."}</h1>
             </div>
 
             <div className={"dataDiv"}>
                 <div className={"coverDiv"}>
-                    <img src={videogame.cover} alt={"Game Cover"}/>
-                    {user === -1 ?
-                        null
+                    {Object.keys(videogame).length !== 0 ?
+                        <img src={videogame.cover} alt={"Game Cover"}/>
                         :
+                        <SkeletonComp/>
+                    }
+                    {Object.keys(user).length !== 0?
                         <ShelfManager props={videogame}/>
+                        :
+                        null
                     }
                 </div>
 
                 <div className={"moreDataDiv"}>
-                    <div className={'options'}>
-                        {checkPrivilege(user, videogame.owner_id) ?
-                            <div className={'optionImage acceptOptionImage'}>
-                                <img alt={"Edit videogame"}
-                                     title={"Edit videogame"}
-                                     src={pencil_icon}
-                                     onClick={redirectEdit}/>
-                            </div>
-                            :
-                            null
-                        }
-                        {user !== -1 ?
-                            <div className={`optionImage ${subscription ? 'rejectOptionImage': 'acceptOptionImage'}`}>
-                                <img alt={"Sub/Unsub videogame"}
-                                     title={subscription ? "Unsubscribe" : "Subscribe"}
-                                     src={subscription ? un_mail_icon : mail_icon}
-                                     onClick={handleSubscription}
-                                />
-                            </div>
-                            :
-                            null
-                        }
-                    </div>
+                    {Object.keys(videogame).length !== 0 ?
+                        <div className={'options'}>
+                            {checkPrivilege(user, videogame.owner_id) ?
+                                <div className={'optionImage acceptOptionImage'}>
+                                    <img alt={"Edit videogame"}
+                                         title={"Edit videogame"}
+                                         src={pencil_icon}
+                                         onClick={redirectEdit}/>
+                                </div>
+                                :
+                                null
+                            }
+                            {Object.keys(user).length !== 0 ?
+                                <div
+                                    className={`optionImage ${subscription ? 'rejectOptionImage' : 'acceptOptionImage'}`}>
+                                    <img alt={"Sub/Unsub videogame"}
+                                         title={subscription ? "Unsubscribe" : "Subscribe"}
+                                         src={subscription ? un_mail_icon : mail_icon}
+                                         onClick={handleSubscription}
+                                    />
+                                </div>
+                                :
+                                null
+                            }
+                        </div>
+                        :
+                        null
+                    }
 
-                    <div className={"attributesDiv"}>
-                        <h2>About the game:</h2>
-                        <p>{videogame.description}</p>
-                        <p>Developer: {developer !== '' ?
-                            <Link to={`/profile/${developer}`}>
-                                {developer}
-                            </Link>
-                            :
-                            "Unknown"
-                        }</p>
-                        <p>Date of release: {formatDate(videogame.release_date)}</p>
-                        {videogame.tags.length === 0 ?
-                            <p>No tags available</p>
-                            :
-                            <p>Tags: {videogame.tags.map(tag => tag.name).join(', ')}</p>
-                        }
-                    </div>
+                    {Object.keys(videogame).length !== 0 ?
+                        <div className={"attributesDiv"}>
+                            <h2>About the game:</h2>
+                            <p>{videogame.description}</p>
+                            <p>Developer: {developer !== '' ?
+                                <Link to={`/profile/${developer}`}>
+                                    {developer}
+                                </Link>
+                                :
+                                "Unknown"
+                            }</p>
+                            <p>Date of release: {formatDate(videogame.release_date)}</p>
+                            {videogame.tags.length === 0 ?
+                                <p>No tags available</p>
+                                :
+                                <p>Tags: {videogame.tags.map(tag => tag.name).join(', ')}</p>
+                            }
+                        </div>
+                        :
+                        <SmallerSkeletonComp/>
+                    }
 
-                    <div className={"reviewsDiv"}>
-                        <h2 className={"pb-5"}>Reviews section</h2>
-                        <form className={'publishReviewDiv'} onSubmit={publishReview}>
+                    {reviewsRetrieved ?
+                        <div className={"reviewsDiv"}>
+                            <h2 className={"pb-5"}>Reviews section</h2>
+                            <form className={'publishReviewDiv'} onSubmit={publishReview}>
                             <textarea id={'1'}
                                       placeholder={'Add your review'}
                                       value={review}
@@ -226,39 +239,42 @@ function VideogameView() {
                                           setReview(e.target.value)
                                       }
                             />
-                            <button type={'submit'} >Publish</button>
-                        </form>
+                                <button type={'submit'}>Publish</button>
+                            </form>
 
-                        {errorMessage !== '' ?
-                            <ErrorView message={errorMessage}/>
-                            :
-                            null
-                        }
+                            {errorMessage !== '' ?
+                                <ErrorView message={errorMessage}/>
+                                :
+                                null
+                            }
 
-                        {reviews.length === 0 ?
-                            <div className={"reviewDiv w-full mt-5 rounded-xl"}>
-                                <img id={"special"} src={user_icon} alt={"user_icon"}/>
-                                <p>Be the first one to review!</p>
-                            </div>
-                            :
-                            reviews.map((review) => (
-                                <div key={review.id} className={"reviewDiv mt-5 rounded-xl"}>
-                                    <Link className={"mr-2"}
-                                          to={'/profile/' + review.author.username}
-                                          title={`Visit ${review.author.username} page!`}>
-                                        <img src={review.author.pfp !== null ? review.author.pfp : user_icon}
-                                             alt={"user_icon"}/>
-                                    </Link>
-                                    {/*<img src={review.author.pfp !== null ? review.author.pfp : user_icon} alt={"user_icon"}/>*/}
-                                    <p>{review.author.username}<br/>{review.text}</p>
+                            {reviews.length === 0 ?
+                                <div className={"reviewDiv w-full mt-5 rounded-xl"}>
+                                    <img id={"special"} src={user_icon} alt={"user_icon"}/>
+                                    <p>Be the first one to review!</p>
                                 </div>
-                            ))
-                        }
-                    </div>
+                                :
+                                reviews.map((review) => (
+                                    <div key={review.id} className={"reviewDiv mt-5 rounded-xl"}>
+                                        <Link className={"mr-2"}
+                                              to={'/profile/' + review.author.username}
+                                              title={`Visit ${review.author.username} page!`}>
+                                            <img src={review.author.pfp !== null ? review.author.pfp : user_icon}
+                                                 alt={"user_icon"}/>
+                                        </Link>
+                                        {/*<img src={review.author.pfp !== null ? review.author.pfp : user_icon} alt={"user_icon"}/>*/}
+                                        <p>{review.author.username}<br/>{review.text}</p>
+                                    </div>
+                                ))
+                            }
+                        </div>
+                        :
+                        <SmallerSkeletonComp/>
+                    }
                 </div>
 
                 <div className={"newsDiv"}>
-                    <NewsComp videogameID={videogameID.videogameID} owner={checkPrivilege(user, videogame.owner_id)} />
+                    <NewsComp videogameID={videogameID.videogameID} owner={checkPrivilege(user, videogame.owner_id)}/>
                 </div>
             </div>
         </main>
@@ -283,15 +299,6 @@ function checkPrivilege(user, ownerID) {
 function formatDate(date) {
     let d = new Date(date);
     return (d.getDate() + 1) + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
-}
-
-function loadingScreen() {
-    return (
-        <main>
-            <Header/>
-            <SkeletonView/>
-        </main>
-    )
 }
 
 export default VideogameView;
