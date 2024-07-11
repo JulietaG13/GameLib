@@ -1,26 +1,25 @@
 import React from "react";
+import skeletoncss from "../TheLibrary/skeletons/SkeletonLoader.css";
 
 
 const ProfileSkeleton = () => {
     return (
-        <div>
-            <div className='relative'>
-                <div className='flex flex-col md:flex-row'>
-                    <div className='flex-grow'>
-                        {/* Banner */}
-                        <div className='bg-white relative border-2 '>
-                            <div className="animate-pulse">
-                                <div className="w-full h-[250px] bg-gray-200"></div>
-                            </div>
+        <div className={"animate-pulse -mt-8"}>
+            <div className="flex items-center justify-center h-screen">
+                <div className="w-full px-4">
+                    <div className="space-y-4">
+                        <div className="h-[250px] bg-gray-300 rounded "></div>
+                        <div className="flex ">
+                            <div
+                                className="relative h-52 w-52 md:h-56 md:w-56 bg-gray-300  rounded-full z-1000 -mt-40 ml-6 border border-gray-400"></div>
+                            <div className="flex-1 h-20 bg-gray-300 rounded"></div>
                         </div>
-                        {/* Profile Information */}
-                        <div className="flex w-4/5 md:w-3/4 lg:w-1/2 h-auto items-center mx-auto md:mx-16 z-40 -mt-32 rounded-lg p-4">
-                            <div className="relative h-52 w-52 md:h-56 md:w-56 bg-gray-200 animate-pulse rounded-full z-1000"></div>
-                            <div className="ml-4 pt-20">
-                                <div className="h-8 w-3/4 bg-gray-200 animate-pulse mb-4"></div>
-                                <div className="h-6 w-1/2 bg-gray-200 animate-pulse mb-4"></div>
-                                <div className="h-4 w-full bg-gray-200 animate-pulse"></div>
-                            </div>
+                        <div className="h-8 bg-gray-300 rounded mt-10"></div>
+                        <div className="flex flex-wrap justify-between gap-4">
+                            {Array(6).fill().map((_, index) => (
+                                <div key={index} className="flex-1 bg-gray-300 rounded-lg "
+                                     style={{height: '350px', width: 'calc(20% - 10px)'}}></div>
+                            ))}
                         </div>
                     </div>
                 </div>
