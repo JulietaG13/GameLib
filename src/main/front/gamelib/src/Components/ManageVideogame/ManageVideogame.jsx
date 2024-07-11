@@ -171,7 +171,6 @@ function ManageVideogame({type}) {
     if (navigate) {
         return <Navigate to={"/"}/>;
     }
-    // if (isLoading) {return standByScreen("Loading videogame...");}
     if (toView) {
         return <Navigate to={`/videogame/${videogameID.videogameID}`}/>;
     }
@@ -188,79 +187,86 @@ function ManageVideogame({type}) {
             <form className={"mainPopUP flex flex-col items-center"}
               onSubmit={type === "Edit" ? editVideogame : addVideogame}
               style={{width: "50%", justifyContent: 'center'}}>
-            <h1 className={'font-bold text-[30px] mb-2 text-center'}>{type} Videogame</h1>
+                <h1 className={'font-bold text-[30px] mb-2 text-center'}>{type} Videogame</h1>
 
-            <div className={'cover'}>
-                <div className={"imageOption"}>
-                    <h2>Select the cover for your game:</h2>
+                <div className={'cover'}>
+                    <div className={"imageOption"}>
+                        <h2>Cover:</h2>
+                    </div>
 
+                    <div>
+                        <input type={'File'}
+                               accept={'image/*'}
+                               onChange={e => {
+                                   formatBase64Image(e.target.files[0])
+                                       .then(result => setTheVideogame({...theVideogame, cover: result}))
+                                       .catch(error => console.error(error));
+                               }}
+                        />
+
+                        {
+                            theVideogame.cover === '' ?
+                                null
+                                :
+                                <img src={theVideogame.cover} alt={"cover1"}/>
+                        }
+                    </div>
                 </div>
 
-                <div>
-                    <input type={'File'}
-                           accept={'image/*'}
-                           onChange={e => {
-                               formatBase64Image(e.target.files[0])
-                                   .then(result => setTheVideogame({...theVideogame, cover: result}))
-                                   .catch(error => console.error(error));
-                           }}
+                <div className={'cover'}>
+                    <div className={"imageOption"}>
+                        <h2>Background image:</h2>
+                    </div>
+
+                    <div>
+                        <input type={'File'}
+                               accept={'image/*'}
+                               onChange={e => {
+                                   formatBase64Image(e.target.files[0])
+                                       .then(result => setTheVideogame({...theVideogame, background_image: result}))
+                                       .catch(error => console.error(error));
+                               }}
+                        />
+
+                        {
+                            theVideogame.background_image === '' ?
+                                null
+                                :
+                                <img src={theVideogame.background_image} alt={"cover1"}/>
+                        }
+                    </div>
+                </div>
+
+                <div className={"titleDesc flex justify-center items-center"}>
+                    <div className={"imageOption"}>
+                        <h2>Title:</h2>
+                    </div>
+                    <input className={'p-1 rounded mb-2'}
+                           type={"text"}
+                           placeholder={"Add videogame name"}
+                           defaultValue={theVideogame.name}
+                           onChange={e => setTheVideogame({...theVideogame, name: e.target.value})}
                     />
 
-                    {
-                        theVideogame.cover === '' ?
-                            null
-                            :
-                            <img src={theVideogame.cover} alt={"cover1"}/>
-                    }
-                </div>
-            </div>
-
-            <div className={'cover'}>
-                <div className={"imageOption"}>
-                    <h2>Select the background image to display:</h2>
-                </div>
-
-                <div>
-                    <input type={'File'}
-                           accept={'image/*'}
-                           onChange={e => {
-                               formatBase64Image(e.target.files[0])
-                                   .then(result => setTheVideogame({...theVideogame, background_image: result}))
-                                   .catch(error => console.error(error));
-                           }}
+                    <div className={"imageOption"}>
+                        <h2>Description:</h2>
+                    </div>
+                    <input id={"desc"}
+                           type={"text"}
+                           className={'p-1 rounded mb-2'}
+                           placeholder={"Add description"}
+                           defaultValue={theVideogame.description}
+                           onChange={e => setTheVideogame({...theVideogame, description: e.target.value})}
                     />
-
-                    {
-                        theVideogame.background_image === '' ?
-                            null
-                            :
-                            <img src={theVideogame.background_image} alt={"cover1"}/>
-                    }
                 </div>
-            </div>
 
-            <div className={"titleDesc flex justify-center items-center"}>
-                <input className={'p-1 rounded mb-2'}
-                       type={"text"}
-                       placeholder={"Add videogame name"}
-                       defaultValue={theVideogame.name}
-                       onChange={e => setTheVideogame({...theVideogame, name: e.target.value})}
-                />
-
-                <input id={"desc"}
-                       type={"text"}
-                       className={'p-1 rounded mb-2'}
-                       placeholder={"Add description"}
-                       defaultValue={theVideogame.description}
-                       onChange={e => setTheVideogame({...theVideogame, description: e.target.value})}
-                />
-            </div>
-
-            <div className={"tagsSelectionDiv"}>
-                <h2>Select tags:</h2>
-                <div className={"tagsDiv"}>
-                    {tags.map((tag, index) => (
-                        <div key={index} className={"tagDiv"}>
+                <div className={"tagsSelectionDiv"}>
+                    <div className={"imageOption"}>
+                        <h2>Tags:</h2>
+                    </div>
+                    <div className={"tagsDiv"}>
+                        {tags.map((tag, index) => (
+                            <div key={index} className={"tagDiv"}>
                             <input
                                 type="checkbox"
                                 checked={theVideogame.tags.includes(tag.id)}
@@ -284,46 +290,49 @@ function ManageVideogame({type}) {
                 </div>
             </div>
 
-            <div className={"releaseDate font-bold flex justify-start items-center mb-2"}>
-                <div className={'flex justify-center'}>
-                    <input type={"date"}
-                           className={'rounded-b'}
-                           name={"release_date"}
-                           defaultValue={theVideogame.release_date}
-                           onChange={e =>
-                               setTheVideogame({...theVideogame, release_date: e.target.value})
-                           }
+                <div className={"releaseDate font-bold flex justify-start items-center mb-2"}>
+                    <div className={'flex justify-center'}>
+                        <div className={"imageOption"}>
+                            <h2>Release date:</h2>
+                        </div>
+                        <input type={"date"}
+                               className={'rounded-b'}
+                               name={"release_date"}
+                               defaultValue={theVideogame.release_date}
+                               onChange={e =>
+                                   setTheVideogame({...theVideogame, release_date: e.target.value})
+                               }
+                        />
+                    </div>
+                </div>
+
+                    {errorMessage !== '' ?
+                        <ErrorView message={errorMessage}/>
+                        :
+                        null
+                }
+
+                <div className={"font-bold flex justify-center"}>
+                    <input type={"button"}
+                           disabled={disableButton}
+                           className={`${disableButton ? 'disabled' : 'submit'} cursor-pointer mr-2`}
+                           value={"Cancel"}
+                           onClick={cancel}
+                    />
+
+                    {type === "Edit" ? <input type={"button"}
+                                              disabled={disableButton}
+                                              className={`cursor-pointer ${disableButton ? 'disabled' : 'submit'}`}
+                                              value={"Delete"}
+                                              onClick={deleteGame}/> : null}
+
+                    <input type={"button"}
+                           value={type}
+                           disabled={disableButton}
+                           className={`${disableButton ? 'disabled' : 'submit'} ml-2 cursor-pointer`}
+                           onClick={type === "Edit" ? editVideogame : addVideogame}
                     />
                 </div>
-            </div>
-
-            {errorMessage !== '' ?
-                <ErrorView message={errorMessage}/>
-                :
-                null
-            }
-
-            <div className={"font-bold flex justify-center"}>
-                <input type={"button"}
-                       disabled={disableButton}
-                       className={`${disableButton ? 'disabled' : 'submit'} cursor-pointer mr-2`}
-                       value={"Cancel"}
-                       onClick={cancel}
-                />
-
-                {type === "Edit" ? <input type={"button"}
-                                          disabled={disableButton}
-                                          className={`cursor-pointer ${disableButton ? 'disabled' : 'submit'}`}
-                                          value={"Delete"}
-                                          onClick={deleteGame}/> : null}
-
-                <input type={"button"}
-                       value={type}
-                       disabled={disableButton}
-                       className={`${disableButton ? 'disabled' : 'submit'} ml-2 cursor-pointer`}
-                       onClick={type === "Edit" ? editVideogame : addVideogame}
-                />
-            </div>
         </form>
     );
 }
@@ -392,14 +401,6 @@ function formatTagJSON(tag) {
         id: tag.id,
         name: tag.name,
     }
-}
-
-function standByScreen(msg) {
-    return (
-        <div className={"loadingScreen"}>
-            <h1>{msg}</h1>
-        </div>
-    )
 }
 
 export default ManageVideogame;
