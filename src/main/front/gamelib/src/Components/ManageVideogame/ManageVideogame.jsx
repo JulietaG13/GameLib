@@ -3,6 +3,7 @@ import {Navigate, useParams} from "react-router-dom";
 import './ManageVideogame.css';
 import axios from "axios";
 import ErrorView from "../ErrorView/ErrorView";
+import StandByComponent from "./skeleton/StandByComponent";
 
 function ManageVideogame({type}) {
     const videogameID = useParams();
@@ -170,16 +171,21 @@ function ManageVideogame({type}) {
     if (navigate) {
         return <Navigate to={"/"}/>;
     }
-    if (isLoading) {
-        return standByScreen("Loading videogame...");
-
-    }
+    // if (isLoading) {return standByScreen("Loading videogame...");}
     if (toView) {
         return <Navigate to={`/videogame/${videogameID.videogameID}`}/>;
     }
 
-    return (
-        <form className={"mainPopUP flex flex-col items-center"}
+    return (isLoading ?
+            <form className={"mainPopUP flex flex-col items-center"}
+                  onSubmit={type === "Edit" ? editVideogame : addVideogame}
+                  style={{width: "50%", justifyContent: 'center'}}>
+                <h1 className={'font-bold text-[30px] mb-2 text-center'}>{type} Videogame</h1>
+
+                <StandByComponent/>
+            </form>
+            :
+            <form className={"mainPopUP flex flex-col items-center"}
               onSubmit={type === "Edit" ? editVideogame : addVideogame}
               style={{width: "50%", justifyContent: 'center'}}>
             <h1 className={'font-bold text-[30px] mb-2 text-center'}>{type} Videogame</h1>

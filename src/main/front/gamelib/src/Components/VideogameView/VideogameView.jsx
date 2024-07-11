@@ -168,7 +168,7 @@ function VideogameView() {
                         :
                         <SkeletonComp/>
                     }
-                    {Object.keys(user).length !== 0?
+                    {Object.keys(user).length !== 0 && Object.keys(videogame).length !== 0 ?
                         <ShelfManager props={videogame}/>
                         :
                         null
