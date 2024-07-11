@@ -185,8 +185,8 @@ function ManageVideogame({type}) {
             </form>
             :
             <form className={"mainPopUP flex flex-col items-center"}
-              onSubmit={type === "Edit" ? editVideogame : addVideogame}
-              style={{width: "50%", justifyContent: 'center'}}>
+                  onSubmit={type === "Edit" ? editVideogame : addVideogame}
+                  style={{width: "50%", justifyContent: 'center'}}>
                 <h1 className={'font-bold text-[30px] mb-2 text-center'}>{type} Videogame</h1>
 
                 <div className={'cover'}>
@@ -267,28 +267,28 @@ function ManageVideogame({type}) {
                     <div className={"tagsDiv"}>
                         {tags.map((tag, index) => (
                             <div key={index} className={"tagDiv"}>
-                            <input
-                                type="checkbox"
-                                checked={theVideogame.tags.includes(tag.id)}
-                                onChange={() => {
-                                    if (theVideogame.tags.includes(tag.id)) {
-                                        setTheVideogame({
-                                            ...theVideogame,
-                                            tags: theVideogame.tags.filter(t => t !== tag.id)
-                                        });
-                                    } else {
-                                        setTheVideogame({
-                                            ...theVideogame,
-                                            tags: [...theVideogame.tags, tag.id]
-                                        });
-                                    }
-                                }}
-                            />
-                            <label className={"flex items-center"}>{tag.name}</label>
-                        </div>
-                    ))}
+                                <input
+                                    type="checkbox"
+                                    checked={theVideogame.tags.includes(tag.id)}
+                                    onChange={() => {
+                                        if (theVideogame.tags.includes(tag.id)) {
+                                            setTheVideogame({
+                                                ...theVideogame,
+                                                tags: theVideogame.tags.filter(t => t !== tag.id)
+                                            });
+                                        } else {
+                                            setTheVideogame({
+                                                ...theVideogame,
+                                                tags: [...theVideogame.tags, tag.id]
+                                            });
+                                        }
+                                    }}
+                                />
+                                <label className={"flex items-center"}>{tag.name}</label>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </div>
 
                 <div className={"releaseDate font-bold flex justify-start items-center mb-2"}>
                     <div className={'flex justify-center'}>

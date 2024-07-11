@@ -18,7 +18,8 @@ function MVR({type}) {
         background_image: ''
     });
     const [videogameFetched, setVideogameFetched] = useState(false);
-    const [tags, setTags] = useState([]);
+    const [platformTags, setPlatformTags] = useState([]);
+    const [genreTags, setGenreTags] = useState([]);
     const [tagsFetched, setTagsFetched] = useState(true);
 
     const [errorMessage, setErrorMessage] = useState('');
@@ -65,7 +66,9 @@ function MVR({type}) {
                     navigate("/");
                 }
 
+                // console.log("Game response: ", gameResponse.data)
                 let formattedJSON = formatJSON(gameResponse.data);
+                // console.log("Formatted JSON: ", formattedJSON);
                 setVideogame(formattedJSON);
                 setVideogameFetched(true);
             })
@@ -77,7 +80,12 @@ function MVR({type}) {
                 console.error('Fetching tags error:', error);
             })
             .then(tagsResponse => {
-                setTags(formatAllTagsJSON(tagsResponse.data));
+                let formattedTags = formatAllTagsJSON(tagsResponse.data);
+                let platformTags = formattedTags.filter(tag => tag.tag_type === "PLATFORM");
+                let genreTags = formattedTags.filter(tag => tag.tag_type === "GENRE");
+
+                setPlatformTags(platformTags);
+                setGenreTags(genreTags);
                 setTagsFetched(true);
             })
     }
@@ -91,7 +99,11 @@ function MVR({type}) {
     // Form submitting management
     const manageSubmit = (e) => {
         e.preventDefault()
-        setVideogame({...videogame, last_update: formatDate(new Date())});
+        setVideogame({
+            ...videogame,
+            tags: formatTagsToID(videogame.tags),
+            last_update: formatDate(new Date())
+        });
         setDisableButton(true);
 
         if (type === "Add") {
@@ -99,6 +111,30 @@ function MVR({type}) {
         } else {
             editVideogame();
         }
+    }
+
+    const manageCancel = () => {
+        manageSuccess(type ==="Add" ? "/" : `/videogame/${videogameID}`);
+    }
+
+    const manageDelete = () => {
+        console.log("Deleting game");
+        setDisableButton(true);
+        axios.post(`http://localhost:4567/game/delete/${videogameID}`, {}, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        })
+            .then(() => {
+                console.log("Game deleted.");
+                manageSuccess("/");
+            })
+            .catch((e) => {
+                console.log("Deleting game error: " + e);
+                setDisableButton(false);
+                manageFailure(e);
+            })
     }
 
     const addVideogame = () => {
@@ -109,7 +145,7 @@ function MVR({type}) {
             }
         })
             .then(() => {
-                manageSuccess();
+                manageSuccess(type ==="Add" ? "/" : `/videogame/${videogameID}`);
             })
             .catch(error => {
                 manageFailure(error);
@@ -124,14 +160,14 @@ function MVR({type}) {
             }
         })
             .then(() =>
-                manageSuccess()
+                manageSuccess(type ==="Add" ? "/" : `/videogame/${videogameID}`)
             )
             .catch(error => {
                 manageFailure(error);
             });
     }
 
-    const manageSuccess = () => {
+    const manageSuccess = (route) => {
         setVideogame({
             name: '',
             description: '',
@@ -141,7 +177,6 @@ function MVR({type}) {
             cover: '',
             background_image: ''
         });
-        const route = type ==="Add" ? "/" : `/videogame/${videogameID}`;
         navigate(route);
     }
 
@@ -190,15 +225,6 @@ function MVR({type}) {
                         ></textarea>
                     </div>
 
-                    <div className={"tagsDivABM divBackground"}>
-                        <h2 id={"formSubtitle"}>Tags (Optional)</h2>
-                        {tagsFetched ?
-                            <p>several tags</p>
-                            :
-                            <p>Loading tags...</p>
-                        }
-                    </div>
-
                     <div className={"dateDivABM divBackground"}>
                         <h2 id={"formSubtitle"}>Release date</h2>
                         <input className={"dateInput"}
@@ -209,6 +235,74 @@ function MVR({type}) {
                                }
                         />
                     </div>
+
+                    {tagsFetched && platformTags.length > 0 && genreTags.length > 0 ?
+                        <div className={"tagsDivABM divBackground"}>
+                            <h2 id={"formSubtitle"}>Tags (Optional)</h2>
+                            <div className={"biggerTagsContainer"}>
+                                <div className={"tagsContainerABM"}>
+                                    <h3>Genre tags</h3>
+                                    {genreTags.map((tag, index) => (
+                                        <div key={index} className={"tagDivABM"}>
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={videogame.tags.includes(tag.id)}
+                                                    onChange={() => {
+                                                        if (videogame.tags.includes(tag.id)) {
+                                                            setVideogame({
+                                                                ...videogame,
+                                                                tags: videogame.tags.filter(t => t !== tag.id)
+                                                            });
+                                                        } else {
+                                                            setVideogame({
+                                                                ...videogame,
+                                                                tags: [...videogame.tags, tag.id]
+                                                            });
+                                                        }
+                                                    }}
+                                                />
+                                            {tag.name}</label>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={"tagsContainerABM"}>
+                                    <h3>Platform tags</h3>
+                                    {platformTags.map((tag, index) => (
+                                        <div key={index} className={"tagDivABM"}>
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={videogame.tags.includes(tag.id)}
+                                                    onChange={() => {
+                                                        if (videogame.tags.includes(tag.id)) {
+                                                            setVideogame({
+                                                                ...videogame,
+                                                                tags: videogame.tags.filter(t => t !== tag.id)
+                                                            });
+                                                        } else {
+                                                            setVideogame({
+                                                                ...videogame,
+                                                                tags: [...videogame.tags, tag.id]
+                                                            });
+                                                        }
+                                                    }}
+                                                />
+                                            {tag.name}</label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                        :
+                        <div className={"tagsDivABM divBackground"}>
+                            <h2 id={"formSubtitle"}>Tags (Optional)</h2>
+                            <div className={"standByContainer tagsStandByContainer"}>
+                                <h1>Configuring tags..</h1>
+                                <StandByComponent/>
+                            </div>
+                        </div>
+                    }
 
                     {errorMessage !== "" ?
                         <ErrorView message={errorMessage}/>
@@ -225,12 +319,14 @@ function MVR({type}) {
                         <button disabled={disableButton}
                                 className={"submitButton"}
                                 id={disableButton ? "disabled" : "cancel"}
+                                onClick={manageCancel}
                         >Cancel</button>
 
                         {type === "Edit" ?
                             <button disabled={disableButton}
                                     className={"submitButton"}
                                     id={disableButton ? "disabled" : "delete"}
+                                    onClick={manageDelete}
                             >Delete</button>
                             :
                             null
@@ -314,6 +410,7 @@ function formatJSON(videogame) {
         description: videogame.description.toString(),
         release_date: videogame.release_date.toString(),
         tags: formatTagsToID(videogame.tags),
+        // tags: videogame.tags,
         cover: videogame.cover.toString(),
         background_image: videogame.background_image.toString()
     }
@@ -331,6 +428,7 @@ function formatTagJSON(tag) {
     return {
         id: tag.id,
         name: tag.name,
+        tag_type: tag.tag_type
     }
 }
 

@@ -30,6 +30,12 @@
     border-radius: 0.25em;
     border: 0.1em solid black;
 }
+.biggerTagsContainer {
+    display: flex;
+}
+.tagsContainerABM {
+    flex: 1;
+}
 .buttonsDivABM {
     display: flex;
     justify-content: space-around;
@@ -91,4 +97,8 @@
     background-color: white;
     padding: 2.5em;
     border-radius: 0.75em;
+}
+.tagsStandByContainer {
+    height: 10em;
+    margin: 0;
 }
