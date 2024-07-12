@@ -741,7 +741,8 @@ public class Application {
         DeveloperController.getInstance(factory),
         AdminController.getInstance(factory),
         CommonController.getInstance(factory),
-        NotificationController.getInstance(factory)
+        NotificationController.getInstance(factory),
+        PaymentController.getInstance(factory)
     );
     controllers.forEach(Controller::run);
   }
