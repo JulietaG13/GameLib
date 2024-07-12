@@ -4,10 +4,12 @@ import user_icon from "../Assets/user-icon.png";
 import bell_icon from '../Assets/notifbell.png';
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import ManagePopup from "../Payment/ManagePopup";
 
 function Header() {
     const [showDropdown, setShowDropdown] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
+    const [showManagePopup, setShowManagePopup] = useState(false);
     const dropdownRef = useRef(null);
     const notificationsRef = useRef(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -15,6 +17,7 @@ function Header() {
     const [notifications, setNotifications] = useState([]);
     const navigate = useNavigate();
     const pfp = localStorage.getItem('pfp') === "" ? localStorage.getItem('pfp') : user_icon ;
+    const isDeveloper = localStorage.getItem('rol') === 'DEVELOPER';
 
     function handleLogout() {
         if (!isLoggedIn) {
@@ -39,6 +42,18 @@ function Header() {
             console.error('Error:', error);
         });
     }
+
+    const handleManageDonations = () => {
+        setShowManagePopup(true);
+    };
+
+    const handleCloseManagePopup = () => {
+        setShowManagePopup(false);
+    };
+
+    const handleConfirmManagePopup = () => {
+        setShowManagePopup(false);
+    };
 
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
@@ -160,8 +175,17 @@ function Header() {
                         {showDropdown && (
                             <div className="border-2 border-black dropdown-content absolute bg-gray-100 w-40 py-2 shadow-md z-10 top-full right-0 flex flex-col pl-2 rounded-xl">
                                 <Link to={`/profile/${localStorage.getItem("username")}`}>Profile</Link>
+                                { isDeveloper &&
+                                    <a href="#" onClick={handleManageDonations}>Manage Donations</a>
+                                }
                                 <a href="#" onClick={handleLogout}>Logout</a>
                                 <a href="#" onClick={handleDeleteUser}>Delete account</a>
+
+                                <ManagePopup
+                                    visible={showManagePopup}
+                                    onConfirm={handleConfirmManagePopup}
+                                    onCancel={handleCloseManagePopup}
+                                />
                             </div>
                         )}
                     </div>

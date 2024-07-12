@@ -1,6 +1,11 @@
 package model;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import values.Rol;
+
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +17,9 @@ public class Developer {
 
     @OneToOne
     private User user;
+    
+    @OneToMany(mappedBy = "owner")
+    private final Set<Game> developed = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -20,6 +28,12 @@ public class Developer {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> subscribers = new HashSet<>();
+    
+    private boolean isDonationsSetup = false;
+    
+    private String mpPublicKey;
+    
+    private String mpAccessToken;
 
     public Developer() {}
 
@@ -28,6 +42,11 @@ public class Developer {
     }
 
     // UTILITY HELPERS
+    
+    public void addDeveloped(Game game) {
+        developed.add(game);
+        game.setOwner(this.getUser());
+    }
 
     public void addSubscriber(User user) {
         subscribers.add(user);
@@ -56,8 +75,36 @@ public class Developer {
     public User getUser() {
         return user;
     }
-
+    
+    public Set<Game> getDeveloped() {
+        return Collections.unmodifiableSet(developed);
+    }
+    
     public Set<User> getSubscribers() {
         return subscribers;
+    }
+    
+    public boolean isDonationsSetup() {
+        return isDonationsSetup;
+    }
+    
+    public void setDonationsSetup(boolean donationsSetup) {
+        isDonationsSetup = donationsSetup;
+    }
+    
+    public String getMpPublicKey() {
+        return mpPublicKey;
+    }
+    
+    public void setMpPublicKey(String mpPublicKey) {
+        this.mpPublicKey = mpPublicKey;
+    }
+    
+    public String getMpAccessToken() {
+        return mpAccessToken;
+    }
+    
+    public void setMpAccessToken(String mpAccessToken) {
+        this.mpAccessToken = mpAccessToken;
     }
 }

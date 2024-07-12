@@ -88,6 +88,7 @@ public class BDExample {
         }
 
         indies();
+        paymentExample();
     }
 
     static {
@@ -235,5 +236,41 @@ public class BDExample {
             }
         }
         return shelves;
+    }
+    
+    private void paymentExample() {
+        Developer dev1 = new Developer(new User(
+            "IAcceptDonations1",
+            "gamelib.bot+donations1@gmail.com",
+            "1234",
+            Rol.DEVELOPER
+        ));
+    
+        Developer dev2 = new Developer(new User(
+            "IAcceptDonations2",
+            "gamelib.bot+donations2@gmail.com",
+            "1234",
+            Rol.DEVELOPER
+        ));
+    
+        /*------------------*/
+    
+        UserRepository userRepository = new UserRepository(entityManager);
+        userRepository.persist(dev1.getUser());
+        userRepository.persist(dev2.getUser());
+    
+        /*------------------*/
+        
+        DeveloperRepository developerRepository = new DeveloperRepository(entityManager);
+        developerRepository.setupDonations(
+            dev1.getUser(),
+            "APP_USR-7935a1bd-06e9-4148-ac35-6d3efc60dbdf",
+            "APP_USR-3308950100823866-070817-edee83028d45f993e55a22ec7b955a62-1893394530"
+        );
+        developerRepository.setupDonations(
+            dev2.getUser(),
+            "APP_USR-d5fc5ac3-de97-452d-9138-d247e7aeac00",
+            "APP_USR-3163159331731443-071018-7032e41a4154a40c58275390f87c992b-1894251913"
+        );
     }
 }

@@ -42,5 +42,8 @@ dependencies {
     implementation 'com.konghq:unirest-java:3.11.09'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
 
+    // mercado pago
+    implementation 'com.mercadopago:sdk-java:2.1.15'
+
     testImplementation 'junit:junit:4.13.2'
 }

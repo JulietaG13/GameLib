@@ -45,4 +45,8 @@ public class ErrorMessages {
     public static String userMustBeDeveloper() {
         return "You must be a Developer to perform this action!";
     }
+    
+    public static String userNotDeveloper() {
+        return "This user is not a developer!";
+    }
 }

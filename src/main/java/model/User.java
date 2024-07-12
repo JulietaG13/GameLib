@@ -40,9 +40,6 @@ public class User {
   
   @OneToMany(mappedBy = "owner")
   private final Set<Notification> notifications = new HashSet<>();
-
-  @OneToMany(mappedBy = "owner")
-  private final Set<Game> developed = new HashSet<>();
   
   @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
   private final Set<Review> reviews = new HashSet<>();
@@ -208,12 +205,6 @@ public class User {
   }
   
   // UTILITY METHODS //
-
-  public void addDeveloped(Game game) {
-    if (this.rol != Rol.DEVELOPER) return; //throw new NoPermissionException("User not allowed to have developed games");
-    developed.add(game);
-    game.setOwner(this);
-  }
   
   public void addReview(Review review) {
     reviews.add(review);
@@ -351,10 +342,6 @@ public class User {
   
   public void setRol(Rol rol) {
     this.rol = rol;
-  }
-
-  public Set<Game> getDeveloped() {
-    return developed;
   }
   
   public Set<Review> getLikedReviews() {
