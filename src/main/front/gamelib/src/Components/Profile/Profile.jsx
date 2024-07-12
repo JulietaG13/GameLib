@@ -175,7 +175,7 @@ function Profile() {
                 setIsDonationsSetup(isSetup);
             })
             .catch(() => {
-                setNotFound(true);
+                setIsDonationsSetup(false);
             });
     }, [username])
 
