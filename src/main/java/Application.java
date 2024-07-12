@@ -118,9 +118,6 @@ public class Application {
         resp.status(401);
         return "Token is invalid or has expired!";
       }
-      
-      resp.type("application/json");
-      resp.status(201);
 
       EntityManager em = getEntityManager();
       UserRepository userRepository = new UserRepository(em);
@@ -132,6 +129,14 @@ public class Application {
         resp.status(404);
         return "User not found!";
       }
+      
+      if (user.get().isBanned()) {
+        resp.status(401);
+        return "You are banned";
+      }
+  
+      resp.type("application/json");
+      resp.status(201);
 
       return user.get().asJson();
     });
