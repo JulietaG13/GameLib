@@ -20,6 +20,12 @@ public class Developer {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> subscribers = new HashSet<>();
+    
+    private boolean isDonationsSetup = false;
+    
+    private String mpPublicKey;
+    
+    private String mpAccessToken;
 
     public Developer() {}
 
@@ -59,5 +65,29 @@ public class Developer {
 
     public Set<User> getSubscribers() {
         return subscribers;
+    }
+    
+    public boolean isDonationsSetup() {
+        return isDonationsSetup;
+    }
+    
+    public void setDonationsSetup(boolean donationsSetup) {
+        isDonationsSetup = donationsSetup;
+    }
+    
+    public String getMpPublicKey() {
+        return mpPublicKey;
+    }
+    
+    public void setMpPublicKey(String mpPublicKey) {
+        this.mpPublicKey = mpPublicKey;
+    }
+    
+    public String getMpAccessToken() {
+        return mpAccessToken;
+    }
+    
+    public void setMpAccessToken(String mpAccessToken) {
+        this.mpAccessToken = mpAccessToken;
     }
 }
