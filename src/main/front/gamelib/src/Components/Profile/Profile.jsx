@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import gamelib_logo from "../Assets/Designer(3).jpeg";
 import userProfile from "../Assets/user-icon.png";
-import { useParams, useNavigate, Navigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Header from "../Header/Header";
 import Shelves from "./Shelves";
 import ProfileSkeleton from "./ProfileSkeleton"; // Import the skeleton component
-import Alert from "../alert/Alert"; // Import the new Alert component
+import Alert from "../alert/Alert";
+import PayPopup from "../Payment/PayPopup";
+import StatusPopup from '../Payment/StatusPopup';
 
 function Profile() {
     const navigate = useNavigate();
@@ -23,6 +25,13 @@ function Profile() {
     const [bannerImage, setBannerImage] = useState(gamelib_logo); // State for banner image
     const loggedInUsername = localStorage.getItem('username');
     const [alert, setAlert] = useState({ message: '', visible: false, position: { top: 0, left: 0 } }); // State for alert
+
+    // payment
+    const location = useLocation();
+    const [isDonationsSetup, setIsDonationsSetup] = useState(null);
+    const [status, setStatus] = useState(null);
+    const [preferenceId, setPreferenceId] = useState(null);
+    const [showPopup, setShowPopup] = useState(false);
 
     const handleAdminAction = () => {
         axios.put('http://localhost:4567/admin/ban/' + localStorage.getItem("currentProfileId"), {}, {
@@ -158,6 +167,35 @@ function Profile() {
             });
     }, [username]);
 
+    // payment
+    useEffect(() => {
+        axios.get(`http://localhost:4567/pay/setup/is/${username}`)
+            .then(response => {
+                const isSetup = response.data.is_setup;
+                setIsDonationsSetup(isSetup);
+            })
+            .catch(() => {
+                setNotFound(true);
+            });
+    }, [username])
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const statusParam = searchParams.get('status');
+        const preferenceIdParam = searchParams.get('preference_id');
+
+        if (statusParam) {
+            setStatus(statusParam);
+            setPreferenceId(preferenceIdParam);
+            setShowPopup(true);
+        }
+    }, [location]);
+
+    const handleClosePopup = () => {
+        setShowPopup(false);
+        navigate('/profile/' + username);
+    };
+
     if (notFound) {
         return <Navigate to="/error" />;
     }
@@ -272,14 +310,23 @@ function Profile() {
                                             {isBanned ? 'Unban' : 'Ban'}
                                         </button>
                                     )}
+
                                 </div>
+
                             )}
                             <Alert alert={alert} setAlert={setAlert} />
                             {/* Profile Information */}
                             <div className="flex w-4/5 md:w-3/4 lg:w-1/2 h-auto items-center mx-auto md:mx-16 z-40 -mt-32 rounded-lg p-4">
                                 <img src={profilePicture} className="h-52 w-52 md:h-56 md:w-56 bg-gray-400 object-cover rounded-full border-2 border-black" alt="User Profile"/>
                                 <div className="ml-4 pt-20">
-                                    <h1 className="font-bold text-2xl md:text-3xl pt-10 pl-10">{usernameResponse}</h1>
+                                    <div className="flex items-center justify-between pt-10 px-10">
+                                        <h1 className="font-bold text-2xl md:text-3xl">{usernameResponse}</h1>
+                                        {loggedInUsername !== username && isDonationsSetup && (
+                                            <div style={{ position: 'absolute', right: '20px' }}>
+                                                <PayPopup username={username} />
+                                            </div>
+                                        )}
+                                    </div>
                                     <h2 className="font-semibold text-lg md:text-xl pt-2 pb-1 pl-14">About me</h2>
                                     <p className="font-normal pl-14">{description}</p>
                                 </div>
@@ -293,6 +340,7 @@ function Profile() {
                     </div>
                 </div>
             </div>
+            {showPopup && <StatusPopup status={status} onClose={handleClosePopup} preferenceId={preferenceId} username={username} />}
         </div>
     );
 }
