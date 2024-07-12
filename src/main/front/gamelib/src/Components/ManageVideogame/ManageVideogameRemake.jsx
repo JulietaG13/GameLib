@@ -199,181 +199,185 @@ function MVR({type}) {
             <form className={"abmMain"}
                   onSubmit={manageSubmit}
             >
-                <div className={"videogameStrings"}>
+                <div className={"formTitleDivABM"}>
                     <h1 id={"formTitle"}>{type} videogame</h1>
+                </div>
+                <div className={"attributesDivABM"}>
+                    <div className={"videogameStrings"}>
+                        <div className={"titleDivABM divBackground"}>
+                            <h2 id={"formSubtitle"}>Title</h2>
+                            <input className={"textInput"}
+                                   type={"text"}
+                                   defaultValue={videogame.name}
+                                   onChange={e =>
+                                       setVideogame({...videogame, name: e.target.value})
+                                   }
+                            />
+                        </div>
 
-                    <div className={"titleDivABM divBackground"}>
-                        <h2 id={"formSubtitle"}>Title</h2>
-                        <input className={"textInput"}
-                               type={"text"}
-                               defaultValue={videogame.name}
-                               onChange={e =>
-                                   setVideogame({...videogame, name: e.target.value})
-                               }
-                        />
-                    </div>
+                        <div className={"descDivABM divBackground"}>
+                            <h2 id={"formSubtitle"}>Description (Optional)</h2>
+                            <textarea className={"textInput"}
+                                      maxLength={200}
+                                      rows={3}
+                                      defaultValue={videogame.description}
+                                      onChange={e =>
+                                          setVideogame({...videogame, description: e.target.value})
+                                      }
+                            ></textarea>
+                        </div>
 
-                    <div className={"descDivABM divBackground"}>
-                        <h2 id={"formSubtitle"}>Description (Optional)</h2>
-                        <textarea className={"textInput"}
-                                  maxLength={200}
-                                  rows={3}
-                                  defaultValue={videogame.description}
-                                  onChange={e =>
-                                      setVideogame({...videogame, description: e.target.value})
-                                  }
-                        ></textarea>
-                    </div>
+                        <div className={"dateDivABM divBackground"}>
+                            <h2 id={"formSubtitle"}>Release date</h2>
+                            <input className={"dateInput"}
+                                   type={"date"}
+                                   defaultValue={videogame.release_date}
+                                   onChange={e =>
+                                       setVideogame({...videogame, release_date: e.target.value})
+                                   }
+                            />
+                        </div>
 
-                    <div className={"dateDivABM divBackground"}>
-                        <h2 id={"formSubtitle"}>Release date</h2>
-                        <input className={"dateInput"}
-                               type={"date"}
-                               defaultValue={videogame.release_date}
-                               onChange={e =>
-                                   setVideogame({...videogame, release_date: e.target.value})
-                               }
-                        />
-                    </div>
-
-                    {tagsFetched && platformTags.length > 0 && genreTags.length > 0 ?
-                        <div className={"tagsDivABM divBackground"}>
-                            <h2 id={"formSubtitle"}>Tags (Optional)</h2>
-                            <div className={"biggerTagsContainer"}>
-                                <div className={"tagsContainerABM"}>
-                                    <h3>Genre tags</h3>
-                                    {genreTags.map((tag, index) => (
-                                        <div key={index} className={"tagDivABM"}>
-                                            <label>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={videogame.tags.includes(tag.id)}
-                                                    onChange={() => {
-                                                        if (videogame.tags.includes(tag.id)) {
-                                                            setVideogame({
-                                                                ...videogame,
-                                                                tags: videogame.tags.filter(t => t !== tag.id)
-                                                            });
-                                                        } else {
-                                                            setVideogame({
-                                                                ...videogame,
-                                                                tags: [...videogame.tags, tag.id]
-                                                            });
-                                                        }
-                                                    }}
-                                                />
-                                            {tag.name}</label>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className={"tagsContainerABM"}>
-                                    <h3>Platform tags</h3>
-                                    {platformTags.map((tag, index) => (
-                                        <div key={index} className={"tagDivABM"}>
-                                            <label>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={videogame.tags.includes(tag.id)}
-                                                    onChange={() => {
-                                                        if (videogame.tags.includes(tag.id)) {
-                                                            setVideogame({
-                                                                ...videogame,
-                                                                tags: videogame.tags.filter(t => t !== tag.id)
-                                                            });
-                                                        } else {
-                                                            setVideogame({
-                                                                ...videogame,
-                                                                tags: [...videogame.tags, tag.id]
-                                                            });
-                                                        }
-                                                    }}
-                                                />
-                                            {tag.name}</label>
-                                        </div>
-                                    ))}
+                        {tagsFetched && platformTags.length > 0 && genreTags.length > 0 ?
+                            <div className={"tagsDivABM divBackground"}>
+                                <h2 id={"formSubtitle"}>Tags (Optional)</h2>
+                                <div className={"biggerTagsContainer"}>
+                                    <div className={"tagsContainerABM"}>
+                                        <h3>Genre tags</h3>
+                                        {genreTags.map((tag, index) => (
+                                            <div key={index} className={"tagDivABM"}>
+                                                <label>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={videogame.tags.includes(tag.id)}
+                                                        onChange={() => {
+                                                            if (videogame.tags.includes(tag.id)) {
+                                                                setVideogame({
+                                                                    ...videogame,
+                                                                    tags: videogame.tags.filter(t => t !== tag.id)
+                                                                });
+                                                            } else {
+                                                                setVideogame({
+                                                                    ...videogame,
+                                                                    tags: [...videogame.tags, tag.id]
+                                                                });
+                                                            }
+                                                        }}
+                                                    />
+                                                    {tag.name}</label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className={"tagsContainerABM"}>
+                                        <h3>Platform tags</h3>
+                                        {platformTags.map((tag, index) => (
+                                            <div key={index} className={"tagDivABM"}>
+                                                <label>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={videogame.tags.includes(tag.id)}
+                                                        onChange={() => {
+                                                            if (videogame.tags.includes(tag.id)) {
+                                                                setVideogame({
+                                                                    ...videogame,
+                                                                    tags: videogame.tags.filter(t => t !== tag.id)
+                                                                });
+                                                            } else {
+                                                                setVideogame({
+                                                                    ...videogame,
+                                                                    tags: [...videogame.tags, tag.id]
+                                                                });
+                                                            }
+                                                        }}
+                                                    />
+                                                    {tag.name}</label>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        :
-                        <div className={"tagsDivABM divBackground"}>
-                            <h2 id={"formSubtitle"}>Tags (Optional)</h2>
-                            <div className={"standByContainer tagsStandByContainer"}>
-                                <h1>Configuring tags..</h1>
-                                <StandByComponent/>
+                            :
+                            <div className={"tagsDivABM divBackground"}>
+                                <h2 id={"formSubtitle"}>Tags (Optional)</h2>
+                                <div className={"standByContainer tagsStandByContainer"}>
+                                    <h1>Configuring tags..</h1>
+                                    <StandByComponent/>
+                                </div>
                             </div>
-                        </div>
-                    }
+                        }
 
-                    {errorMessage !== "" ?
-                        <ErrorView message={errorMessage}/>
-                        :
-                        null
-                    }
-
-                    <div className={"buttonsDivABM divBackground"}>
-                        <button disabled={disableButton}
-                                className={"submitButton"}
-                                id={disableButton ? "disabled" : "submit"}
-                        >{type}</button>
-
-                        <button disabled={disableButton}
-                                className={"submitButton"}
-                                id={disableButton ? "disabled" : "cancel"}
-                                onClick={manageCancel}
-                        >Cancel</button>
-
-                        {type === "Edit" ?
-                            <button disabled={disableButton}
-                                    className={"submitButton"}
-                                    id={disableButton ? "disabled" : "delete"}
-                                    onClick={manageDelete}
-                            >Delete</button>
+                        {errorMessage !== "" ?
+                            <ErrorView message={errorMessage}/>
                             :
                             null
                         }
-                    </div>
-                </div>
-                <div className={"videogameImages"}>
-                    <div className={"imageDivABM divBackground"}>
-                        <h2 id={"formSubtitle"}>Cover (Optional)</h2>
-                        <input className={"imageInput"}
-                               type={"file"}
-                               accept={"image/*"}
-                               onChange={e => {
-                                   formatBase64Image(e.target.files[0])
-                                       .then(result => setVideogame({...videogame, cover: result}))
-                                       .catch(error => console.error(error));
-                               }}
-                        />
-                        {videogame.cover ?
-                            <img className={"imagePreviewABM"}
-                                 src={videogame.cover}
-                                 alt={"Cover"}
-                            />
-                            :
-                            <p>No cover selected</p>
-                        }
-                    </div>
 
-                    <div className={"imageDivABM divBackground"}>
-                        <h2 id={"formSubtitle"}>Cover (Optional)</h2>
-                        <input className={"imageInput"}
-                               type={"file"}
-                               accept={"image/*"}
-                               onChange={e => {
-                                   formatBase64Image(e.target.files[0])
-                                       .then(result => setVideogame({...videogame, background_image: result}))
-                                       .catch(error => console.error(error));
-                               }}
-                        />
-                        {videogame.background_image ?
-                            <img className={"imagePreviewABM"}
-                                 src={videogame.background_image}
-                                 alt={"Background image"}
+                        <div className={"buttonsDivABM divBackground"}>
+                            <button disabled={disableButton}
+                                    className={"submitButton"}
+                                    id={disableButton ? "disabled" : "submit"}
+                            >{type}</button>
+
+                            <button disabled={disableButton}
+                                    className={"submitButton"}
+                                    id={disableButton ? "disabled" : "cancel"}
+                                    onClick={manageCancel}
+                            >Cancel
+                            </button>
+
+                            {type === "Edit" ?
+                                <button disabled={disableButton}
+                                        className={"submitButton"}
+                                        id={disableButton ? "disabled" : "delete"}
+                                        onClick={manageDelete}
+                                >Delete</button>
+                                :
+                                null
+                            }
+                        </div>
+                    </div>
+                    <div className={"videogameImages"}>
+                        <div className={"imageDivABM divBackground"}>
+                            <h2 id={"formSubtitle"}>Cover (Optional)</h2>
+                            <input className={"imageInput"}
+                                   type={"file"}
+                                   accept={"image/*"}
+                                   onChange={e => {
+                                       formatBase64Image(e.target.files[0])
+                                           .then(result => setVideogame({...videogame, cover: result}))
+                                           .catch(error => console.error(error));
+                                   }}
                             />
-                            :
-                            <p>No cover selected</p>
-                        }
+                            {videogame.cover ?
+                                <img className={"imagePreviewABM"}
+                                     src={videogame.cover}
+                                     alt={"Cover"}
+                                />
+                                :
+                                <p>No cover selected</p>
+                            }
+                        </div>
+
+                        <div className={"imageDivABM divBackground"}>
+                            <h2 id={"formSubtitle"}>Cover (Optional)</h2>
+                            <input className={"imageInput"}
+                                   type={"file"}
+                                   accept={"image/*"}
+                                   onChange={e => {
+                                       formatBase64Image(e.target.files[0])
+                                           .then(result => setVideogame({...videogame, background_image: result}))
+                                           .catch(error => console.error(error));
+                                   }}
+                            />
+                            {videogame.background_image ?
+                                <img className={"imagePreviewABM"}
+                                     src={videogame.background_image}
+                                     alt={"Background image"}
+                                />
+                                :
+                                <p>No cover selected</p>
+                            }
+                        </div>
                     </div>
                 </div>
             </form>
@@ -442,10 +446,10 @@ function formatBase64Image(image) {
     return new Promise((resolve, reject) => {
         let reader = new FileReader();
         reader.readAsDataURL(image);
-        reader.onload = function() {
+        reader.onload = function () {
             resolve(reader.result);
         };
-        reader.onerror = function(error) {
+        reader.onerror = function (error) {
             reject(error);
         };
     });
