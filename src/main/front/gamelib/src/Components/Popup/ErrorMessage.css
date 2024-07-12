@@ -1,0 +1,33 @@
+.error-message {
+    position: fixed;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    background-color: rgba(66, 66, 66, 0.8);
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    transition: bottom 0.5s ease-out;
+    text-align: center;
+}
+
+.error-message.visible {
+    bottom: 20px;
+    pointer-events: auto; /* Permitir interacciones cuando se muestra */
+}
+
+.error-content {
+    padding: 12px;
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+}
