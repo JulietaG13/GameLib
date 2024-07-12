@@ -17,6 +17,7 @@ function VideogameView() {
     const videogameID = useParams();
     const [user, setUser] = useState({});
     const [videogame, setVideogame] = useState({});
+    const [videogameFetched, setVideogameFetched] = useState(false);
     const [subscription, setSubscription] = useState(false);
     const [developer, setDeveloper] = useState('');
     const [reviews, setReviews] = useState([]);
@@ -59,6 +60,7 @@ function VideogameView() {
         axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
             .then(response => {
                 setVideogame(response.data);
+                setVideogameFetched(true);
                 axios.get('http://localhost:4567/user/get/' + response.data.owner_id,{
                     headers: {
                         'Content-Type': 'application/json',
@@ -158,17 +160,17 @@ function VideogameView() {
             <Header/>
             <img id={"backImg"} src={videogame.background_image} alt={"Game Background"}/>
             <div className={"titleDiv "}>
-                <h1>{Object.keys(videogame).length !== 0 ? videogame.name : "Loading game..."}</h1>
+                <h1>{videogameFetched ? videogame.name : "Loading game..."}</h1>
             </div>
 
             <div className={"dataDiv"}>
                 <div className={"coverDiv"}>
-                    {Object.keys(videogame).length !== 0 ?
+                    {videogameFetched ?
                         <img src={videogame.cover} alt={"Game Cover"}/>
                         :
                         <SkeletonComp/>
                     }
-                    {Object.keys(user).length !== 0 && Object.keys(videogame).length !== 0 ?
+                    {Object.keys(user).length !== 0 && videogameFetched ?
                         <ShelfManager props={videogame}/>
                         :
                         null
@@ -176,7 +178,7 @@ function VideogameView() {
                 </div>
 
                 <div className={"moreDataDiv"}>
-                    {Object.keys(videogame).length !== 0 ?
+                    {videogameFetched ?
                         <div className={'options'}>
                             {checkPrivilege(user, videogame.owner_id) ?
                                 <div className={'optionImage acceptOptionImage'}>
@@ -205,7 +207,7 @@ function VideogameView() {
                         null
                     }
 
-                    {Object.keys(videogame).length !== 0 ?
+                    {videogameFetched ?
                         <div className={"attributesDiv"}>
                             <h2>About the game:</h2>
                             <p>{videogame.description}</p>
@@ -217,10 +219,19 @@ function VideogameView() {
                                 "Unknown"
                             }</p>
                             <p>Date of release: {formatDate(videogame.release_date)}</p>
-                            {videogame.tags.length === 0 ?
-                                <p>No tags available</p>
+                            {videogame.tags.filter(t => t.tag_type === "GENRE").length === 0 ?
+                                <p>Unknown genres</p>
                                 :
-                                <p>Tags: {videogame.tags.map(tag => tag.name).join(', ')}</p>
+                                <p>Genres: {videogame.tags
+                                    .filter(t => t.tag_type === "GENRE")
+                                    .map(tag => tag.name).join(', ')}</p>
+                            }
+                            {videogame.tags.filter(t => t.tag_type === "PLATFORM").length === 0 ?
+                                <p>Unknown platforms</p>
+                                :
+                                <p>Platforms: {videogame.tags
+                                    .filter(t => t.tag_type === "PLATFORM")
+                                    .map(tag => tag.name).join(', ')}</p>
                             }
                         </div>
                         :
