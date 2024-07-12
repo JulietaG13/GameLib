@@ -578,7 +578,14 @@ public class Application {
     UserRepository userRepository = new UserRepository(entityManager);
 
     User user = User.create("IOwnAShelf").email("shelves@mail.com").password("1234").build();
-    User developer = User.create("IOwnGames").email("games@mail.com").password("1234").rol(Rol.DEVELOPER).build();
+    Developer developer = new Developer(
+        User.create("IOwnGames")
+            .email("games@mail.com")
+            .password("1234")
+            .rol(Rol.DEVELOPER)
+            .build()
+    );
+    
     Shelf shelf = new Shelf(user, "elf on a shelf");
     Game game1 = Game
         .create("awesome game")
@@ -603,7 +610,7 @@ public class Application {
     
     if (gameRepository.listAll().isEmpty() && shelfRepository.listAll().isEmpty()) {
       userRepository.persist(user);
-      userRepository.persist(developer);
+      userRepository.persist(developer.getUser());
       gameRepository.persist(game1);
       gameRepository.persist(game2);
       gameRepository.persist(game3);
@@ -613,11 +620,14 @@ public class Application {
     developer.addDeveloped(game1);
     developer.addDeveloped(game2);
     
+    DeveloperRepository developerRepository = new DeveloperRepository(entityManager);
+    developerRepository.persist(developer);
+    
     shelfRepository.addGame(shelf, user, game1);
     shelfRepository.addGame(shelf, user, game3);
     
-    News news1 = new News("first news", "this is this game's first news!!!", game2, developer);
-    News news2 = new News("second news", "another news", game2, developer);
+    News news1 = new News("first news", "this is this game's first news!!!", game2, developer.getUser());
+    News news2 = new News("second news", "another news", game2, developer.getUser());
     NewsRepository newsRepository = new NewsRepository(entityManager);
     newsRepository.persist(news1);
     newsRepository.persist(news2);
@@ -626,12 +636,12 @@ public class Application {
             "SACRED SEDUCTION. You will never be alone again.",
             "Remember that when humanity fails you, the Massive Monster developers are there. In your heart, in the deepest, darkest parts of your mind...",
             game1,
-            developer);
+            developer.getUser());
     News awesomeNews2 = new News(
             "ANNOUNCING UNHOLY ALLIANCE.",
             "Summoned by blood and born in corruption, a wicked new ally can join the holy Lamb in LOCAL CO-OP! Crusade through dungeons, slay heretics, build your cult, and seek new powers together...",
             game1,
-            developer);
+            developer.getUser());
 
     newsRepository.persist(awesomeNews1);
     newsRepository.persist(awesomeNews2);

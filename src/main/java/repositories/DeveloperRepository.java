@@ -75,9 +75,12 @@ public class DeveloperRepository {
 
   public Developer persist(Developer dev) {
     EntityTransaction tx = entityManager.getTransaction();
+    Optional<Developer> old = findByUserId(dev.getUser().getId());
     tx.begin();
-    entityManager.persist(dev);
+    if (old.isEmpty()) {
+      entityManager.persist(dev);
+    }
     tx.commit();
-    return dev;
+    return old.orElse(dev);
   }
 }

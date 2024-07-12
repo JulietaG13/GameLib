@@ -1,6 +1,11 @@
 package model;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import values.Rol;
+
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +17,9 @@ public class Developer {
 
     @OneToOne
     private User user;
+    
+    @OneToMany(mappedBy = "owner")
+    private final Set<Game> developed = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -34,6 +42,11 @@ public class Developer {
     }
 
     // UTILITY HELPERS
+    
+    public void addDeveloped(Game game) {
+        developed.add(game);
+        game.setOwner(this.getUser());
+    }
 
     public void addSubscriber(User user) {
         subscribers.add(user);
@@ -62,7 +75,11 @@ public class Developer {
     public User getUser() {
         return user;
     }
-
+    
+    public Set<Game> getDeveloped() {
+        return Collections.unmodifiableSet(developed);
+    }
+    
     public Set<User> getSubscribers() {
         return subscribers;
     }
