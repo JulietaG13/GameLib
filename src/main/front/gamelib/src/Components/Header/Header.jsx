@@ -5,6 +5,7 @@ import bell_icon from '../Assets/notifbell.png';
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import ManagePopup from "../Payment/ManagePopup";
+import CheckPopup from "../Popup/CheckPopup";
 
 function Header() {
     const [showDropdown, setShowDropdown] = useState(false);
@@ -18,6 +19,7 @@ function Header() {
     const navigate = useNavigate();
     const pfp = localStorage.getItem('pfp') === "" ? localStorage.getItem('pfp') : user_icon ;
     const isDeveloper = localStorage.getItem('rol') === 'DEVELOPER';
+    const [isCheckPopupVisible, setIsCheckPopupVisible] = useState(false);
 
     function handleLogout() {
         if (!isLoggedIn) {
@@ -121,6 +123,20 @@ function Header() {
         }
     }
 
+    // checking delete account
+    const handleCheckPopupConfirm = () => {
+        handleDeleteUser();
+        setIsCheckPopupVisible(false);
+    };
+
+    const handleCheckPopupCancel = () => {
+        setIsCheckPopupVisible(false);
+    };
+
+    const showCheckPopup = () => {
+        setIsCheckPopupVisible(true);
+    };
+
     return (
         <div className="flex items-center bg-[#ff8341] h-20 px-4 justify-between">
             <div className="flex items-center">
@@ -179,7 +195,7 @@ function Header() {
                                     <a href="#" onClick={handleManageDonations}>Manage Donations</a>
                                 }
                                 <a href="#" onClick={handleLogout}>Logout</a>
-                                <a href="#" onClick={handleDeleteUser}>Delete account</a>
+                                <a href="#" onClick={showCheckPopup}>Delete account</a>
 
                                 <ManagePopup
                                     visible={showManagePopup}
@@ -195,6 +211,13 @@ function Header() {
                     </h2>
                 )}
             </div>
+            {isCheckPopupVisible && (
+                <CheckPopup
+                    message="Are you sure you want to delete your account?"
+                    onConfirm={handleCheckPopupConfirm}
+                    onCancel={handleCheckPopupCancel}
+                />
+            )}
         </div>
     );
 }
