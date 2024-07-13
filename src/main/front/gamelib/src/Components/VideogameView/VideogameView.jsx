@@ -26,7 +26,6 @@ function VideogameView() {
     const [errorMessage, setErrorMessage] = useState('');
 
     const [navigateHome, setNavigateHome] = useState(false);
-    const [navigateEdit, setNavigateEdit] = useState(false);
     const [reviewsRetrieved, setReviewsRetrieved] = useState(false);
 
     useEffect(() => {
@@ -93,10 +92,6 @@ function VideogameView() {
             });
     }, [videogameID, review]);
 
-    const redirectEdit = () => {
-        setNavigateEdit(true);
-    }
-
     const handleSubscription = () => {
         let config = {
             headers: {
@@ -153,7 +148,6 @@ function VideogameView() {
     }
 
     if(navigateHome) {return <Navigate to={`/`}/>;}
-    if(navigateEdit) {return <Navigate to={`/editVideogame/${videogameID.videogameID}`}/>;}
 
     return (
         <main className={"gameView"}>
@@ -182,10 +176,11 @@ function VideogameView() {
                         <div className={'options'}>
                             {checkPrivilege(user, videogame.owner_id) ?
                                 <div className={'optionImage acceptOptionImage'}>
-                                    <img alt={"Edit videogame"}
-                                         title={"Edit videogame"}
-                                         src={pencil_icon}
-                                         onClick={redirectEdit}/>
+                                    <Link to={`/editVideogame/${videogameID.videogameID}`}>
+                                        <img alt={"Edit videogame"}
+                                             title={"Edit videogame"}
+                                             src={pencil_icon}/>
+                                    </Link>
                                 </div>
                                 :
                                 null
