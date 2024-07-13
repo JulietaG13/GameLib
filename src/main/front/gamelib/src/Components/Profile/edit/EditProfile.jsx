@@ -91,9 +91,9 @@ function EditProfile() {
                     navigate(`/profile/${username}`);
                 }
             }).catch(e => {
-                console.error('Error:', e);
+                console.error('Error:', e.response.data);
                 setAlert({
-                    message: 'Failed to save changes. Please try again.',
+                    message: e.response.data,
                     visible: true,
                     position: { top: rect.top + rect.height - 50, left: leftPosition - 150 }
                 });
@@ -154,12 +154,12 @@ function EditProfile() {
                             />
                             <img src={pencil_icon} className="absolute inset-0 m-auto h-16 w-16 cursor-pointer" alt="Edit" onClick={() => document.getElementById('profile-upload').click()} />
                         </div>
-                        <div className={"pl-4 pt-24"}>
+                        <div className={"pl-4 pt-28"}>
                             <input type={'text'} value={newUsername}
                                    onChange={(event) => setNewUsername(event.target.value)}
                                    className={"flex font-bold items-center text-2xl border-2 border-black rounded-s"}></input>
                             <div className={"pl-14"}>
-                                <h2 className={"font-semibold text-xl  pb-1 -mt-4"}>About me</h2>
+                                <h2 className={"font-semibold text-xl  pb-1 "}>About me</h2>
                                 <input type='text' value={newDescription}
                                        onChange={event => setNewDescription(event.target.value)}
                                        className={"font-normal  pr-1 border-2 border-black rounded-s -mt-2 "}></input>
