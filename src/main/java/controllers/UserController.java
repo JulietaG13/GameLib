@@ -194,7 +194,7 @@ public class UserController implements Controller {
                     }
                     if (userRepository.findByUsername(newUsername).isPresent()) {
                         resp.status(400);
-                        return ErrorMessages.usernameAlreadyInUse(username);
+                        return ErrorMessages.usernameAlreadyInUse(newUsername);
                     }
                     user.get().setUsername(newUsername);
                     token = AccessControlService.generateToken(newUsername).getToken();
