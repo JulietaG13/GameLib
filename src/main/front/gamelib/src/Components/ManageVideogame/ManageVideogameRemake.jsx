@@ -4,6 +4,7 @@ import axios from "axios";
 import './ManageVideogameRemake.css';
 import StandByComponent from "./skeleton/StandByComponent";
 import ErrorView from "../ErrorView/ErrorView";
+import CheckPopup from "../Popup/CheckPopup";
 
 function MVR({type}) {
     const videogameID = useParams().videogameID;
@@ -24,6 +25,8 @@ function MVR({type}) {
 
     const [errorMessage, setErrorMessage] = useState('');
     const [disableButton, setDisableButton] = useState(false);
+
+    const [isCheckPopupVisible, setIsCheckPopupVisible] = useState(false);
 
     const navigate = useNavigate();
 
@@ -194,6 +197,20 @@ function MVR({type}) {
         }
     }
 
+    // checking delete game
+    const handleCheckPopupConfirm = () => {
+        manageDelete();
+        setIsCheckPopupVisible(false);
+    };
+
+    const handleCheckPopupCancel = () => {
+        setIsCheckPopupVisible(false);
+    };
+
+    const showCheckPopup = () => {
+        setIsCheckPopupVisible(true);
+    };
+
     // View rendering
     return (videogameFetched ?
             <form className={"abmMain"}
@@ -240,7 +257,7 @@ function MVR({type}) {
 
                         {tagsFetched && platformTags.length > 0 && genreTags.length > 0 ?
                             <div className={"tagsDivABM divBackground"}>
-                                <h2 id={"formSubtitle"}>Tags (Optional)</h2>
+                                <h2 id={"formSubtitle"}>Tags</h2>
                                 <div className={"biggerTagsContainer"}>
                                     <div className={"tagsContainerABM"}>
                                         <h3>Genre tags</h3>
@@ -300,7 +317,7 @@ function MVR({type}) {
                             <div className={"tagsDivABM divBackground"}>
                                 <h2 id={"formSubtitle"}>Tags (Optional)</h2>
                                 <div className={"standByContainer tagsStandByContainer"}>
-                                    <h1>Configuring tags..</h1>
+                                    <h1>Loading tags...</h1>
                                     <StandByComponent/>
                                 </div>
                             </div>
@@ -329,7 +346,10 @@ function MVR({type}) {
                                 <button disabled={disableButton}
                                         className={"submitButton"}
                                         id={disableButton ? "disabled" : "delete"}
-                                        onClick={manageDelete}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            showCheckPopup();
+                                        }}
                                 >Delete</button>
                                 :
                                 null
@@ -359,7 +379,7 @@ function MVR({type}) {
                         </div>
 
                         <div className={"imageDivABM divBackground"}>
-                            <h2 id={"formSubtitle"}>Cover (Optional)</h2>
+                            <h2 id={"formSubtitle"}>Banner (Optional)</h2>
                             <input className={"imageInput"}
                                    type={"file"}
                                    accept={"image/*"}
@@ -380,6 +400,13 @@ function MVR({type}) {
                         </div>
                     </div>
                 </div>
+                {isCheckPopupVisible && (
+                    <CheckPopup
+                        message="Are you sure you want to delete the game?"
+                        onConfirm={handleCheckPopupConfirm}
+                        onCancel={handleCheckPopupCancel}
+                    />
+                )}
             </form>
             :
             <div className={"standByContainer"}>
