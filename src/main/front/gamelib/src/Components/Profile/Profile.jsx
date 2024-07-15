@@ -9,6 +9,7 @@ import ProfileSkeleton from "./ProfileSkeleton"; // Import the skeleton componen
 import Alert from "../alert/Alert";
 import PayPopup from "../Payment/PayPopup";
 import StatusPopup from '../Payment/StatusPopup';
+import Developed from "./Developed";
 
 function Profile() {
     const navigate = useNavigate();
@@ -334,13 +335,16 @@ function Profile() {
                         </div>
                         {/* Shelves */}
                         <div className="bg-white mt-8">
+                            <h1 className="pl-4 md:pl-16 font-bold text-4xl pt-5">Developed Games</h1>
+                            <Developed username={username}/>
                             <h1 className="pl-4 md:pl-16 font-bold text-4xl pt-5">All Shelves</h1>
-                            <Shelves username={username} />
+                            <Shelves username={username}/>
                         </div>
                     </div>
                 </div>
             </div>
-            {showPopup && <StatusPopup status={status} onClose={handleClosePopup} preferenceId={preferenceId} username={username} />}
+            {showPopup &&
+                <StatusPopup status={status} onClose={handleClosePopup} preferenceId={preferenceId} username={username} />}
         </div>
     );
 }
