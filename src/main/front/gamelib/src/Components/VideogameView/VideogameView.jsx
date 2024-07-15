@@ -242,7 +242,7 @@ function VideogameView() {
                                 <div className="genres-list">
                                     <p>
                                         {videogame.tags
-                                            .filter(t => t.tag_type === "GENRE")
+                                            .filter(t => t.tag_type === "PLATFORM")
                                             .map(tag => (
                                                 <span className="genre-tag">{tag.name}</span>
                                             ))}
