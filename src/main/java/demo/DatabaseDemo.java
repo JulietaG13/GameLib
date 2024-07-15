@@ -681,6 +681,8 @@ public class DatabaseDemo {
         Rol.USER
     );
     
+    userRepository.persist(hasFriends);
+    
     int n = reviewers.size() / 2 + 1;
     
     for (int j = 0; j < n; j++) {
@@ -691,7 +693,11 @@ public class DatabaseDemo {
       reviewers.get(j).sendFriendRequest(hasFriends);
     }
     
+    userRepository.persist(hasFriends);
+    //reviewers.forEach(userRepository::persist);
+    
     /* END */
+    em.close();
   }
   
   
