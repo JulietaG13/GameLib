@@ -39,8 +39,8 @@ function NewsComp(props) {
 
     return (!isLoading ?
                 <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <h2 style={{ marginRight: 'auto', fontWeight: 'bold' }}>News</h2>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <h2 style={{ marginTop: '0.1em', marginRight: 'auto', fontWeight: 'bold' }}>News</h2>
                         {props.owner ?
                             <div style={{ flex: 1, textAlign: 'right' }}>
                                 <AddNewPopUp videogameID={props.videogameID}/>

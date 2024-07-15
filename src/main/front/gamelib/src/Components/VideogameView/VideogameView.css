@@ -246,9 +246,9 @@ h3 {
 }
 
 .genres-list {
-    display: inline-block;
+    display: block;
     horiz-align: left;
-    margin-bottom: -1em;
+    margin-bottom: -0.8em;
 }
 .genre-tag {
     display: inline-block;
@@ -258,6 +258,7 @@ h3 {
     margin-right: 5px;
     border-radius: 5px;
     font-size: 0.9em;
+    margin-bottom: 0.4em;
 }
 
 .description-container {
