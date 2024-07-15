@@ -6,6 +6,8 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import ManagePopup from "../Payment/ManagePopup";
 import CheckPopup from "../Popup/CheckPopup";
+import userProfile from "../Assets/user-icon.png";
+import gamelib_logo from "../Assets/Designer(3).jpeg";
 
 function Header() {
     const [showDropdown, setShowDropdown] = useState(false);
@@ -17,7 +19,8 @@ function Header() {
     const [searchQuery, setSearchQuery] = useState('');
     const [notifications, setNotifications] = useState([]);
     const navigate = useNavigate();
-    const pfp = localStorage.getItem('pfp') === "" ? localStorage.getItem('pfp') : user_icon ;
+    const [ pfp, setPfp ] = useState(localStorage.getItem('pfp') === "" ? localStorage.getItem('pfp') : user_icon);
+    const username = localStorage.getItem('username');
     const isDeveloper = localStorage.getItem('rol') === 'DEVELOPER';
     const [isCheckPopupVisible, setIsCheckPopupVisible] = useState(false);
 
@@ -66,8 +69,9 @@ function Header() {
     };
 
     useEffect(() => {
-        validateLogin();
+        validateLogin()
         fetchNotifications();
+        handleUpdatePfp()
         function handleClickOutside(event) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setShowDropdown(false);
@@ -136,6 +140,19 @@ function Header() {
     const showCheckPopup = () => {
         setIsCheckPopupVisible(true);
     };
+
+    const handleUpdatePfp = () => {
+        if (username !== '') {
+            axios.get(`http://localhost:4567/getprofile/${username}`)
+                .then(response => {
+                    console.log("handleUpdatePfp: " + response.data);
+                    setPfp(response.data.pfp || userProfile);
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
+        }
+    }
 
     return (
         <div className="flex items-center bg-[#ff8341] h-20 px-4 justify-between">
