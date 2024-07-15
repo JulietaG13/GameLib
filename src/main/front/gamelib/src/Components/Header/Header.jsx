@@ -161,7 +161,7 @@ function Header() {
                     <img src={gameLibLogoRework} width={80} height={80} className="ml-3 min-w-[50px]" alt="" />
                 </a>
                 <div
-                    className=" flex bg-slate-300 p-2 w-full h-12 items-center mx-4 rounded-full max-w-[600px] flex-grow">
+                    className=" flex bg-slate-300 p-2 w-full h-12 items-center mx-4 rounded-full max-w-[600px] flex-grow ml-7 pl-5">
                     <input
                         type="text"
                         placeholder="Search Games"

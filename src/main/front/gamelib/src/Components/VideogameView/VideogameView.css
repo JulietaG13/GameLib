@@ -10,18 +10,19 @@
     padding: 0.5em;
     margin-top: 1em;
     margin-left: 1em;
-    margin-bottom: 8em;
+    margin-bottom: 7em;
     width: fit-content;
-    background-color: white;
+
 }
 .titleDiv h1 {
     display: inline-block;
-    font-size: 3em;
-    color: #ff6d11;
-    font-weight: bold;
-    text-decoration: underline;
+    font-size: 4em;
+    color: aliceblue; /* Color de relleno de las letras */
+    text-shadow:
+            0px 0px 25px rgba(0, 0, 0, 90.0%); /* Sombra negra más fuerte */
     word-break: break-all;
 }
+
 
 .dataDiv {
     display: flex;
@@ -41,8 +42,9 @@
     width: 50%;
 }
 .coverDiv img {
-    width: 100%;
-    height: 100%;
+    margin-left: 15px;
+    width: 400px;
+    height: 500px;
 }
 
 .newsDiv {

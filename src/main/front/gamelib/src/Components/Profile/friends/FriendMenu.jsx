@@ -96,12 +96,12 @@ function FriendMenu() {
 
     return (
         <>
-            <div className={`fixed top-4 ${isMenuOpen ? 'right-48' : 'right-0'} z-50 transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-1/2'}`}>
+            <div className={`fixed top-4 ${isMenuOpen ? 'right-[235px]' : 'right-0'} z-50 transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-1/2'}`}>
                 <button onClick={toggleMenu} className="bg-gray-600 text-white py-2 px-4 rounded-full">
                     ☰
                 </button>
             </div>
-            <div className={`fixed top-0 right-0 h-full bg-gray-100 p-4 shadow-lg transition-transform duration-300 z-50 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+            <div className={`fixed top-0 right-0 h-full bg-gray-100 p-4 shadow-lg transition-transform duration-300 z-50 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} w-64 overflow-auto`}>
                 <h2 className='font-bold text-xl mb-4'>Friends</h2>
                 {friends.length === 0 ? (
                     <p>No friends found</p>
@@ -109,7 +109,7 @@ function FriendMenu() {
                     <ul>
                         {friends.map(friend => (
                             <li key={friend.username} className='mb-2'>
-                                <Link to={`/profile/${friend.username}`} className='text-blue-600 block p-2 hover:bg-gray-100'>
+                                <Link to={`/profile/${friend.username}`} className='text-blue-600 block p-2 hover:bg-gray-100 truncate'>
                                     {friend.username}
                                 </Link>
                             </li>
@@ -124,12 +124,12 @@ function FriendMenu() {
                         {friendRequests.map(request => (
                             <li key={request.id} className='mb-2'>
                                 <div className='flex justify-between items-center'>
-                                    <span>{request.username}</span>
+                                    <span className='truncate'>{request.username}</span>
                                     <div className='flex space-x-2'>
-                                        <button onClick={() => handleAcceptRequest(request.id)} className="bg-green-600 text-white py-1 px-2 rounded">
+                                        <button onClick={() => handleAcceptRequest(request.id)} className="bg-green-600 text-white py-1 px-2 rounded truncate">
                                             Accept
                                         </button>
-                                        <button onClick={() => handleRejectRequest(request.id)} className="bg-red-600 text-white py-1 px-2 rounded">
+                                        <button onClick={() => handleRejectRequest(request.id)} className="bg-red-600 text-white py-1 px-2 rounded truncate">
                                             Reject
                                         </button>
                                     </div>
