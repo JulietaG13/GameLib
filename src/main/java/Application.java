@@ -2,6 +2,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import cronjob.CronJobInitializer;
+import demo.DatabaseDemo;
 import example.ImageExample;
 import org.quartz.SchedulerException;
 import values.ErrorMessages;
@@ -51,6 +52,7 @@ public class Application {
 
     storeAdmin(admin, getEntityManager());
 
+    /*
     EntityManager entityManager = getEntityManager();
     storeUsers1(entityManager);
     storeGames1(entityManager);
@@ -58,6 +60,8 @@ public class Application {
     storeReviews1(entityManager);
     new BDExample(entityManager).store();
     entityManager.close();
+    */
+    new DatabaseDemo(factory).run();
 
     controllers(factory);
     cronJobs(factory);

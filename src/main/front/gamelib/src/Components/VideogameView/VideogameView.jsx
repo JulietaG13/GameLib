@@ -30,6 +30,10 @@ function VideogameView() {
     const [reviewsRetrieved, setReviewsRetrieved] = useState(false);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
+    useEffect(() => {
         axios.post(`http://localhost:4567/tokenvalidation`, {}, {
             headers: {
                 'Content-Type': 'application/json',
