@@ -157,7 +157,7 @@ function VideogameView() {
     return (
         <main className={"gameView"}>
             <Header/>
-            <img id={"backImg"} src={videogame.background_image} alt={"Game Background"} />
+            <img id={"backImg"} src={videogame.background_image} alt={"Game Background"}  className={""}/>
             <div className={"titleDiv font-montserrat font-bold"}>
                 <h1>{videogameFetched ? videogame.name : "Loading game..."}</h1>
             </div>

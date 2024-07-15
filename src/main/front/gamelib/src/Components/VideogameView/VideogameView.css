@@ -19,7 +19,7 @@
     font-size: 4em;
     color: aliceblue; /* Color de relleno de las letras */
     text-shadow:
-            0px 0px 25px rgba(0, 0, 0, 0.9); /* Sombra negra más fuerte */
+            0px 0px 25px rgba(0, 0, 0, 90.0%); /* Sombra negra más fuerte */
     word-break: break-all;
 }
 
@@ -42,8 +42,9 @@
     width: 50%;
 }
 .coverDiv img {
-    width: 350px;
-    height: 400px;
+    margin-left: 15px;
+    width: 400px;
+    height: 500px;
 }
 
 .newsDiv {
