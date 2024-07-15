@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import './ManagePopup.css';
 import ErrorMessage from '../Popup/ErrorMessage';
@@ -7,15 +7,32 @@ import { FaQuestionCircle } from 'react-icons/fa';
 const ManagePopup = ({ visible, onConfirm, onCancel }) => {
     const [publicKey, setPublicKey] = useState('');
     const [accessToken, setAccessToken] = useState('');
+    const [isDonationsSetup, setIsDonationsSetup] = useState(false);
     const [disableDonationsExpanded, setDisableDonationsExpanded] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const username = localStorage.getItem("username");
+
+    useEffect( () => {
+        handleIsDonationsSetup();
+    })
+
+    const handleIsDonationsSetup = async => {
+        axios.get(`http://localhost:4567/pay/setup/is/${username}`)
+            .then(response => {
+                const isSetup = response.data.is_setup;
+                setIsDonationsSetup(isSetup);
+            })
+            .catch(() => {
+                setIsDonationsSetup(false);
+            });
+    }
 
     if (!visible) {
         if (publicKey !== '' || accessToken !== '' || disableDonationsExpanded === true) {
             setPublicKey('');
             setAccessToken('');
             setDisableDonationsExpanded(false);
+            handleIsDonationsSetup();
         }
         return null;
     }
@@ -108,19 +125,27 @@ const ManagePopup = ({ visible, onConfirm, onCancel }) => {
                     <button className="manage-confirm-button" onClick={handleConfirm}>Confirm</button>
                     <button className="manage-cancel-button" onClick={onCancel}>Cancel</button>
                 </div>
-                <div className="disable-donations-container" style={{ overflow: 'hidden', transition: 'height 1s ease' }}>
-                    {disableDonationsExpanded ? (
-                        <div className="disable-donations">
-                            <button className="manage-disable-button" onClick={confirmDisableDonations}>
-                                Disable donations
-                            </button>
+                { isDonationsSetup && (
+                        <div className="disable-donations-container" style={{ overflow: 'hidden', transition: 'height 1s ease' }}>
+                            {disableDonationsExpanded ? (
+                                <div>
+                                    <div className="disable-donations-label" onClick={toggleDisableDonations}>
+                                        <span>Are you sure you want to disable donations?</span>
+                                    </div>
+                                    <div className="disable-donations">
+                                        <button className="manage-disable-button" onClick={confirmDisableDonations}>
+                                            Disable donations
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="disable-donations-label" onClick={toggleDisableDonations}>
+                                    <span>Disable donations?</span>
+                                </div>
+                            )}
                         </div>
-                    ) : (
-                        <div className="disable-donations-label" onClick={toggleDisableDonations}>
-                            <span>Disable donations?</span>
-                        </div>
-                    )}
-                </div>
+                    )
+                }
             </div>
             {errorMessage && (
                 <ErrorMessage
