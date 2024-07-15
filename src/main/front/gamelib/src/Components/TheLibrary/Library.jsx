@@ -37,7 +37,7 @@ function Library() {
             fetchGenreList(),
         ]);
         setLoading(false);
-
+        window.scrollTo(0, 0);
     }
 
     async function getIsDeveloper() {
