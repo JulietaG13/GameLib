@@ -262,12 +262,13 @@ function VideogameView() {
                             </h2>
                             <form className={'publishReviewDiv'} onSubmit={publishReview}>
                             <textarea id={'1'}
-                                      placeholder={' Write a review'}
+                                      placeholder={'Write a review'}
                                       value={review}
                                       maxLength={200}
                                       onChange={e =>
                                           setReview(e.target.value)
                                       }
+                                      style={{ margin: '0.1em', marginLeft: '0.2em', padding: '0.5em' }}
                             />
                                 <button type={'submit'} style={{ whiteSpace: 'pre' }}>
                                     {'  Publish  '}
