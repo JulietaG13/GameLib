@@ -27,7 +27,7 @@ public class DatabaseDemo {
   
   private void func() {
     EntityManager em = factory.createEntityManager();
-    
+  
     Developer developer1 = new Developer(new User(
         "IOwnGames",
         "gamelib.test+IOwnGames@gmail.com",
@@ -41,10 +41,10 @@ public class DatabaseDemo {
         "1234",
         Rol.DEVELOPER
     ));
-    
+  
     developer1.getUser().setPfp("https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_square.jpg");
     developer1.getUser().setBanner("https://t4.ftcdn.net/jpg/05/35/71/33/360_F_535713376_F10In0XLEXIqcVRFAQXIaLJ8RDvL5ynr.jpg");
-    
+  
     developer2.getUser().setPfp("https://tr.rbxcdn.com/c75f3664783f2f43e441b5f84e083a52/420/420/Hat/Png");
     developer2.getUser().setBanner("https://img.freepik.com/free-photo/front-view-beautiful-dog-with-copy-space_23-2148786562.jpg");
   
@@ -56,6 +56,18 @@ public class DatabaseDemo {
     developer1 = developerRepository.findByUsername(developer1.getUser().getUsername()).get();
     developer2 = developerRepository.findByUsername(developer2.getUser().getUsername()).get();
   
+    developerRepository.setupDonations(
+        developer1.getUser(),
+        "APP_USR-7935a1bd-06e9-4148-ac35-6d3efc60dbdf",
+        "APP_USR-3308950100823866-070817-edee83028d45f993e55a22ec7b955a62-1893394530"
+    );
+  
+    developerRepository.setupDonations(
+        developer2.getUser(),
+        "APP_USR-d5fc5ac3-de97-452d-9138-d247e7aeac00",
+        "APP_USR-3163159331731443-071018-7032e41a4154a40c58275390f87c992b-1894251913"
+    );
+  
     /* GAMES */
   
     List<Game> games = new ArrayList<>();
@@ -64,7 +76,7 @@ public class DatabaseDemo {
   
   
     /* developer 1 */
-    
+  
     Game gameCult = new Game(
         "Cult of the Lamb",
         developer1.getUser(),
@@ -76,7 +88,7 @@ public class DatabaseDemo {
     );
     games.add(gameCult);
     gamesDev1.add(gameCult);
-    
+  
     Game gameStardew = new Game(
         "Stardew Valley",
         developer1.getUser(),
@@ -89,7 +101,7 @@ public class DatabaseDemo {
     );
     games.add(gameStardew);
     gamesDev1.add(gameStardew);
-    
+  
     Game gamePz = new Game(
         "Project Zomboid",
         developer1.getUser(),
@@ -103,7 +115,7 @@ public class DatabaseDemo {
     );
     games.add(gamePz);
     gamesDev1.add(gamePz);
-    
+  
     Game gameCuphead = new Game(
         "Cuphead",
         developer1.getUser(),
@@ -127,7 +139,7 @@ public class DatabaseDemo {
     );
     games.add(gameLethal);
     gamesDev1.add(gameLethal);
-    
+  
     /* developer 2 */
   
     Game gamePotion = new Game(
@@ -182,7 +194,7 @@ public class DatabaseDemo {
   
     GameRepository gameRepository = new GameRepository(em);
     games.forEach(gameRepository::persist);
-    
+  
     /*  TAGS  */
   
     List<String> platforms = List.of("Steam", "Riot", "PlayStation", "Xbox", "EpicGames", "Mobile");
@@ -196,10 +208,10 @@ public class DatabaseDemo {
         "Horror",
         "Cozy game",
         "Multiplayer");
-    
+  
     Tag tagIndie = new Tag("Indie", TagType.GENRE);
     tagIndie.setId(9999L);
-    
+  
     List<Tag> tagsPlatforms = new ArrayList<>(platforms.size());
     platforms.forEach(t -> tagsPlatforms.add(new Tag(t, TagType.PLATFORM)));
   
@@ -211,25 +223,25 @@ public class DatabaseDemo {
     TagRepository tagRepository = new TagRepository(em);
     tagsPlatforms.forEach(tagRepository::persist);
     tagsGenres.forEach(tagRepository::persist);
-    
+  
     // platform tags
-    
+  
     for (int i = 0; i < gamesDev1.size(); i++) {
       gameRepository.addTag(developer1.getUser(), gamesDev1.get(i), tagsPlatforms.get((i) % tagsPlatforms.size()));
-      gameRepository.addTag(developer1.getUser(), gamesDev1.get(i), tagsPlatforms.get((i+1) % tagsPlatforms.size()));
-      gameRepository.addTag(developer1.getUser(), gamesDev1.get(i), tagsPlatforms.get((i+2) % tagsPlatforms.size()));
+      gameRepository.addTag(developer1.getUser(), gamesDev1.get(i), tagsPlatforms.get((i + 1) % tagsPlatforms.size()));
+      gameRepository.addTag(developer1.getUser(), gamesDev1.get(i), tagsPlatforms.get((i + 2) % tagsPlatforms.size()));
     }
     gameRepository.addTag(developer1.getUser(), gamesDev1.get(0), tagsPlatforms.get(4));
     gameRepository.addTag(developer1.getUser(), gamesDev1.get(1), tagsPlatforms.get(5));
   
     for (int i = 0; i < gamesDev2.size(); i++) {
-      gameRepository.addTag(developer2.getUser(), gamesDev2.get(i), tagsPlatforms.get((i+1) % tagsPlatforms.size()));
-      gameRepository.addTag(developer2.getUser(), gamesDev2.get(i), tagsPlatforms.get((i+3) % tagsPlatforms.size()));
-      gameRepository.addTag(developer2.getUser(), gamesDev2.get(i), tagsPlatforms.get((i+5) % tagsPlatforms.size()));
+      gameRepository.addTag(developer2.getUser(), gamesDev2.get(i), tagsPlatforms.get((i + 1) % tagsPlatforms.size()));
+      gameRepository.addTag(developer2.getUser(), gamesDev2.get(i), tagsPlatforms.get((i + 3) % tagsPlatforms.size()));
+      gameRepository.addTag(developer2.getUser(), gamesDev2.get(i), tagsPlatforms.get((i + 5) % tagsPlatforms.size()));
     }
     gameRepository.addTag(developer2.getUser(), gamesDev2.get(0), tagsPlatforms.get(4));
     gameRepository.addTag(developer2.getUser(), gamesDev2.get(1), tagsPlatforms.get(5));
-    
+  
     // genre tags
   
     for (int i = 0; i < gamesDev1.size(); i++) {
@@ -239,11 +251,11 @@ public class DatabaseDemo {
         gameRepository.addTag(developer1.getUser(), gamesDev1.get(i), tagsGenres.get((j) % tagsGenres.size()));
       }
     }
-    
+  
     /* NEWS */
   
     NewsRepository newsRepository = new NewsRepository(em);
-    
+  
     // Developer 1
   
     newsRepository.persist(new News(
@@ -252,18 +264,18 @@ public class DatabaseDemo {
         gameCult,
         developer1.getUser())
     );
-    
+  
     newsRepository.persist(
         new News(
-        "CULT OF THE LAMB: THE FIRST VERSE",
-        "The first-ever graphic novel inspired by CULT OF THE LAMB, is now available globally in stores!\n" +
-            "\n" +
-            "We’re thrilled to partner with OniPress to explore the world they create with our characters, " +
-            "and witness the coming of the Lamb's first flock anew, together with you!",
-        gameCult,
-        developer1.getUser())
+            "CULT OF THE LAMB: THE FIRST VERSE",
+            "The first-ever graphic novel inspired by CULT OF THE LAMB, is now available globally in stores!\n" +
+                "\n" +
+                "We’re thrilled to partner with OniPress to explore the world they create with our characters, " +
+                "and witness the coming of the Lamb's first flock anew, together with you!",
+            gameCult,
+            developer1.getUser())
     );
-    
+  
     newsRepository.persist(
         new News(
             "Win Merch Through Our Base Builder Contest",
@@ -289,7 +301,6 @@ public class DatabaseDemo {
     );
   
   
-    
     newsRepository.persist(new News(
         "1.6.5 patch notes",
         "After quickly fixing a few issues with 1.6.4, we are now on 1.6.5.\n" +
@@ -326,7 +337,6 @@ public class DatabaseDemo {
         gameStardew,
         developer1.getUser())
     );
-  
   
   
     newsRepository.persist(new News(
@@ -376,7 +386,6 @@ public class DatabaseDemo {
     );
   
   
-  
     newsRepository.persist(new News(
         "Cupdate - Hotfix 1.2.3",
         "Hotfix Patch Notes 1.2.3\n" +
@@ -418,8 +427,7 @@ public class DatabaseDemo {
         developer1.getUser())
     );
   
-    
-    
+  
     newsRepository.persist(new News(
         "The Challenge Moons Patch - Version 47",
         "Hello employees, I hope you had a good Christmas. Now get back to work!!!\n" +
@@ -437,7 +445,7 @@ public class DatabaseDemo {
         gameLethal,
         developer1.getUser())
     );
-    
+  
     newsRepository.persist(new News(
         "Version 55 now available in the beta branch!",
         "Hello, you can now test Version 55 in the public beta branch! " +
@@ -455,8 +463,8 @@ public class DatabaseDemo {
         gameLethal,
         developer1.getUser())
     );
-    
-    
+  
+  
     // Developer 2
   
     newsRepository.persist(new News(
@@ -465,7 +473,7 @@ public class DatabaseDemo {
         gameCats,
         developer2.getUser())
     );
-    
+  
     newsRepository.persist(new News(
         "\uD83E\uDD16\uD83D\uDE3B 100 ROBO CATS IS OUT! \uD83E\uDDBE\uD83D\uDC08",
         "\uD83D\uDC08 Meow! Our new game is already available! Hurry up to get a real Robo vibe with your furry friends! \uD83C\uDF89",
@@ -474,7 +482,6 @@ public class DatabaseDemo {
     );
   
   
-    
     newsRepository.persist(new News(
         "\"Host of Horrors\" Content Update Available Now!",
         "New horrors await! As more rifts appear across the Constant, monsters have started rising from the dead, becoming vessels for unearthly apparitions. " +
@@ -498,7 +505,6 @@ public class DatabaseDemo {
     );
   
   
-    
     newsRepository.persist(new News(
         "The List of Upcoming Features",
         "The future is brighter than ever! See what new features will be available in Potion Craft in the upcoming updates!",
@@ -513,14 +519,13 @@ public class DatabaseDemo {
         gamePotion,
         developer2.getUser())
     );
-    
+  
     newsRepository.persist(new News(
         "Potion Craft is 55% OFF!",
         "Get Potion Craft 55% off during the Steam Winter Sale – Offer ends January 4th!",
         gamePotion,
         developer2.getUser())
     );
-  
   
   
     newsRepository.persist(new News(
@@ -553,13 +558,13 @@ public class DatabaseDemo {
         developer2.getUser())
     );
     */
-    
+  
     /* REVIEWS */
-    
+  
     ReviewRepository reviewRepository = new ReviewRepository(em);
     List<User> reviewers = getReviewUsers();
     int i = 2;
-    
+  
     List<String> reviewsCult = List.of(
         "I put my coworkers in the game and bully the ones i dont like",
         "Excellent, 10/10, cried when I sacrificed my fav and longest follower of 102 days",
@@ -571,7 +576,7 @@ public class DatabaseDemo {
       reviewRepository.addReview(new Review(r), reviewers.get(i++), gameCult);
       i = i % reviewers.size();
     }
-    
+  
     List<String> reviewsStardew = List.of(
         "still waiting for the update where i can marry robin",
         "This game is so good if youre either a teenage girl (i am) or a grown ass depressed man",
@@ -628,7 +633,7 @@ public class DatabaseDemo {
       reviewRepository.addReview(new Review(r), reviewers.get(i++), gamePotion);
       i = i % reviewers.size();
     }
-    
+  
     List<String> reviewsStarve = List.of(
         "Don't starve and you'll win.",
         "i frickin died of hungary.",
@@ -640,7 +645,7 @@ public class DatabaseDemo {
       reviewRepository.addReview(new Review(r), reviewers.get(i++), gameStarve);
       i = i % reviewers.size();
     }
-    
+  
     List<String> reviewsCats = List.of(
         "A fine, free Where's Wally/Waldo style game.",
         "Took me 6 minutes to finish it.",
@@ -666,7 +671,29 @@ public class DatabaseDemo {
       reviewRepository.addReview(new Review(r), reviewers.get(i++), gameTakesTwo);
       i = i % reviewers.size();
     }
+  
+    /* FRIENDS */
+  
+    User hasFriends = new User(
+        "IHaveFriends",
+        "gamelib.test+IHaveFriends@gmail.com",
+        "1234",
+        Rol.USER
+    );
+    
+    int n = reviewers.size() / 2 + 1;
+    
+    for (int j = 0; j < n; j++) {
+      hasFriends.addFriend(reviewers.get(j));
+    }
+    
+    for (int j = n; j < reviewers.size(); j++) {
+      reviewers.get(j).sendFriendRequest(hasFriends);
+    }
+    
+    /* END */
   }
+  
   
   private List<User> getReviewUsers() {
     List<User> users = List.of(
