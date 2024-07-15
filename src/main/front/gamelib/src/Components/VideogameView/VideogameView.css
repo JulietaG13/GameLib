@@ -242,7 +242,7 @@ h3 {
 }
 
 .developer-name:hover {
-    background-color: rgba(0, 0, 0, 0.1); /* Slightly darker grey background on hover */
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
 .genres-list {
@@ -259,6 +259,11 @@ h3 {
     border-radius: 5px;
     font-size: 0.9em;
     margin-bottom: 0.4em;
+    transition: background-color 0.3s ease;
+}
+
+.genre-tag:hover {
+    background-color: rgba(0, 0, 0, 0.6);
 }
 
 .description-container {

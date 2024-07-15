@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Link, Navigate, useParams} from "react-router-dom";
+import {Link, Navigate, useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
 import user_icon from "../Assets/user-icon.png";
 import pencil_icon from "../Assets/pencil-icon.png";
@@ -230,7 +230,9 @@ function VideogameView() {
                                     {videogame.tags
                                         .filter(t => t.tag_type === "GENRE")
                                         .map(tag => (
-                                            <span className="genre-tag">{tag.name}</span>
+                                            <Link to={`/search?query=${tag.name}`}>
+                                                <span className="genre-tag">{tag.name}</span>
+                                            </Link>
                                         ))}
                                 </div>
                             }
@@ -244,7 +246,9 @@ function VideogameView() {
                                         {videogame.tags
                                             .filter(t => t.tag_type === "PLATFORM")
                                             .map(tag => (
-                                                <span className="genre-tag">{tag.name}</span>
+                                                <Link to={`/search?query=${tag.name}`}>
+                                                    <span className="genre-tag">{tag.name}</span>
+                                                </Link>
                                             ))}
                                     </p>
                                 </div>
