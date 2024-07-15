@@ -120,7 +120,7 @@ public class EmailService {
       // combine
       Multipart multipart = new MimeMultipart("related");
       multipart.addBodyPart(htmlPart);
-      multipart.addBodyPart(imgPart);
+      //multipart.addBodyPart(imgPart);
   
       message.setContent(multipart);
   
@@ -201,7 +201,6 @@ public class EmailService {
         "        <div class=\"content\">" +
         "            <h2>" + title + "</h2>" +
         "            <p>" + description + "</p>" +
-        "            <img class=\"news-image\" src=\"cid:cover0123\" alt=\"Game Cover\"/>" +
         "            <p><strong>Game:</strong> " + game + "</p>" +
         "            <p><strong>Author:</strong> " + author + "</p>" +
         "        </div>" +
