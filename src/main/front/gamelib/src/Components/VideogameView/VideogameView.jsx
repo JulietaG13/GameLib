@@ -153,15 +153,15 @@ function VideogameView() {
     return (
         <main className={"gameView"}>
             <Header/>
-            <img id={"backImg"} src={videogame.background_image} alt={"Game Background"}/>
-            <div className={"titleDiv "}>
+            <img id={"backImg"} src={videogame.background_image} alt={"Game Background"} />
+            <div className={"titleDiv font-montserrat font-bold"}>
                 <h1>{videogameFetched ? videogame.name : "Loading game..."}</h1>
             </div>
 
             <div className={"dataDiv"}>
                 <div className={"coverDiv"}>
                     {videogameFetched ?
-                        <img src={videogame.cover} alt={"Game Cover"}/>
+                        <img src={videogame.cover} alt={"Game Cover"} className={" rounded-2xl"}/>
                         :
                         <SkeletonComp/>
                     }
@@ -274,7 +274,7 @@ function VideogameView() {
                                       }
                                       style={{ margin: '0.1em', marginLeft: '0.2em', padding: '0.5em' }}
                             />
-                                <button type={'submit'} style={{ whiteSpace: 'pre' }}>
+                                <button type={'submit'} style={{ whiteSpace: 'pre' }} className={"ml-4 mr-5"}>
                                     {'  Publish  '}
                                 </button>
                             </form>

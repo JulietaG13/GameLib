@@ -10,17 +10,27 @@
     padding: 0.5em;
     margin-top: 1em;
     margin-left: 1em;
-    margin-bottom: 8em;
+    margin-bottom: 7em;
     width: fit-content;
-    background-color: white;
+
 }
 .titleDiv h1 {
     display: inline-block;
-    font-size: 3em;
-    color: #ff6d11;
-    font-weight: bold;
-    text-decoration: underline;
+    font-size: 4em;
+    color: aliceblue; /* Color de relleno de las letras */
+    text-shadow:
+            1px 1px 0px white,
+            -1px -1px 0px white,
+            -1px 1px 0px white,
+            1px -1px 0px white,
+            1px 0px 0px white,
+            -1px 0px 0px white,
+            0px 1px 0px white,
+            0px -1px 0px white, /* Sombra de texto que actúa como borde */
+            10px 10px 15px rgba(0,0,0,0.9); /* Sombra negra */
     word-break: break-all;
+
+
 }
 
 .dataDiv {
@@ -41,8 +51,8 @@
     width: 50%;
 }
 .coverDiv img {
-    width: 100%;
-    height: 100%;
+    width: 350px;
+    height: 400px;
 }
 
 .newsDiv {
