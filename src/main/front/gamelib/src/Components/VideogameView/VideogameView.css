@@ -19,19 +19,10 @@
     font-size: 4em;
     color: aliceblue; /* Color de relleno de las letras */
     text-shadow:
-            1px 1px 0px white,
-            -1px -1px 0px white,
-            -1px 1px 0px white,
-            1px -1px 0px white,
-            1px 0px 0px white,
-            -1px 0px 0px white,
-            0px 1px 0px white,
-            0px -1px 0px white, /* Sombra de texto que actúa como borde */
-            10px 10px 15px rgba(0,0,0,0.9); /* Sombra negra */
+            0px 0px 25px rgba(0, 0, 0, 0.9); /* Sombra negra más fuerte */
     word-break: break-all;
-
-
 }
+
 
 .dataDiv {
     display: flex;
