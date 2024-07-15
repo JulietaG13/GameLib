@@ -1,0 +1,4 @@
+.reviewsContainer {
+    display: flex;
+    flex-direction: column;
+}

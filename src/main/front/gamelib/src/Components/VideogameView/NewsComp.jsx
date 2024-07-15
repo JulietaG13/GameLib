@@ -39,14 +39,18 @@ function NewsComp(props) {
 
     return (!isLoading ?
                 <div>
-                    {props.owner ?
-                        <AddNewPopUp videogameID={props.videogameID}/>
-                        :
-                        null
-                    }
-                    <h2>News</h2>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h2 style={{ marginRight: 'auto', fontWeight: 'bold' }}>News</h2>
+                        {props.owner ?
+                            <div style={{ flex: 1, textAlign: 'right' }}>
+                                <AddNewPopUp videogameID={props.videogameID}/>
+                            </div>
+                            :
+                            null
+                        }
+                    </div>
                     {news.length === 0 ?
-                        <h3 id={'noNews'}>Nothing new to see here!</h3>
+                        <h3 id={'noNews'}>Nothing to see here!</h3>
                         :
                         <ul className={'particularNewDiv'}>
                             {news.map((news, index) => {

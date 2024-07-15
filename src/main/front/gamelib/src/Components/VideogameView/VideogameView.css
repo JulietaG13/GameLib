@@ -7,8 +7,12 @@
 }
 
 .titleDiv {
-    padding: 1em;
-    margin-bottom: 10em;
+    padding: 0.5em;
+    margin-top: 1em;
+    margin-left: 1em;
+    margin-bottom: 8em;
+    width: fit-content;
+    background-color: white;
 }
 .titleDiv h1 {
     display: inline-block;
@@ -16,8 +20,6 @@
     color: #ff6d11;
     font-weight: bold;
     text-decoration: underline;
-    font-style: italic;
-    background-color: white;
     word-break: break-all;
 }
 
@@ -46,7 +48,7 @@
 .newsDiv {
     display: flex;
     align-items: flex-start;
-    width: 30%;
+    width: 35%;
     height: 100%;
 }
 
@@ -85,7 +87,7 @@
 
 .attributesDiv {
     width: 100%;
-    border-bottom: 0.2em solid #000000;
+    border-bottom: 0.2em solid rgba(0, 0, 0, 0.6);
 }
 
 .reviewsDiv {
@@ -226,4 +228,38 @@ h3 {
     font-style: italic;
     font-size: 1.5em;
     color: white;
+}
+
+.developer-name {
+    display: inline-block; /* Ensures it only takes up as much width as its content */
+    padding: 3px 10px 3px 10px; /* top, right, bottom, left */
+    border-radius: 5px;
+    transition: background-color 0.3s ease; /* Smooth transition for background color change */
+
+    /* Default text styles */
+    color: black; /* Default text color */
+    text-decoration: none; /* Remove underline from link */
+}
+
+.developer-name:hover {
+    background-color: rgba(0, 0, 0, 0.1); /* Slightly darker grey background on hover */
+}
+
+.genres-list {
+    display: inline-block;
+    horiz-align: left;
+    margin-bottom: -1em;
+}
+.genre-tag {
+    display: inline-block;
+    background-color: rgba(0, 0, 0, 0.4);
+    color: white;
+    padding: 3px 10px;
+    margin-right: 5px;
+    border-radius: 5px;
+    font-size: 0.9em;
+}
+
+.description-container {
+    word-wrap: break-word;
 }

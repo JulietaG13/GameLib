@@ -101,7 +101,9 @@ function ShelfManager({props}) {
 
     return (
         <div className={'shelvesPopUp'} >
-            <h2>Shelves Manager</h2>
+            <div style={{textAlign: 'center', marginBottom: '0.5em'}}>
+                <h2><b>Shelves Manager</b></h2>
+            </div>
             <div className={'shelvesList'}>
                 {waitingForShelves ?
                     <div className={'shelf'}>
@@ -120,8 +122,12 @@ function ShelfManager({props}) {
                                     <button onClick={() => {handleRemoveFromShelf(shelf.id, props.id)}}
                                     >Remove from shelf</button>
                                     :
-                                    <button onClick={() => {handleAddToShelf(shelf.id, props.id)}}
-                                    >Add to shelf</button>
+                                    <button
+                                        onClick={() => {handleAddToShelf(shelf.id, props.id)}}
+                                        style={{ whiteSpace: 'pre' }}
+                                    >
+                                        {'  Add to shelf  '}
+                                    </button>
                                 }
                             </div>
                         ))
@@ -133,7 +139,7 @@ function ShelfManager({props}) {
                 <form className={'shelfCreator'} onSubmit={handleShelfSubmit}>
                     <div className={'shelfAttributes'}>
                         <input type={'text'}
-                               placeholder={'Shelf name'}
+                               placeholder={' Shelf name'}
                                required
                                value={shelfToUpload.name}
                                onChange={(e) => {
@@ -142,6 +148,7 @@ function ShelfManager({props}) {
                                        name: e.target.value
                                    });
                                }}
+                               style={{ margin: '0.1em', marginLeft: '0.2em', padding: '0.1em' }}
                         />
                         <label>
                             <input type={"checkbox"}
@@ -152,7 +159,9 @@ function ShelfManager({props}) {
                                            is_private: !shelfToUpload.is_private
                                        });
                                    }}/>
-                            <p>Private shelf</p>
+                            <div style={{whiteSpace: 'pre'}}>
+                                {' Private '}
+                            </div>
                         </label>
                     </div>
                     <button type={'submit'}>Create shelf</button>

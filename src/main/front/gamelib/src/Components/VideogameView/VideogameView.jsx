@@ -12,6 +12,7 @@ import Header from "../Header/Header";
 import ErrorView from "../ErrorView/ErrorView";
 import SkeletonComp from "./skeleton/SkeletonComp";
 import SmallerSkeletonComp from "./skeleton/SmallerSkeletonComp";
+import ReviewsList from "./Reviews/ReviewsList";
 
 function VideogameView() {
     const videogameID = useParams();
@@ -204,30 +205,51 @@ function VideogameView() {
 
                     {videogameFetched ?
                         <div className={"attributesDiv"}>
-                            <h2>About the game:</h2>
-                            <p>{videogame.description}</p>
-                            <p>Developer: {developer !== '' ?
-                                <Link to={`/profile/${developer}`}>
-                                    {developer}
-                                </Link>
-                                :
-                                "Unknown"
-                            }</p>
-                            <p>Date of release: {formatDate(videogame.release_date)}</p>
+                            <h2><b>About the game:</b></h2>
+                            <div className="description-container">
+                                {videogame.description}
+                            </div>
+                            <div>
+                                <p><b>Developer:</b> {developer !== '' ?
+                                    <div className={'developer-name'} style={{padding: '2px 10px'}}>
+                                        <Link to={`/profile/${developer}`}>
+                                            {developer}
+                                        </Link>
+                                    </div>
+                                    :
+                                    "Unknown"
+                                }</p>
+                                <p><b>Date of release:</b> {formatDate(videogame.release_date)}</p>
+                            </div>
                             {videogame.tags.filter(t => t.tag_type === "GENRE").length === 0 ?
-                                <p>Unknown genres</p>
+                                <div>
+                                    <p><i>No genres specified</i></p>
+                                </div>
                                 :
-                                <p>Genres: {videogame.tags
-                                    .filter(t => t.tag_type === "GENRE")
-                                    .map(tag => tag.name).join(', ')}</p>
+                                <div className="genres-list">
+                                    {videogame.tags
+                                        .filter(t => t.tag_type === "GENRE")
+                                        .map(tag => (
+                                            <span className="genre-tag">{tag.name}</span>
+                                        ))}
+                                </div>
                             }
                             {videogame.tags.filter(t => t.tag_type === "PLATFORM").length === 0 ?
-                                <p>Unknown platforms</p>
+                                <div>
+                                    <p><i>No platforms specified</i></p>
+                                </div>
                                 :
-                                <p>Platforms: {videogame.tags
-                                    .filter(t => t.tag_type === "PLATFORM")
-                                    .map(tag => tag.name).join(', ')}</p>
+                                <div className="genres-list">
+                                    <p>
+                                        {videogame.tags
+                                            .filter(t => t.tag_type === "GENRE")
+                                            .map(tag => (
+                                                <span className="genre-tag">{tag.name}</span>
+                                            ))}
+                                    </p>
+                                </div>
                             }
+                            <br/>
                         </div>
                         :
                         <SmallerSkeletonComp/>
@@ -235,17 +257,21 @@ function VideogameView() {
 
                     {reviewsRetrieved ?
                         <div className={"reviewsDiv"}>
-                            <h2 className={"pb-5"}>Reviews section</h2>
+                            <h2 className={"pb-5"} style={{ fontSize: '1.5rem', marginTop: '0.8em' }}>
+                                Reviews section
+                            </h2>
                             <form className={'publishReviewDiv'} onSubmit={publishReview}>
                             <textarea id={'1'}
-                                      placeholder={'Add your review'}
+                                      placeholder={' Write a review'}
                                       value={review}
                                       maxLength={200}
                                       onChange={e =>
                                           setReview(e.target.value)
                                       }
                             />
-                                <button type={'submit'}>Publish</button>
+                                <button type={'submit'} style={{ whiteSpace: 'pre' }}>
+                                    {'  Publish  '}
+                                </button>
                             </form>
 
                             {errorMessage !== '' ?
@@ -255,23 +281,12 @@ function VideogameView() {
                             }
 
                             {reviews.length === 0 ?
-                                <div className={"reviewDiv w-full mt-5 rounded-xl"}>
+                                <div className={"reviewDiv w-full mt-5 rounded-xl"} style={{marginLeft: '0px'}}>
                                     <img id={"special"} src={user_icon} alt={"user_icon"}/>
-                                    <p>Be the first one to review!</p>
+                                    <p>Be the first one to leave a review!</p>
                                 </div>
                                 :
-                                reviews.map((review) => (
-                                    <div key={review.id} className={"reviewDiv mt-5 rounded-xl"}>
-                                        <Link className={"mr-2"}
-                                              to={'/profile/' + review.author.username}
-                                              title={`Visit ${review.author.username} page!`}>
-                                            <img src={review.author.pfp !== null ? review.author.pfp : user_icon}
-                                                 alt={"user_icon"}/>
-                                        </Link>
-                                        {/*<img src={review.author.pfp !== null ? review.author.pfp : user_icon} alt={"user_icon"}/>*/}
-                                        <p>{review.author.username}<br/>{review.text}</p>
-                                    </div>
-                                ))
+                                <ReviewsList reviews={reviews}/>
                             }
                         </div>
                         :
