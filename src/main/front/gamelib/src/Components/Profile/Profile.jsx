@@ -335,8 +335,12 @@ function Profile() {
                         </div>
                         {/* Shelves */}
                         <div className="bg-white mt-8">
-                            <h1 className="pl-4 md:pl-16 font-bold text-4xl pt-5">Developed Games</h1>
-                            <Developed username={username}/>
+                            {localStorage.getItem("currentProfileRol") === 'DEVELOPER' && (
+                                <>
+                                    <h1 className="pl-4 md:pl-16 font-bold text-4xl pt-5">Developed Games</h1>
+                                    <Developed username={username} />
+                                </>
+                            )}
                             <h1 className="pl-4 md:pl-16 font-bold text-4xl pt-5">All Shelves</h1>
                             <Shelves username={username}/>
                         </div>
