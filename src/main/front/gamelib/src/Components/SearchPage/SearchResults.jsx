@@ -24,6 +24,7 @@ const SearchResults = () => {
     const query = useQuery();
     const searchQuery = query.get('query');
     const [games, setGames] = useState([]);
+    const [taggedGames, setTaggedGames] = useState([]);
     const [apiGames, setApiGames] = useState([]);
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -47,11 +48,13 @@ const SearchResults = () => {
             const response = await axios.get(`http://localhost:4567/common/search/all/${searchQuery}`, {}, {});
             setError('')
             setGames(response.data.games);
+            setTaggedGames(response.data.taggedGames);
             setUsers(response.data.users);
         } catch (error) {
             console.error('Error fetching from gamelib:', error);
             setError('Failed to fetch search results');
             setGames([])
+            setTaggedGames([])
             setUsers([])
         } finally {
             setIsLoading(false);
@@ -66,33 +69,36 @@ const SearchResults = () => {
 
                 {error && <div className="bg-red-500 text-white p-4 rounded-md mb-4">{error}</div>}
 
-                <div className="mb-8">
+                <div className="mb-2">
                     {isLoading ? (
-                        <Skeleton />
-                    ) : games.length === 0 ? (
-                        <p className={"text-2xl font-bold "}>No games found inside GameLib</p>
-                    ) : (
-                        <GamesFromDB gamesFromDB={games} title="Games" />
-                    )}
+                        <Skeleton/>
+                    ) : games.length === 0 && taggedGames.length === 0 ? (
+                        <p className={"text-2xl font-bold italic p-5"}>No games found inside GameLib</p>
+                    ) : games.length !== 0 && (
+                        <GamesFromDB gamesFromDB={games} title="Games"/>
+                    ) || taggedGames.length !== 0 && (
+                        <GamesFromDB gamesFromDB={taggedGames} title={`Games tagged with: ${searchQuery}`}/>
+                    )
+                    }
                 </div>
 
-                <div>
+                <div className="mb-2">
                     {isLoading ? (
-                        <Skeleton />
+                        <Skeleton/>
                     ) : users.length === 0 ? (
-                        <p className={"text-2xl font-bold "}>No users found</p>
+                        <p className={"text-2xl font-bold italic p-5"}>No users found</p>
                     ) : (
-                        <MapUsers users={users} />
+                        <MapUsers users={users}/>
                     )}
                 </div>
 
-                <div className="mb-8">
+                <div className="mb-2">
                     {isLoading ? (
-                        <Skeleton />
+                        <Skeleton/>
                     ) : apiGames.length === 0 ? (
-                        <p className={"text-2xl font-bold "}>No games found outside GameLib</p>
+                        <p className={"text-2xl font-bold italic p-5"}>No games found outside GameLib</p>
                     ) : (
-                        <MapApiGames gamesFromDB={apiGames} title="You may be looking for" />
+                        <MapApiGames gamesFromDB={apiGames} title="You may be looking for"/>
                     )}
                 </div>
             </div>

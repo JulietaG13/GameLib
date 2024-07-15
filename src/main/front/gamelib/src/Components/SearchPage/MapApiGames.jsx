@@ -7,7 +7,7 @@ const Container = styled.div`
     position: relative;
     padding: 1.25rem;
     border-radius: 0.75rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 `;
 
 const ScrollContainer = styled.div`
@@ -102,7 +102,7 @@ function MapApiGames({ gamesFromDB, title }) {
 
     return (
         <Container>
-            <h2 className="font-schibsted text-[30px] text-black pt-10 pb-5">{title}</h2>
+            <h2 className="font-schibsted text-[30px] text-black pb-5">{title}</h2>
             <ScrollContainer ref={scrollRef}>
                 {isLoading ? (
                     Array.from({ length: 5 }).map((_, index) => (

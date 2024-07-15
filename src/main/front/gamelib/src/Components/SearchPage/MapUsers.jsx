@@ -66,7 +66,7 @@ function MapUsers({ users }) {
     console.log(users);
     return (
         <Container>
-            <h2 className="font-schibsted text-[30px] text-black pt-10 pb-5">Users</h2>
+            <h2 className="font-schibsted text-[30px] text-black pb-5">Users</h2>
             <ScrollContainer ref={scrollRef}>
                 {users.map((user) => (
                     <UserCard key={user.id} to={`/profile/${user.username}`}>
