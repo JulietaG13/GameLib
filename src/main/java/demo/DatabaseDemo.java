@@ -252,6 +252,14 @@ public class DatabaseDemo {
       }
     }
   
+    for (int i = 0; i < gamesDev2.size(); i++) {
+      gameRepository.addTag(developer2.getUser(), gamesDev2.get(i), tagsGenres.get(0));
+      for (int j = i; j < 10; j += 2) {
+        if (j == 0) continue;
+        gameRepository.addTag(developer2.getUser(), gamesDev2.get(i), tagsGenres.get((j+1) % tagsGenres.size()));
+      }
+    }
+  
     /* NEWS */
   
     NewsRepository newsRepository = new NewsRepository(em);
