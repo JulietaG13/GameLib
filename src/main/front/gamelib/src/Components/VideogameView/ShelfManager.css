@@ -1,8 +1,9 @@
 .shelvesPopUp {
     background-color: #fd8240;
     padding: 3%;
-    margin: 1em 0;
-    border-radius: 5px;
+    margin: 1em 0 1em 15px;
+    border-radius: 1rem;
+    width: 400px;
 }
 .shelvesPopUp button {
     background-color: #fb813f;

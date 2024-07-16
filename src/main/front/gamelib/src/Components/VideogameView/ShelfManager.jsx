@@ -53,8 +53,7 @@ function ShelfManager({props}) {
             });
     }
 
-    const handleRemoveFromShelf = (shelfID, gameID, e) => {
-        e.preventDefault();
+    const handleRemoveFromShelf = (shelfID, gameID) => {
         axios.put(`http://localhost:4567/shelf/remove/${shelfID}/${gameID}`, {}, {
             headers: {
                 'Content-Type': 'application/json',

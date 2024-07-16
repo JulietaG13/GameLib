@@ -214,7 +214,7 @@ function VideogameView() {
                                 {videogame.description}
                             </div>
                             <div>
-                                <p><b>Developer:</b> {developer !== '' ?
+                                <p><b>Developer:</b>{developer !== '' ?
                                     <div className={'developer-name'} style={{padding: '2px 10px'}}>
                                         <Link to={`/profile/${developer}`}>
                                             {developer}
