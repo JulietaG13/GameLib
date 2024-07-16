@@ -41,7 +41,7 @@ public class CronJobInitializer {
 
         Trigger trigger = TriggerBuilder.newTrigger()
             .withIdentity("notifyReleasingGamesTrigger", "group1")
-            .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?"))
+            .withSchedule(CronScheduleBuilder.cronSchedule("0 */1 * * * ?"))
             .build();
         // Execute cronjob every minute: "0 */1 * * * ?"
         // Execute cronjob every start of day: "0 0 0 * * ?"

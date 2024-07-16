@@ -29,13 +29,13 @@ public class NotifyReleasingGames implements Job {
             return;
         }
 
-        // Get bot user
-        User bot = getBot(entityManager);
-
         // Notify release from each game to users
-        NewsRepository newsRepository = new NewsRepository(entityManager);
         games.forEach(game -> {
-            News releasingNew = createReleasingNews(game, bot, newsRepository);
+            User author = game.getOwner();
+            if (author == null) {
+                return;
+            }
+            News releasingNew = createReleasingNews(game, author);
             NewsService.notifyUsers(releasingNew, entityManager);
         });
 
@@ -47,24 +47,10 @@ public class NotifyReleasingGames implements Job {
         return gameRepository.findByDate(today);
     }
 
-    private User getBot(EntityManager entityManager) {
-        String username = "bot";
-        UserRepository userRepository = new UserRepository(entityManager);
-        Optional<User> user = userRepository.findByUsername(username);
-
-        if (user.isEmpty()) {
-            throw new RuntimeException("Bot user not found");
-        }
-
-        return user.get();
-    }
-
-    private News createReleasingNews(Game game, User bot, NewsRepository newsRepository) {
+    private News createReleasingNews(Game game, User bot) {
         String title = "New game released!";
         String description = "The game " + game.getName() + " is releasing today! Don't miss it!";
         News news = new News(title, description, game, bot);
-
-        newsRepository.persist(news);
 
         return news;
     }
