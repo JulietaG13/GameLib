@@ -707,6 +707,23 @@ public class DatabaseDemo {
     //reviewers.forEach(userRepository::persist);
     
     /* END */
+
+    ShelfRepository shelfRepository = new ShelfRepository(em);
+    List<Shelf> shelves = new ArrayList<>();
+
+    Shelf shelf1dev1 = new Shelf(developer1.getUser(), "Favouritesss", false);
+    Shelf shelf2dev1 = new Shelf(developer1.getUser(), "Weekend gamez~", true);
+    shelves.add(shelf1dev1);
+    shelves.add(shelf2dev1);
+
+    shelf1dev1.addGame(gameCats);
+    shelf1dev1.addGame(gamePotion);
+    shelf2dev1.addGame(gameLethal);
+    shelf2dev1.addGame(gameTakesTwo);
+
+    shelves.forEach(shelfRepository::persist);
+
+    /*  */
     em.close();
   }
   
@@ -714,44 +731,44 @@ public class DatabaseDemo {
   private List<User> getReviewUsers() {
     List<User> users = List.of(
         new User(
-            "username321",
-            "gamelib.test+username321@gmail.com",
+            "user321",
+            "gamelib.test+user321@gmail.com",
             "1234",
             Rol.USER
         ),
         new User(
-            "username685",
-            "gamelib.test+username685@gmail.com",
+            "user685",
+            "gamelib.test+user685@gmail.com",
             "1234",
             Rol.USER
         ),
         new User(
-            "username193",
-            "gamelib.test+username193@gmail.com",
+            "user193",
+            "gamelib.test+user193@gmail.com",
             "1234",
             Rol.USER
         ),
         new User(
-            "username954",
-            "gamelib.test+username954@gmail.com",
+            "user954",
+            "gamelib.test+user954@gmail.com",
             "1234",
             Rol.USER
         ),
         new User(
-            "username835",
-            "gamelib.test+username835@gmail.com",
+            "user835",
+            "gamelib.test+user835@gmail.com",
             "1234",
             Rol.USER
         ),
         new User(
-            "username268",
-            "gamelib.test+username268@gmail.com",
+            "user268",
+            "gamelib.test+user268@gmail.com",
             "1234",
             Rol.USER
         ),
         new User(
-            "username894",
-            "gamelib.test+username894@gmail.com",
+            "user894",
+            "gamelib.test+user894@gmail.com",
             "1234",
             Rol.USER
         )
