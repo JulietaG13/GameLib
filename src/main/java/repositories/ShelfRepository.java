@@ -72,9 +72,9 @@ public class ShelfRepository {
 
         managedShelf.get().addGame(managedGame.get());
 
-        persist(managedShelf.get());
-
         t.commit();
+
+        persist(managedShelf.get());
     }
     
     public void takeOutGame(Shelf shelf, User user, Game game) {
@@ -92,10 +92,10 @@ public class ShelfRepository {
         }
     
         managedShelf.get().takeOutGame(game);
+        t.commit();
         
         persist(managedShelf.get());
-        
-        t.commit();
+
     }
     
     public void deleteShelf(Shelf shelf, User user) {
@@ -122,7 +122,10 @@ public class ShelfRepository {
     }
 
     public Shelf persist(Shelf shelf) {
+        EntityTransaction t = entityManager.getTransaction();
+        t.begin();
         entityManager.persist(shelf);
+        t.commit();
         return shelf;
     }
 }
