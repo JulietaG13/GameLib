@@ -1,15 +1,15 @@
 import React, {useEffect, useState} from "react";
-import {Navigate, useParams} from "react-router-dom";
-import './ManageVideogame.css';
+import {useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
-import ErrorView from "../ErrorView/ErrorView";
+import './ManageVideogame.css';
 import StandByComponent from "./skeleton/StandByComponent";
+import ErrorView from "../ErrorView/ErrorView";
+import CheckPopup from "../Popup/CheckPopup";
 
-function ManageVideogame({type}) {
-    const videogameID = useParams();
-    const [tags, setTags] = useState([]);
+function MVR({type}) {
+    const videogameID = useParams().videogameID;
 
-    const [theVideogame, setTheVideogame] = useState({
+    const [videogame, setVideogame] = useState({
         name: '',
         description: '',
         release_date: '',
@@ -18,16 +18,20 @@ function ManageVideogame({type}) {
         cover: '',
         background_image: ''
     });
+    const [videogameFetched, setVideogameFetched] = useState(false);
+    const [platformTags, setPlatformTags] = useState([]);
+    const [genreTags, setGenreTags] = useState([]);
+    const [tagsFetched, setTagsFetched] = useState(true);
 
     const [errorMessage, setErrorMessage] = useState('');
-
     const [disableButton, setDisableButton] = useState(false);
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [navigate, setNavigate] = useState(false);
-    const [toView, setToView] = useState(false);
+    const [isCheckPopupVisible, setIsCheckPopupVisible] = useState(false);
 
-    useEffect(() => {
+    const navigate = useNavigate();
+
+    // Initial requests to back
+    function validateToken() {
         axios.post('http://localhost:4567/tokenvalidation', {}, {
             headers: {
                 'Content-Type': 'application/json',
@@ -35,105 +39,139 @@ function ManageVideogame({type}) {
             }
         })
             .catch(error => {
-                console.error('Error en tokenValidation:', error);
+                console.error('Token validation error:', error);
                 localStorage.clear();
-                setNavigate(true);
+                navigate("/");
             })
-            .then(userResponseData => {
-                checkIfUser(userResponseData, setNavigate);
-                axios.get('http://localhost:4567/tag/get')
-                    .catch(error => {
-                        console.error('Error en tags:', error);
-                        setNavigate(true);
-                    })
-                    .then(response => {
-                        setTags(formatAllTagsJSON(response.data));
-                        console.log(formatAllTagsJSON(response.data));
-                        if (type === "Add") {
-                            setIsLoading(false);
-                        }
-                        if (type === "Edit") {
-                            axios.get(`http://localhost:4567/getgame/${videogameID.videogameID}`)
-                                .then(gameResponseData => {
-                                    checkOwnership(gameResponseData, userResponseData, setNavigate);
+            .then(validationResponse => {
+                // Checks it is no a user that is trying to access the ABM.
+                if (isUser(validationResponse)) {
+                    navigate("/");
+                }
 
-                                    let formattedJSON = formatJSON(gameResponseData.data);
-                                    setTheVideogame(formattedJSON);
-                                    setIsLoading(false);
-                                    console.log(formattedJSON);
-                                })
-                                .catch(error => {
-                                    console.error('Error en getGame:', error);
-                                    setNavigate(true);
-                                });
-                        }
-                    })
+                // Fetches the videogame data to edit
+                if (type === "Edit") {
+                    fetchGameData(validationResponse);
+                } else {
+                    setVideogameFetched(true);
+                }
+            })
+    }
 
-            });
+    function fetchGameData(validationResponse) {
+        axios.get(`http://localhost:4567/getgame/${videogameID}`)
+            .catch(error => {
+                console.error('Fetching game error:', error);
+                navigate("/");
+            })
+            .then(gameResponse => {
+                if (checkNoOwnership(gameResponse, validationResponse)) {
+                    navigate("/");
+                }
+
+                // console.log("Game response: ", gameResponse.data)
+                let formattedJSON = formatJSON(gameResponse.data);
+                // console.log("Formatted JSON: ", formattedJSON);
+                setVideogame(formattedJSON);
+                setVideogameFetched(true);
+            })
+    }
+
+    function fetchTags() {
+        axios.get('http://localhost:4567/tag/get')
+            .catch(error => {
+                console.error('Fetching tags error:', error);
+            })
+            .then(tagsResponse => {
+                let formattedTags = formatAllTagsJSON(tagsResponse.data);
+                let platformTags = formattedTags.filter(tag => tag.tag_type === "PLATFORM");
+                let genreTags = formattedTags.filter(tag => tag.tag_type === "GENRE");
+
+                setPlatformTags(platformTags);
+                setGenreTags(genreTags);
+                setTagsFetched(true);
+            })
+    }
+
+    useEffect(() => {
+        // Checks token is valid
+        validateToken();
+        fetchTags();
     }, []);
 
-    const addVideogame = e => {
+    // Form submitting management
+    const manageSubmit = (e) => {
         e.preventDefault()
+        setVideogame({
+            ...videogame,
+            tags: formatTagsToID(videogame.tags),
+            last_update: formatDate(new Date())
+        });
         setDisableButton(true);
-        setTheVideogame({...theVideogame, last_update: formatDate(new Date())});
 
-        axios.post("http://localhost:4567/game/create", theVideogame, {
-            headers: {
-                'Content-Type': 'application/json',
-                'token': localStorage.getItem('token')
-            }
-        })
-            .then(() =>
-                manageSuccess()
-            )
-            .catch(error => {
-                manageFailure(error);
-            });
+        if (type === "Add") {
+            addVideogame();
+        } else {
+            editVideogame();
+        }
     }
 
-    const editVideogame = e => {
-        e.preventDefault()
-        setDisableButton(true);
-        setTheVideogame({...theVideogame, last_update: formatDate(new Date())});
-
-        axios.put(`http://localhost:4567/game/edit/${videogameID.videogameID}`, theVideogame, {
-            headers: {
-                'Content-Type': 'application/json',
-                'token': localStorage.getItem('token')
-            }
-        })
-            .then(() =>
-                manageSuccess()
-            )
-            .catch(error => {
-                manageFailure(error);
-            });
+    const manageCancel = () => {
+        manageSuccess(type ==="Add" ? "/" : `/videogame/${videogameID}`);
     }
 
-    const deleteGame = () => {
-        console.log("About to delete game");
+    const manageDelete = () => {
+        console.log("Deleting game");
         setDisableButton(true);
-        axios.post(`http://localhost:4567/game/delete/${videogameID.videogameID}`, {}, {
+        axios.post(`http://localhost:4567/game/delete/${videogameID}`, {}, {
             headers: {
                 'Content-Type': 'application/json',
                 'token': localStorage.getItem('token')
             }
         })
             .then(() => {
-                console.log("Game deleted");
-                manageSuccess();
-                setNavigate(true);
+                console.log("Game deleted.");
+                manageSuccess("/");
             })
             .catch((e) => {
-                console.log("Error deleting game");
-                console.log(e);
+                console.log("Deleting game error: " + e);
+                setDisableButton(false);
                 manageFailure(e);
             })
     }
 
-    function manageSuccess() {
-        setDisableButton(false);
-        setTheVideogame({
+    const addVideogame = () => {
+        axios.post("http://localhost:4567/game/create", videogame, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        })
+            .then(() => {
+                manageSuccess(type ==="Add" ? "/" : `/videogame/${videogameID}`);
+            })
+            .catch(error => {
+                manageFailure(error);
+            });
+    }
+
+    const editVideogame = () => {
+        axios.put(`http://localhost:4567/game/edit/${videogameID}`, videogame, {
+            headers: {
+                'Content-Type': 'application/json',
+                'token': localStorage.getItem('token')
+            }
+        })
+            .then(() =>
+                manageSuccess(type ==="Add" ? "/" : `/videogame/${videogameID}`)
+            )
+            .catch(error => {
+                manageFailure(error);
+            });
+    }
+
+    const manageSuccess = (route) => {
+        setVideogame({
             name: '',
             description: '',
             release_date: '',
@@ -142,12 +180,12 @@ function ManageVideogame({type}) {
             cover: '',
             background_image: ''
         });
-        setToView(true);
+        navigate(route);
     }
 
-    function manageFailure(error) {
+    const manageFailure = (error) => {
+        console.log("Submitting videogame error: " + error)
         setDisableButton(false);
-        console.log(error.response)
         if (error.response.status) {
             if (error.response.data === <html><body><h2>404 Not found</h2></body></html>) {
                 setErrorMessage("Something went wrong")
@@ -157,224 +195,248 @@ function ManageVideogame({type}) {
         } else {
             setErrorMessage("Something went wrong")
         }
-        console.error('Error:', error);
     }
 
-    const cancel = () => {
-        if (type === "Edit") {
-            setToView(true);
-        } else if (type === "Add") {
-            setNavigate(true);
-        }
-    }
+    // checking delete game
+    const handleCheckPopupConfirm = () => {
+        manageDelete();
+        setIsCheckPopupVisible(false);
+    };
 
-    if (navigate) {
-        return <Navigate to={"/"}/>;
-    }
-    if (toView) {
-        return <Navigate to={`/videogame/${videogameID.videogameID}`}/>;
-    }
+    const handleCheckPopupCancel = () => {
+        setIsCheckPopupVisible(false);
+    };
 
-    return (isLoading ?
-            <form className={"mainPopUP flex flex-col items-center"}
-                  onSubmit={type === "Edit" ? editVideogame : addVideogame}
-                  style={{width: "50%", justifyContent: 'center'}}>
-                <h1 className={'font-bold text-[30px] mb-2 text-center'}>{type} Videogame</h1>
+    const showCheckPopup = () => {
+        setIsCheckPopupVisible(true);
+    };
 
-                <StandByComponent/>
+    // View rendering
+    return (videogameFetched ?
+            <form className={"abmMain"}
+                  onSubmit={manageSubmit}
+            >
+                <div className={"formTitleDivABM"}>
+                    <h1 id={"formTitle"}>{type} videogame</h1>
+                </div>
+                <div className={"attributesDivABM"}>
+                    <div className={"videogameStrings"}>
+                        <div className={"titleDivABM divBackground"}>
+                            <h2 id={"formSubtitle"}>Title</h2>
+                            <input className={"textInput"}
+                                   type={"text"}
+                                   defaultValue={videogame.name}
+                                   onChange={e =>
+                                       setVideogame({...videogame, name: e.target.value})
+                                   }
+                            />
+                        </div>
+
+                        <div className={"descDivABM divBackground"}>
+                            <h2 id={"formSubtitle"}>Description (Optional)</h2>
+                            <textarea className={"textInput"}
+                                      maxLength={200}
+                                      rows={3}
+                                      defaultValue={videogame.description}
+                                      onChange={e =>
+                                          setVideogame({...videogame, description: e.target.value})
+                                      }
+                            ></textarea>
+                        </div>
+
+                        <div className={"dateDivABM divBackground"}>
+                            <h2 id={"formSubtitle"}>Release date</h2>
+                            <input className={"dateInput"}
+                                   type={"date"}
+                                   defaultValue={videogame.release_date}
+                                   onChange={e =>
+                                       setVideogame({...videogame, release_date: e.target.value})
+                                   }
+                            />
+                        </div>
+
+                        {tagsFetched && platformTags.length > 0 && genreTags.length > 0 ?
+                            <div className={"tagsDivABM divBackground"}>
+                                <h2 id={"formSubtitle"}>Tags</h2>
+                                <div className={"biggerTagsContainer"}>
+                                    <div className={"tagsContainerABM"}>
+                                        <h3>Genre tags</h3>
+                                        {genreTags.map((tag, index) => (
+                                            <div key={index} className={"tagDivABM"}>
+                                                <label>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={videogame.tags.includes(tag.id)}
+                                                        onChange={() => {
+                                                            if (videogame.tags.includes(tag.id)) {
+                                                                setVideogame({
+                                                                    ...videogame,
+                                                                    tags: videogame.tags.filter(t => t !== tag.id)
+                                                                });
+                                                            } else {
+                                                                setVideogame({
+                                                                    ...videogame,
+                                                                    tags: [...videogame.tags, tag.id]
+                                                                });
+                                                            }
+                                                        }}
+                                                    />
+                                                    {tag.name}</label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className={"tagsContainerABM"}>
+                                        <h3>Platform tags</h3>
+                                        {platformTags.map((tag, index) => (
+                                            <div key={index} className={"tagDivABM"}>
+                                                <label>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={videogame.tags.includes(tag.id)}
+                                                        onChange={() => {
+                                                            if (videogame.tags.includes(tag.id)) {
+                                                                setVideogame({
+                                                                    ...videogame,
+                                                                    tags: videogame.tags.filter(t => t !== tag.id)
+                                                                });
+                                                            } else {
+                                                                setVideogame({
+                                                                    ...videogame,
+                                                                    tags: [...videogame.tags, tag.id]
+                                                                });
+                                                            }
+                                                        }}
+                                                    />
+                                                    {tag.name}</label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            :
+                            <div className={"tagsDivABM divBackground"}>
+                                <h2 id={"formSubtitle"}>Tags (Optional)</h2>
+                                <div className={"standByContainer tagsStandByContainer"}>
+                                    <h1>Loading tags...</h1>
+                                    <StandByComponent/>
+                                </div>
+                            </div>
+                        }
+
+                        {errorMessage !== "" ?
+                            <ErrorView message={errorMessage}/>
+                            :
+                            null
+                        }
+
+                        <div className={"buttonsDivABM divBackground"}>
+                            <button disabled={disableButton}
+                                    className={"submitButton"}
+                                    id={disableButton ? "disabled" : "submit"}
+                            >{type}</button>
+
+                            <button disabled={disableButton}
+                                    className={"submitButton"}
+                                    id={disableButton ? "disabled" : "cancel"}
+                                    onClick={manageCancel}
+                            >Cancel
+                            </button>
+
+                            {type === "Edit" ?
+                                <button disabled={disableButton}
+                                        className={"submitButton"}
+                                        id={disableButton ? "disabled" : "delete"}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            showCheckPopup();
+                                        }}
+                                >Delete</button>
+                                :
+                                null
+                            }
+                        </div>
+                    </div>
+                    <div className={"videogameImages"}>
+                        <div className={"imageDivABM divBackground"}>
+                            <h2 id={"formSubtitle"}>Cover (Optional)</h2>
+                            <input className={"imageInput"}
+                                   type={"file"}
+                                   accept={"image/*"}
+                                   onChange={e => {
+                                       formatBase64Image(e.target.files[0])
+                                           .then(result => setVideogame({...videogame, cover: result}))
+                                           .catch(error => console.error(error));
+                                   }}
+                            />
+                            {videogame.cover ?
+                                // <div className={"imagePreviewContainerABM"}>
+                                    <img className={"imagePreviewABM"}
+                                         src={videogame.cover}
+                                         alt={"Cover"}
+                                    />
+                                // </div>
+                                :
+                                <p>No cover selected</p>
+                            }
+                        </div>
+
+                        <div className={"imageDivABM divBackground"}>
+                            <h2 id={"formSubtitle"}>Banner (Optional)</h2>
+                            <input className={"imageInput"}
+                                   type={"file"}
+                                   accept={"image/*"}
+                                   onChange={e => {
+                                       formatBase64Image(e.target.files[0])
+                                           .then(result => setVideogame({...videogame, background_image: result}))
+                                           .catch(error => console.error(error));
+                                   }}
+                            />
+                            {videogame.background_image ?
+                                // <div className={"imagePreviewContainerABM"}>
+                                    <img className={"imagePreviewABM"}
+                                         src={videogame.background_image}
+                                         alt={"Background image"}
+                                    />
+                                // </div>
+                                :
+                                <p>No cover selected</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+                {isCheckPopupVisible && (
+                    <CheckPopup
+                        message="Are you sure you want to delete the game?"
+                        onConfirm={handleCheckPopupConfirm}
+                        onCancel={handleCheckPopupCancel}
+                    />
+                )}
             </form>
             :
-            <form className={"mainPopUP flex flex-col items-center"}
-                  onSubmit={type === "Edit" ? editVideogame : addVideogame}
-                  style={{width: "50%", justifyContent: 'center'}}>
-                <h1 className={'font-bold text-[30px] mb-2 text-center'}>{type} Videogame</h1>
-
-                <div className={'cover'}>
-                    <div className={"imageOption"}>
-                        <h2>Cover:</h2>
-                    </div>
-
-                    <div>
-                        <input type={'File'}
-                               accept={'image/*'}
-                               onChange={e => {
-                                   formatBase64Image(e.target.files[0])
-                                       .then(result => setTheVideogame({...theVideogame, cover: result}))
-                                       .catch(error => console.error(error));
-                               }}
-                        />
-
-                        {
-                            theVideogame.cover === '' ?
-                                null
-                                :
-                                <img src={theVideogame.cover} alt={"cover1"}/>
-                        }
-                    </div>
-                </div>
-
-                <div className={'cover'}>
-                    <div className={"imageOption"}>
-                        <h2>Background image:</h2>
-                    </div>
-
-                    <div>
-                        <input type={'File'}
-                               accept={'image/*'}
-                               onChange={e => {
-                                   formatBase64Image(e.target.files[0])
-                                       .then(result => setTheVideogame({...theVideogame, background_image: result}))
-                                       .catch(error => console.error(error));
-                               }}
-                        />
-
-                        {
-                            theVideogame.background_image === '' ?
-                                null
-                                :
-                                <img src={theVideogame.background_image} alt={"cover1"}/>
-                        }
-                    </div>
-                </div>
-
-                <div className={"titleDesc flex justify-center items-center"}>
-                    <div className={"imageOption"}>
-                        <h2>Title:</h2>
-                    </div>
-                    <input className={'p-1 rounded mb-2'}
-                           type={"text"}
-                           placeholder={"Add videogame name"}
-                           defaultValue={theVideogame.name}
-                           onChange={e => setTheVideogame({...theVideogame, name: e.target.value})}
-                    />
-
-                    <div className={"imageOption"}>
-                        <h2>Description:</h2>
-                    </div>
-                    <input id={"desc"}
-                           type={"text"}
-                           className={'p-1 rounded mb-2'}
-                           placeholder={"Add description"}
-                           defaultValue={theVideogame.description}
-                           onChange={e => setTheVideogame({...theVideogame, description: e.target.value})}
-                    />
-                </div>
-
-                <div className={"tagsSelectionDiv"}>
-                    <div className={"imageOption"}>
-                        <h2>Tags:</h2>
-                    </div>
-                    <div className={"tagsDiv"}>
-                        {tags.map((tag, index) => (
-                            <div key={index} className={"tagDiv"}>
-                                <input
-                                    type="checkbox"
-                                    checked={theVideogame.tags.includes(tag.id)}
-                                    onChange={() => {
-                                        if (theVideogame.tags.includes(tag.id)) {
-                                            setTheVideogame({
-                                                ...theVideogame,
-                                                tags: theVideogame.tags.filter(t => t !== tag.id)
-                                            });
-                                        } else {
-                                            setTheVideogame({
-                                                ...theVideogame,
-                                                tags: [...theVideogame.tags, tag.id]
-                                            });
-                                        }
-                                    }}
-                                />
-                                <label className={"flex items-center"}>{tag.name}</label>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className={"releaseDate font-bold flex justify-start items-center mb-2"}>
-                    <div className={'flex justify-center'}>
-                        <div className={"imageOption"}>
-                            <h2>Release date:</h2>
-                        </div>
-                        <input type={"date"}
-                               className={'rounded-b'}
-                               name={"release_date"}
-                               defaultValue={theVideogame.release_date}
-                               onChange={e =>
-                                   setTheVideogame({...theVideogame, release_date: e.target.value})
-                               }
-                        />
-                    </div>
-                </div>
-
-                    {errorMessage !== '' ?
-                        <ErrorView message={errorMessage}/>
-                        :
-                        null
-                }
-
-                <div className={"font-bold flex justify-center"}>
-                    <input type={"button"}
-                           disabled={disableButton}
-                           className={`${disableButton ? 'disabled' : 'submit'} cursor-pointer mr-2`}
-                           value={"Cancel"}
-                           onClick={cancel}
-                    />
-
-                    {type === "Edit" ? <input type={"button"}
-                                              disabled={disableButton}
-                                              className={`cursor-pointer ${disableButton ? 'disabled' : 'submit'}`}
-                                              value={"Delete"}
-                                              onClick={deleteGame}/> : null}
-
-                    <input type={"button"}
-                           value={type}
-                           disabled={disableButton}
-                           className={`${disableButton ? 'disabled' : 'submit'} ml-2 cursor-pointer`}
-                           onClick={type === "Edit" ? editVideogame : addVideogame}
-                    />
-                </div>
-        </form>
+            <div className={"standByContainer"}>
+                <h1>Fetching data...</h1>
+                <StandByComponent/>
+            </div>
     );
 }
 
-function checkIfUser(userResponseData, setNavigate) {
-    if (!userResponseData || !userResponseData.data || userResponseData.data.rol === "USER") {
-        setNavigate(true);
-    }
+function isUser(validationResponse) {
+    return !validationResponse || !validationResponse.data || validationResponse.data.rol === "USER"
 }
 
-function checkOwnership(gameResponseData, userResponseData, setNavigate) {
+function checkNoOwnership(gameResponseData, userResponseData) {
     if (!gameResponseData || !userResponseData) {
-        setNavigate(true);
+        return true;
     }
     if (!gameResponseData.data || !userResponseData.data) {
-        setNavigate(true);
+        return true;
     }
     if (userResponseData.data.rol === "ADMIN") {
-        return;
+        return false;
     }
     if (gameResponseData.data.owner_id !== userResponseData.data.id) {
-        setNavigate(true);
+        return true;
     }
-}
-
-function formatBase64Image(image) {
-    return new Promise((resolve, reject) => {
-        let reader = new FileReader();
-        reader.readAsDataURL(image);
-        reader.onload = function() {
-            resolve(reader.result);
-        };
-        reader.onerror = function(error) {
-            reject(error);
-        };
-    });
-}
-
-function formatDate(date) {
-    return date.getFullYear() + '-' +
-        String(date.getMonth() + 1).padStart(2, '0') + '-' +
-        String(date.getDate()).padStart(2, '0');
 }
 
 function formatJSON(videogame) {
@@ -383,6 +445,7 @@ function formatJSON(videogame) {
         description: videogame.description.toString(),
         release_date: videogame.release_date.toString(),
         tags: formatTagsToID(videogame.tags),
+        // tags: videogame.tags,
         cover: videogame.cover.toString(),
         background_image: videogame.background_image.toString()
     }
@@ -400,7 +463,27 @@ function formatTagJSON(tag) {
     return {
         id: tag.id,
         name: tag.name,
+        tag_type: tag.tag_type
     }
 }
 
-export default ManageVideogame;
+function formatDate(date) {
+    return date.getFullYear() + '-' +
+        String(date.getMonth() + 1).padStart(2, '0') + '-' +
+        String(date.getDate()).padStart(2, '0');
+}
+
+function formatBase64Image(image) {
+    return new Promise((resolve, reject) => {
+        let reader = new FileReader();
+        reader.readAsDataURL(image);
+        reader.onload = function () {
+            resolve(reader.result);
+        };
+        reader.onerror = function (error) {
+            reject(error);
+        };
+    });
+}
+
+export default MVR;
