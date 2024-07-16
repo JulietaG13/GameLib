@@ -280,7 +280,7 @@ public class DatabaseDemo {
             "CULT OF THE LAMB: THE FIRST VERSE",
             "The first-ever graphic novel inspired by CULT OF THE LAMB, is now available globally in stores!\n" +
                 "\n" +
-                "We’re thrilled to partner with OniPress to explore the world they create with our characters, " +
+                "We're thrilled to partner with OniPress to explore the world they create with our characters, " +
                 "and witness the coming of the Lamb's first flock anew, together with you!",
             gameCult,
             developer1.getUser())
