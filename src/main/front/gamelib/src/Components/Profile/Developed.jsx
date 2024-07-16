@@ -21,14 +21,14 @@ function Developed({ username }) {
     }, [username]);
 
     return (
-        <div>
+        <div className={"mr-14"}>
             {developed.length === 0 ? (
                 <div className="pl-16">
                     <h2 className="font-bold text-[25px] text-black pt-3 pb-5 pl-5">No developed games to display!</h2>
                 </div>
             ) : (
                 <div className="pl-16 pt-8 pb-1">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8">
                         {developed.map((game) => (
                             <div key={game.id} className="relative">
                                 <Link to={`/videogame/${game.id}`}>

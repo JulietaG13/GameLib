@@ -56,11 +56,13 @@ public class DatabaseDemo {
     developer1 = developerRepository.findByUsername(developer1.getUser().getUsername()).get();
     developer2 = developerRepository.findByUsername(developer2.getUser().getUsername()).get();
   
+    /*
     developerRepository.setupDonations(
         developer1.getUser(),
         "APP_USR-7935a1bd-06e9-4148-ac35-6d3efc60dbdf",
         "APP_USR-3308950100823866-070817-edee83028d45f993e55a22ec7b955a62-1893394530"
     );
+    */
   
     developerRepository.setupDonations(
         developer2.getUser(),
@@ -278,7 +280,7 @@ public class DatabaseDemo {
             "CULT OF THE LAMB: THE FIRST VERSE",
             "The first-ever graphic novel inspired by CULT OF THE LAMB, is now available globally in stores!\n" +
                 "\n" +
-                "We’re thrilled to partner with OniPress to explore the world they create with our characters, " +
+                "We're thrilled to partner with OniPress to explore the world they create with our characters, " +
                 "and witness the coming of the Lamb's first flock anew, together with you!",
             gameCult,
             developer1.getUser())
