@@ -324,7 +324,9 @@ function MVR({type}) {
                         }
 
                         {errorMessage !== "" ?
-                            <ErrorView message={errorMessage}/>
+                            <div className={"fixedBackground"}>
+                                <ErrorView message={errorMessage}/>
+                            </div>
                             :
                             null
                         }

@@ -118,3 +118,7 @@
     height: 10em;
     margin: 0;
 }
+
+.fixedBackground {
+    margin: 1em;
+}
