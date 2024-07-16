@@ -6,7 +6,7 @@ import './ReviewItem.css';
 const ReviewItem = ({ review }) => {
     return (
         <div className="reviewDiv">
-            <Link className="profileLink"
+            <Link className="profileLink userIconContainer"
                   to={'/profile/' + review.author.username}
                   title={`Visit ${review.author.username}'s page!`}
             >
