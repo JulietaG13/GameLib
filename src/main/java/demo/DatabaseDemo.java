@@ -56,11 +56,13 @@ public class DatabaseDemo {
     developer1 = developerRepository.findByUsername(developer1.getUser().getUsername()).get();
     developer2 = developerRepository.findByUsername(developer2.getUser().getUsername()).get();
   
+    /*
     developerRepository.setupDonations(
         developer1.getUser(),
         "APP_USR-7935a1bd-06e9-4148-ac35-6d3efc60dbdf",
         "APP_USR-3308950100823866-070817-edee83028d45f993e55a22ec7b955a62-1893394530"
     );
+    */
   
     developerRepository.setupDonations(
         developer2.getUser(),
